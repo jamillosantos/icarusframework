@@ -43,7 +43,7 @@ public:
 			<< "\tminotaur::OChainStream " << fileInfo.name << "(";
 
 		if (!fileInfo.parameters.empty())
-			ostream << ", " << fileInfo.parameters;
+			ostream << fileInfo.parameters;
 
 		ostream
 			<< ")" << std::endl
@@ -92,11 +92,10 @@ public:
 	{
 		if (this->getStringBlockLevel() > 0)
 		{
-			if (c == '"')
-			{
+			if (c == '\\')
 				ostream << "\\";
-				ostream << c;
-			}
+			if (c == '"')
+				ostream << "\\\"";
 			else if (c == '\n')
 				ostream << "\\n";
 			else if (c == '\r')

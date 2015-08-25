@@ -27,14 +27,14 @@ namespace minotaur
 {
 namespace compiler
 {
-class Parser
+class Compiler
 {
 private:
 	std::vector<std::string> includeDirectories;
 	std::string inputDirectory;
 	std::string outputDirectory;
 public:
-	Parser(std::string inputDirectory, std::string outputDirectory)
+	Compiler(std::string inputDirectory, std::string outputDirectory)
 		: inputDirectory(inputDirectory), outputDirectory(outputDirectory)
 	{ }
 
@@ -50,12 +50,13 @@ public:
 
 	void setOutputDirectory(const std::string &outputDirectory)
 	{
-		Parser::outputDirectory = outputDirectory;
+		Compiler::outputDirectory = outputDirectory;
 	}
 
 	void compile(TemplateBuilder &templateBuilder) throw(CompilerException)
 	{
 		boost::filesystem::path id(this->inputDirectory);
+		boost::filesystem::path od(this->outputDirectory);
 		std::string
 			idFullPath = id.string(),
 			parentPath;
@@ -68,24 +69,40 @@ public:
 				for (boost::filesystem::recursive_directory_iterator d(id);
 					 d != dirEnd; ++d)
 				{
+					std::cout << "*" << d->path().string();
 					if (boost::filesystem::is_regular(*d))
 					{
-						std::cout << "Compiling " << d->path().string();
-
+						std::cout << ". OK";
+						std::string extension = d->path().extension().string();
 						parentPath = d->path().parent_path().string();
 
 						std::stringstream ostr;
 						CompileFile c((*d).path(), ostr, templateBuilder);
+
+						std::string relativePath;
 						if (parentPath != idFullPath)
-						{
-							std::string relativePath = parentPath.substr(idFullPath.length()+1);
-							boost::split(c.info.package, relativePath, boost::is_any_of("\\/"));
-						}
+							relativePath = parentPath.substr(idFullPath.length()+1);
+
+						boost::filesystem::path targetCppFile(od.string() + (relativePath) +
+															  boost::filesystem::path::preferred_separator + c.info.name + "_" + c.info.extension +
+															  ".hpp"
+						);
+						boost::filesystem::create_directories(targetCppFile.parent_path().string());
+
+						boost::split(c.info.package, relativePath, boost::is_any_of("\\/"));
 						c.compile();
 
-						std::cout << " to: " << std::endl;
-						std::cout << ostr.str() << std::endl;
+						std::ofstream ostream(targetCppFile.string());
+						if (ostream)
+							ostream << ostr.rdbuf();
+						else
+						{
+							// TODO: Spetialize exception
+							std::cerr << "Cannot create file stream on " << targetCppFile.string() << "." << std::endl;
+							throw std::exception();
+						}
 					}
+					std::cout << std::endl;
 				}
 			}
 			else

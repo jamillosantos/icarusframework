@@ -13,6 +13,7 @@
 #include <boost/filesystem.hpp>
 #include <fstream>
 #include <sstream>
+#include <iostream>
 #include <boost/regex.hpp>
 
 #include "exceptions.hpp"
@@ -41,7 +42,7 @@ private:
 	size_t currentChar;
 
 	std::unique_ptr<std::ifstream> istream;
-	std::ostream &ostream;
+	std::ostream &outputStream;
 
 	char inputStreamBuffer[INPUT_STREAM_BUFFER_SIZE];
 	size_t inputStreamBufferSize;
@@ -102,12 +103,12 @@ private:
 		char cc;
 		while (this->readChar(&cc))
 		{
-			this->templateBuilder.writeChar(this->info, this->ostream, cc);
+			this->templateBuilder.writeChar(this->info, this->outputStream, cc);
 			if (cc == '\\')
 			{
 				if (this->readChar(&cc))
 				{
-					this->templateBuilder.writeChar(this->info, this->ostream, cc);
+					this->templateBuilder.writeChar(this->info, this->outputStream, cc);
 				}
 				else
 				{
@@ -136,12 +137,12 @@ private:
 				}
 				else
 				{
-					this->templateBuilder.writeChar(this->info, this->ostream, cc);
+					this->templateBuilder.writeChar(this->info, this->outputStream, cc);
 				}
 			}
 			else
 			{
-				this->templateBuilder.writeChar(this->info, this->ostream, cc);
+				this->templateBuilder.writeChar(this->info, this->outputStream, cc);
 				if (cc == '"')
 				{
 					this->runQuotes();
@@ -170,17 +171,17 @@ private:
 			{
 				if (--bracketCount == 0)
 				{
-					this->templateBuilder.writeChar(this->info, this->ostream, cc);
+					this->templateBuilder.writeChar(this->info, this->outputStream, cc);
 					break;
 				}
 				else
 				{
-					this->templateBuilder.writeChar(this->info, this->ostream, cc);
+					this->templateBuilder.writeChar(this->info, this->outputStream, cc);
 				}
 			}
 			else
 			{
-				this->templateBuilder.writeChar(this->info, this->ostream, cc);
+				this->templateBuilder.writeChar(this->info, this->outputStream, cc);
 				if (cc == '"')
 				{
 					this->runQuotes();
@@ -201,7 +202,7 @@ private:
 
 	void runQuickEcho()
 	{
-		this->templateBuilder.beginWriteBlock(this->info, this->ostream);
+		this->templateBuilder.beginWriteBlock(this->info, this->outputStream);
 		char cc[2] = {this->lastChar(), 0};
 		unsigned int count = 0;
 		do
@@ -212,7 +213,7 @@ private:
 				{
 					if (cc[0] == ':')
 					{
-						this->ostream << "::";
+						this->outputStream << "::";
 					}
 					else
 					{
@@ -230,7 +231,7 @@ private:
 			}
 			else if (cc[0] == '(')
 			{
-				this->templateBuilder.writeChar(this->info, this->ostream, cc[0]);;
+				this->templateBuilder.writeChar(this->info, this->outputStream, cc[0]);;
 				this->runQuickEchoBrackets();
 			}
 			else if (cc[0] == ';')
@@ -239,13 +240,13 @@ private:
 			}
 			else
 			{
-				this->templateBuilder.writeChar(this->info, this->ostream, cc[0]);;
+				this->templateBuilder.writeChar(this->info, this->outputStream, cc[0]);;
 			}
 			count++;
 		}
 		while (this->readChar(&cc[0]));
 
-		this->templateBuilder.endWriteBlock(this->info, this->ostream);
+		this->templateBuilder.endWriteBlock(this->info, this->outputStream);
 	}
 
 	void writeChar(char cc)
@@ -254,23 +255,19 @@ private:
 		{
 			initialized = true;
 
-			this->templateBuilder.beginDocument(this->info, this->ostream);
-			this->templateBuilder.beginClass(this->info, this->ostream);
+			this->templateBuilder.beginDocument(this->info, this->outputStream);
+			this->templateBuilder.beginClass(this->info, this->outputStream);
 		}
 
 		if (this->templateBuilder.getStringBlockLevel() == 0)
-			this->templateBuilder.beginStringBlock(this->info, this->ostream);
-		this->templateBuilder.writeChar(this->info, this->ostream, cc);
+			this->templateBuilder.beginStringBlock(this->info, this->outputStream);
+		this->templateBuilder.writeChar(this->info, this->outputStream, cc);
 	}
 
 public:
 	CompileFile(boost::filesystem::path file, std::ostream &ostream, TemplateBuilder &templateBuilder)
-		: file(file), templateBuilder(templateBuilder), currentLine(0), currentChar(0), ostream(ostream),
-		  currentInputStreamChar(INPUT_STREAM_BUFFER_SIZE), initialized(false)
-	{ }
-
-
-	void compile()
+		: file(file), templateBuilder(templateBuilder), currentLine(0), currentChar(0), outputStream(ostream),
+		currentInputStreamChar(INPUT_STREAM_BUFFER_SIZE), initialized(false)
 	{
 		this->info.extension = this->file.extension().string();
 		std::string fname = this->file.filename().string();
@@ -288,7 +285,10 @@ public:
 		this->info.path = this->file.parent_path().string();
 
 		this->info.fullPath = this->file.string();
+	}
 
+	void compile()
+	{
 		this->istream.reset(new std::ifstream(this->info.fullPath, std::ifstream::in));
 		if (this->istream->is_open())
 		{
@@ -304,7 +304,7 @@ public:
 						if (cc == '{')
 						{
 							if (this->templateBuilder.getStringBlockLevel() > 0)
-								this->templateBuilder.endStringBlock(this->info, this->ostream);
+								this->templateBuilder.endStringBlock(this->info, this->outputStream);
 
 							this->runBrackets();
 						}
@@ -321,12 +321,12 @@ public:
 						}
 						else if (cc == '@')
 						{
-							this->templateBuilder.writeChar(this->info, this->ostream, cc);
+							this->templateBuilder.writeChar(this->info, this->outputStream, cc);
 						}
 						else
 						{
 							if (this->templateBuilder.getStringBlockLevel() > 0)
-								this->templateBuilder.endStringBlock(this->info, this->ostream);
+								this->templateBuilder.endStringBlock(this->info, this->outputStream);
 							this->runQuickEcho();
 						}
 					}
@@ -346,16 +346,16 @@ public:
 				{
 					initialized = true;
 
-					this->templateBuilder.beginDocument(this->info, this->ostream);
-					this->templateBuilder.beginClass(this->info, this->ostream);
+					this->templateBuilder.beginDocument(this->info, this->outputStream);
+					this->templateBuilder.beginClass(this->info, this->outputStream);
 				}
 			}
 
 			if (this->templateBuilder.getStringBlockLevel() > 0)
-				this->templateBuilder.endStringBlock(this->info, this->ostream);
+				this->templateBuilder.endStringBlock(this->info, this->outputStream);
 
-			this->templateBuilder.endClass(this->info, this->ostream);
-			this->templateBuilder.endDocument(this->info, this->ostream);
+			this->templateBuilder.endClass(this->info, this->outputStream);
+			this->templateBuilder.endDocument(this->info, this->outputStream);
 		}
 		else
 		{
