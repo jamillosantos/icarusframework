@@ -97,7 +97,7 @@ public:
 							ostream << ostr.rdbuf();
 						else
 						{
-							// TODO: Spetialize exception
+							// TODO: specialize exception
 							std::cerr << "Cannot create file stream on " << targetCppFile.string() << "." << std::endl;
 							throw std::exception();
 						}
