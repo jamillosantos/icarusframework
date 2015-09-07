@@ -252,7 +252,14 @@ private:
 				{
 					if (cc == '\\')
 					{
-						stream << '\\' << cc;
+						if (this->readChar(&cc))
+							stream << '\\' << cc;
+						else
+						{
+							// TODO: Specialize exception
+							std::cerr << "Unexpected end of file." << std::endl;
+							throw std::exception();
+						}
 					}
 					else if (cc == '<')
 					{
@@ -289,6 +296,13 @@ private:
 									else
 										stream << cc;
 								}
+							}
+							else if (cc == '>')
+							{
+								line.addToken(stream.str(), "");
+								stream.str("");
+								success = true;
+								break;
 							}
 							else if ((cc == ' ') || (cc == '\t') || (cc == '\r') || (cc == '\n'))
 								break;
@@ -345,6 +359,10 @@ private:
 						// TODO: specialize exception
 						std::cerr << "Route declaration incomplete." << std::endl;
 						throw std::exception();
+					}
+					else
+					{
+						stream << cc;
 					}
 				}
 			}
