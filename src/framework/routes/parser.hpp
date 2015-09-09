@@ -3,8 +3,8 @@
  * @date August 18, 2015
  */
 
-#ifndef ICARUSFRAMEWORK_ROUTES_COMPILER_HPP
-#define ICARUSFRAMEWORK_ROUTES_COMPILER_HPP
+#ifndef ICARUSFRAMEWORK_ROUTES_PARSER_HPP
+#define ICARUSFRAMEWORK_ROUTES_PARSER_HPP
 
 #define INPUT_STREAM_BUFFER_SIZE 4096
 
@@ -25,8 +25,6 @@ class Parser
 {
 private:
 	static boost::regex variablesName;
-
-	std::vector<RoutesLine> _lines;
 
 	std::unique_ptr<std::istream> istream;
 
@@ -232,10 +230,9 @@ private:
 		}
 	}
 
-	void runLine()
+	void runLine(RoutesData &data)
 	{
-		this->_lines.emplace_back(this->currentLine);
-		RoutesLine &line = this->_lines.back();
+		RoutesLine line(this->currentLine);
 		std::stringstream stream;
 		char cc = this->lastChar();
 		stream << cc;
@@ -340,6 +337,7 @@ private:
 								stream.str("");
 								this->runLineMethodParameters(callMethod);
 								line.callMethod(callMethod);
+								data.addLine(line);
 								return;
 							}
 							else if (cc == '\n')
@@ -380,7 +378,7 @@ private:
 		throw std::exception();
 	}
 
-	void runDoc()
+	void runDoc(RoutesData &data)
 	{
 		char cc;
 		while (this->readChar(&cc))
@@ -407,7 +405,7 @@ private:
 			}
 			else if ((cc != '\n') && (cc != '\r') && (cc != ' ') && (cc != '\t'))
 			{
-				this->runLine();
+				this->runLine(data);
 			}
 		}
 	}
@@ -416,12 +414,7 @@ public:
 		: inputStreamBufferSize(0), currentInputStreamChar(0), currentLine(0), currentChar(0)
 	{ }
 
-	const std::vector<RoutesLine> &lines() const
-	{
-		return this->_lines;
-	}
-
-	void compile(std::string inputFile)
+	void compile(std::string inputFile, RoutesData &data)
 	{
 		boost::filesystem::path ifp(inputFile);
 		if (boost::filesystem::exists(ifp))
@@ -429,7 +422,7 @@ public:
 			this->istream.reset(new std::ifstream(ifp.string()));
 			if (this->istream)
 			{
-				this->runDoc();
+				this->runDoc(data);
 			}
 			else
 			{
@@ -451,4 +444,4 @@ boost::regex Parser::variablesName("[a-zA-Z_0-9]+");
 }
 }
 
-#endif //ICARUSFRAMEWORK_HTTP_STATUSES_H
+#endif //ICARUSFRAMEWORK_ROUTES_PARSER_HPP

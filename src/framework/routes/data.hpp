@@ -201,6 +201,22 @@ public:
 	}
 };
 
+class RoutesData
+{
+private:
+	std::vector<RoutesLine> _lines;
+public:
+	const std::vector<RoutesLine> &lines() const
+	{
+		return this->_lines;
+	}
+
+	void addLine(RoutesLine &line)
+	{
+		this->_lines.push_back(line);
+	}
+};
+
 }
 }
 
