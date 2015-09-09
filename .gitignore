@@ -1,0 +1,8 @@
+build/
+libs/double-conversion/
+libs/folly/
+libs/gflags/
+libs/glog/
+libs/proxygen/
+libs/soci/
+libs/wangle/
