@@ -25,13 +25,6 @@ message("OpenSSL SSL libraries: ${OPENSSL_SSL_LIBRARIES}")
 message("OpenSSL crypto libraries: ${OPENSSL_CRYPTO_LIBRARIES}")
 include_directories(${OPENSSL_INCLUDE_DIR})
 
-include(MNTR)
-
-add_mntr(test_generation
-	minotaur/src/test/templates/
-	minotaur/src/test/templates.generated/
-)
-
 add_library(simpleweb STATIC
 	libs/simpleweb/simpleweb/server_http.hpp
 	libs/simpleweb/simpleweb/server_https.hpp
@@ -49,7 +42,10 @@ set(SOURCE_FILES
 	src/framework/http/statuses.h
 	src/framework/routes/data.hpp
 	src/framework/routes/parser.hpp
+	src/framework/routes/compiler.hpp
+	src/framework/routes/routeswriter.hpp
 	src/framework/result.hpp
+	src/framework/routes/writers/simpleweb.hpp
 )
 
 set(ICARUS_LIBRARIES
@@ -63,6 +59,8 @@ set(ICARUS_LIBRARIES
 	boost_program_options
 	boost_regex
 
+	rt
+
 	pthread
 
 	${OPENSSL_SSL_LIBRARIES}
@@ -75,9 +73,37 @@ add_library(icarusframework
 	${SOURCE_FILES}
 )
 
-target_link_libraries(icarusframework ${ICARUS_LIBRARIES})
+target_link_libraries(icarusframework
+	${ICARUS_LIBRARIES}
+)
 
 set_target_properties(icarusframework PROPERTIES LINKER_LANGUAGE CXX)
+
+add_library(minotaur
+	src/minotaur/ochainstream.hpp
+	src/minotaur/fileinfo.hpp
+	src/minotaur/compiler/compiler.hpp
+	src/minotaur/compiler/compilefile.hpp
+	src/minotaur/compiler/cpptemplatebuilder.hpp
+	src/minotaur/compiler/exceptions.hpp
+	src/minotaur/compiler/metainfo.hpp
+	src/minotaur/compiler/templatebuilder.hpp
+)
+
+set_target_properties(minotaur PROPERTIES LINKER_LANGUAGE CXX)
+
+add_executable(mntr
+	src/minotaur/mntr.cpp
+)
+
+target_link_libraries(mntr
+	boost_program_options
+	boost_filesystem
+	boost_system
+	boost_regex
+
+	minotaur
+)
 
 # Test configuration thanks to http://neyasystems.com/an-engineers-guide-to-unit-testing-cmake-and-boost-unit-tests/
 
