@@ -233,23 +233,105 @@ private:
 		}
 	}
 
+	char readURI(ComposedURI &uri)
+	{
+		std::stringstream stream;
+		char cc;
+		this->readUntilNonBlank(&cc);
+		stream << cc;
+		while (this->readChar(&cc))
+		{
+			if (cc == '\\')
+			{
+				if (this->readChar(&cc))
+					stream << '\\' << cc;
+				else
+				{
+					throw exceptions::PrematureEOF();
+				}
+			}
+			else if (cc == '<')
+			{
+				bool success = false;
+				std::string tmpstr = stream.str();
+				if (!tmpstr.empty())
+				{
+					uri.add(tmpstr);
+					stream.str("");
+				}
+				while (this->readChar(&cc))
+				{
+					if (cc == ':')
+					{
+						tmpstr = stream.str();
+						stream.str("");
+
+						while (this->readChar(&cc))
+						{
+							if (cc == '>')
+							{
+								uri.add(tmpstr, stream.str());
+								stream.str("");
+								success = true;
+								break;
+							}
+							else if (cc == '\\')
+							{
+								stream << cc;
+								if (!this->readChar(&cc))
+									break;
+								stream << cc;
+							}
+							else
+								stream << cc;
+						}
+					}
+					else if (cc == '>')
+					{
+						uri.add(stream.str(), "");
+						stream.str("");
+						success = true;
+						break;
+					}
+					else if ((cc == ' ') || (cc == '\t') || (cc == '\r') || (cc == '\n'))
+						break;
+					else if (boost::regex_match(std::to_string(cc), variablesName))
+						stream << cc;
+					else
+					{
+						throw exceptions::routes::InvalidChar(this->currentLine, this->currentChar);
+					}
+				}
+				if (!success)
+				{
+					throw exceptions::PrematureEOF();
+				}
+			}
+			else if ((cc == ' ') || (cc == '\t') || (cc == '\n') || (cc == '{'))
+			{
+				std::string tmpstr = stream.str();
+				if (!tmpstr.empty())
+					uri.add(tmpstr);
+				return cc;
+			}
+			else
+			{
+				stream << cc;
+			}
+		}
+		throw exceptions::PrematureEOF();
+	}
+
 	void runGroup(Routes &data, unsigned int level)
 	{
 		unsigned int cl = this->currentLine;
 		std::stringstream stream;
-		std::string uri = this->readUntil("\n{ ");
-		if (uri.empty())
-		{
-			throw exceptions::routes::InvalidURI(uri);
-		}
-		else
-		{
-			Group *group;
-			data.add(group = new Group(uri, cl));
-			if (this->currentChar != '{')
-				this->readUntil("{");
-			this->runDoc(*group, level+1);
-		}
+		Group *group;
+		data.add(group = new Group(cl));
+		char cc = this->readURI(group->uri());
+		if (cc != '{')
+			this->readUntil("{");
+		this->runDoc(*group, level+1);
 	}
 
 	void runLine(Routes &data, unsigned int level)
@@ -272,106 +354,21 @@ private:
 					route.httpMethod(stream.str());
 					stream.str("");    // clear stream
 
+					this->readURI(route.uri());
 					this->readUntilNonBlank(&cc);
 					stream << cc;
+
+					CallMethod callMethod;
 					while (this->readChar(&cc))
 					{
-						if (cc == '\\')
+						if (cc == '(')
 						{
-							if (this->readChar(&cc))
-								stream << '\\' << cc;
-							else
-							{
-								throw exceptions::PrematureEOF();
-							}
-						}
-						else if (cc == '<')
-						{
-							bool success = false;
-							std::string tmpstr = stream.str();
-							if (!tmpstr.empty())
-							{
-								route.add(tmpstr);
-								stream.str("");
-							}
-							while (this->readChar(&cc))
-							{
-								if (cc == ':')
-								{
-									tmpstr = stream.str();
-									stream.str("");
-
-									while (this->readChar(&cc))
-									{
-										if (cc == '>')
-										{
-											route.add(tmpstr, stream.str());
-											stream.str("");
-											success = true;
-											break;
-										}
-										else if (cc == '\\')
-										{
-											stream << cc;
-											if (!this->readChar(&cc))
-												break;
-											stream << cc;
-										}
-										else
-											stream << cc;
-									}
-								}
-								else if (cc == '>')
-								{
-									route.add(stream.str(), "");
-									stream.str("");
-									success = true;
-									break;
-								}
-								else if ((cc == ' ') || (cc == '\t') || (cc == '\r') || (cc == '\n'))
-									break;
-								else if (boost::regex_match(std::to_string(cc), variablesName))
-									stream << cc;
-								else
-								{
-									throw exceptions::routes::InvalidChar(this->currentLine, this->currentChar);
-								}
-							}
-							if (!success)
-							{
-								throw exceptions::PrematureEOF();
-							}
-						}
-						else if ((cc == ' ') || (cc == '\t'))
-						{
-							std::string tmpstr = stream.str();
-							if (!tmpstr.empty())
-								route.add(tmpstr);
+							callMethod.path(stream.str());
 							stream.str("");
-
-							this->readUntilNonBlank(&cc);
-							stream << cc;
-							CallMethod callMethod;
-							while (this->readChar(&cc))
-							{
-								if (cc == '(')
-								{
-									callMethod.path(stream.str());
-									stream.str("");
-									this->runLineMethodParameters(callMethod);
-									route.callMethod(callMethod);
-									data.add(new Route(route));
-									return;
-								}
-								else if (cc == '\n')
-								{
-									throw exceptions::routes::IncompleteDeclaration(this->currentLine, this->currentChar);
-								}
-								else
-								{
-									stream << cc;
-								}
-							}
+							this->runLineMethodParameters(callMethod);
+							route.callMethod(callMethod);
+							data.add(new Route(route));
+							return;
 						}
 						else if (cc == '\n')
 						{
@@ -442,7 +439,7 @@ public:
 		: inputFolder(inputFolder), inputStreamBufferSize(0), currentInputStreamChar(0), currentLine(0), currentChar(0)
 	{ }
 
-	void compile(std::string inputFile, Routes &data)
+	void compile(std::string inputFile, Document &data)
 	{
 		boost::filesystem::path ifp(inputFile);
 		if (boost::filesystem::exists(ifp))

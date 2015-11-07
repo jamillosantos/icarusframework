@@ -17,7 +17,18 @@ link_directories(
 	build/libs/soci/lib
 )
 
-find_package(Boost)
+set(BOOST_ROOT "$ENV{HOME}/libs/libboost_1_59_0")
+set(BOOST_INCLUDEDIR "${BOOST_ROOT}/include")
+set(BOOST_LIBRARYDIR "${BOOST_ROOT}/lib")
+find_package(Boost REQUIRED system coroutine context filesystem program_options regex date_time)
+message("Boost library:")
+message("\t+ include: ${Boost_INCLUDE_DIRS}")
+message("\t+ library: ${Boost_LIBRARY_DIRS}")
+
+include_directories(${Boost_INCLUDE_DIRS})
+link_directories(${Boost_LIBRARY_DIRS})
+
+# find_package(Boost)
 
 find_package(OpenSSL REQUIRED)
 message("OpenSSL include dir: ${OPENSSL_INCLUDE_DIR}")
@@ -36,28 +47,32 @@ add_library(simpleweb STATIC
 set_target_properties(simpleweb PROPERTIES LINKER_LANGUAGE CXX)
 
 set(SOURCE_FILES
-	src/controllers/controller.hpp
-	src/framework/http/headers.hpp
-	src/framework/http/response.hpp
-	src/framework/http/statuses.h
-	src/framework/routes/data.hpp
-	src/framework/routes/parser.hpp
-	src/framework/routes/compiler.hpp
-	src/framework/routes/routeswriter.hpp
-	src/framework/result.hpp
-	src/framework/routes/writers/simpleweb.hpp
-)
+		src/controllers/controller.hpp
+		src/framework/http/headers.hpp
+		src/framework/http/response.hpp
+		src/framework/http/statuses.h
+		src/framework/routes/data.hpp
+		src/framework/routes/parser.hpp
+		src/framework/routes/compiler.hpp
+		src/framework/routes/routeswriter.hpp
+		src/framework/result.hpp
+		src/framework/routes/writers/simpleweb.hpp
+		src/framework/exceptions.hpp
+		src/framework/routes/exceptions.hpp
+		src/test/routes_groups.cpp)
 
 set(ICARUS_LIBRARIES
 	soci_core
 	soci_mysql
 
 	boost_system
+	boost_date_time
 	boost_coroutine
 	boost_context
 	boost_filesystem
 	boost_program_options
 	boost_regex
+	boost_locale
 
 	rt
 

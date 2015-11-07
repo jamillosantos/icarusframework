@@ -22,12 +22,14 @@ protected:
 	{
 		stream << "/**" << std::endl;
 		stream << " * Auto generated." << std::endl;
-		stream << " **/" << std::endl;
+		stream << " **/" << std::endl << std::endl;
+		stream << "class " << std::endl;
 	}
 
-	virtual void writeEndDoc(std::ostream &stream, Routes &data);
+	virtual void writeEndDoc(std::ostream &stream, Routes &data)
+	{
 
-	virtual void writeLine(std::ostream &stream, const Route &line);
+	}
 };
 }
 }

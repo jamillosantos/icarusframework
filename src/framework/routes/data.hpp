@@ -47,6 +47,48 @@ public:
 	}
 };
 
+class ComposedURI
+{
+private:
+	std::vector<RegexToken> _tokens;
+public:
+	ComposedURI &add(std::string name, std::string regex)
+	{
+		this->_tokens.emplace_back(name, regex);
+		return *this;
+	}
+
+	ComposedURI &add(std::string expression)
+	{
+		this->_tokens.emplace_back(expression);
+		return *this;
+	}
+
+	std::vector<RegexToken> &tokens()
+	{
+		return this->_tokens;
+	}
+
+	bool match(std::string requestUri)
+	{
+		// TODO
+		return false;
+	}
+
+	std::string str()
+	{
+		std::stringstream stream;
+		for (RegexToken &t : this->_tokens)
+		{
+			if (t.name().empty())
+				stream << t.regex();
+			else
+				stream << "<" << t.name() << ":" << t.regex() << ">";
+		}
+		return stream.str();
+	}
+};
+
 /**
  * Class that represents the parameters of a method called in a route.
  */
@@ -192,7 +234,7 @@ class Route
 {
 private:
 	std::string _httpMethod;
-	std::vector<RegexToken> _regex;
+	ComposedURI _composedURI;
 	CallMethod _callMethod;
 public:
 	Route(size_t line)
@@ -210,21 +252,9 @@ public:
 		return *this;
 	}
 
-	const std::vector<RegexToken> &regex() const
+	ComposedURI &uri()
 	{
-		return this->_regex;
-	}
-
-	Route & add(std::string name, std::string regex)
-	{
-		this->_regex.emplace_back(name, regex);
-		return *this;
-	}
-
-	Route & add(std::string expression)
-	{
-		this->_regex.emplace_back(expression);
-		return *this;
+		return this->_composedURI;
 	}
 
 	const CallMethod &callMethod() const
@@ -244,17 +274,9 @@ class Routes
 {
 private:
 	std::vector<std::unique_ptr<Piece>> _pieces;
-
-	std::vector<std::string> _package;
-
-	std::string _prefix;
 public:
 	Routes(size_t line)
 		: Piece(line)
-	{ }
-
-	Routes()
-		: Routes(0)
 	{ }
 
 	const std::vector<std::unique_ptr<Piece>> &pieces() const
@@ -266,37 +288,43 @@ public:
 	{
 		this->_pieces.emplace_back(piece);
 	}
-
-	const std::vector<std::string> &package() const
-	{
-		return this->_package;
-	}
-
-	const std::string &prefix() const
-	{
-		return this->_prefix;
-	}
-
-	Routes &prefix(std::string prefix)
-	{
-		this->_prefix = prefix;
-	}
 };
-
 
 class Group
 	: public Routes
 {
 private:
-	std::string _uri;
+	ComposedURI _composedURI;
 public:
-	Group(std::string uri, size_t line)
-		: Routes(line), _uri(uri)
+	Group(size_t line)
+		: Routes(line)
 	{ }
 
-	const std::string uri() const
+	ComposedURI &uri()
 	{
-		return this->_uri;
+		return this->_composedURI;
+	}
+};
+
+class Document
+	: public Routes
+{
+private:
+	std::string _name;
+public:
+	Document(const std::string &name)
+		: Routes(0), _name(name)
+	{ }
+
+	const std::string &name()
+	{
+		return this->_name;
+	}
+
+	Document &name(std::string name)
+	{
+		this->_name = name;
+		return *this;
 	}
 };
 

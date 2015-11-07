@@ -16,30 +16,31 @@ BOOST_AUTO_TEST_CASE(route_group)
 
 	boost::filesystem::path routePath();
 	icarus::routes::Parser parser((resourceDir / "routes").string());
-	icarus::routes::Routes parserData;
+	icarus::routes::Document parserData("routes_groups");
 	parser.compile((resourceDir / "routes" / "routes_groups").string(), parserData);
 
 	{
-		const icarus::routes::Group &group = *dynamic_cast<icarus::routes::Group *>(parserData.pieces()[0].get());
-		BOOST_CHECK_EQUAL(group.uri(), "/testing");
+		icarus::routes::Group &group = *dynamic_cast<icarus::routes::Group *>(parserData.pieces()[0].get());
+		BOOST_REQUIRE_EQUAL(group.uri().tokens().size(), 1);
+		BOOST_CHECK_EQUAL(group.uri().tokens()[0].regex(), "/testing/");
+		BOOST_CHECK_EQUAL(group.uri().tokens()[0].name(), "");
 
 		BOOST_REQUIRE_EQUAL(group.pieces().size(), 2);
-
 		{
-			const icarus::routes::Route &line = *dynamic_cast<icarus::routes::Route *>(group.pieces()[0].get());
+			icarus::routes::Route &line = *dynamic_cast<icarus::routes::Route *>(group.pieces()[0].get());
 			BOOST_CHECK_EQUAL(line.httpMethod(), "POST");
 
-			BOOST_REQUIRE_EQUAL(line.regex().size(), 5);
-			BOOST_CHECK(line.regex()[0].name().empty());
-			BOOST_CHECK_EQUAL(line.regex()[0].regex(), "/");
-			BOOST_CHECK_EQUAL(line.regex()[1].name(), "count");
-			BOOST_CHECK_EQUAL(line.regex()[1].regex(), "");
-			BOOST_CHECK(line.regex()[2].name().empty());
-			BOOST_CHECK_EQUAL(line.regex()[2].regex(), "/");
-			BOOST_CHECK_EQUAL(line.regex()[3].name(), "id");
-			BOOST_CHECK_EQUAL(line.regex()[3].regex(), "");
-			BOOST_CHECK(line.regex()[4].name().empty());
-			BOOST_CHECK_EQUAL(line.regex()[4].regex(), "/");
+			BOOST_REQUIRE_EQUAL(line.uri().tokens().size(), 5);
+			BOOST_CHECK(line.uri().tokens()[0].name().empty());
+			BOOST_CHECK_EQUAL(line.uri().tokens()[0].regex(), "/");
+			BOOST_CHECK_EQUAL(line.uri().tokens()[1].name(), "count");
+			BOOST_CHECK_EQUAL(line.uri().tokens()[1].regex(), "");
+			BOOST_CHECK(line.uri().tokens()[2].name().empty());
+			BOOST_CHECK_EQUAL(line.uri().tokens()[2].regex(), "/");
+			BOOST_CHECK_EQUAL(line.uri().tokens()[3].name(), "id");
+			BOOST_CHECK_EQUAL(line.uri().tokens()[3].regex(), "");
+			BOOST_CHECK(line.uri().tokens()[4].name().empty());
+			BOOST_CHECK_EQUAL(line.uri().tokens()[4].regex(), "/");
 
 			BOOST_CHECK_EQUAL(line.callMethod().path(), "controllers::Index::default3");
 			BOOST_REQUIRE_EQUAL(line.callMethod().params().size(), 2);
@@ -50,20 +51,20 @@ BOOST_AUTO_TEST_CASE(route_group)
 		}
 
 		{
-			const icarus::routes::Route &line = *dynamic_cast<icarus::routes::Route *>(group.pieces()[1].get());
+			icarus::routes::Route &line = *dynamic_cast<icarus::routes::Route *>(group.pieces()[1].get());
 			BOOST_CHECK_EQUAL(line.httpMethod(), "PUT");
 
-			BOOST_REQUIRE_EQUAL(line.regex().size(), 5);
-			BOOST_CHECK(line.regex()[0].name().empty());
-			BOOST_CHECK_EQUAL(line.regex()[0].regex(), "/testing/");
-			BOOST_CHECK_EQUAL(line.regex()[1].name(), "count");
-			BOOST_CHECK_EQUAL(line.regex()[1].regex(), "");
-			BOOST_CHECK(line.regex()[2].name().empty());
-			BOOST_CHECK_EQUAL(line.regex()[2].regex(), "/");
-			BOOST_CHECK_EQUAL(line.regex()[3].name(), "id");
-			BOOST_CHECK_EQUAL(line.regex()[3].regex(), "");
-			BOOST_CHECK(line.regex()[4].name().empty());
-			BOOST_CHECK_EQUAL(line.regex()[4].regex(), "/test");
+			BOOST_REQUIRE_EQUAL(line.uri().tokens().size(), 5);
+			BOOST_CHECK(line.uri().tokens()[0].name().empty());
+			BOOST_CHECK_EQUAL(line.uri().tokens()[0].regex(), "/testing/");
+			BOOST_CHECK_EQUAL(line.uri().tokens()[1].name(), "count");
+			BOOST_CHECK_EQUAL(line.uri().tokens()[1].regex(), "");
+			BOOST_CHECK(line.uri().tokens()[2].name().empty());
+			BOOST_CHECK_EQUAL(line.uri().tokens()[2].regex(), "/");
+			BOOST_CHECK_EQUAL(line.uri().tokens()[3].name(), "id");
+			BOOST_CHECK_EQUAL(line.uri().tokens()[3].regex(), "");
+			BOOST_CHECK(line.uri().tokens()[4].name().empty());
+			BOOST_CHECK_EQUAL(line.uri().tokens()[4].regex(), "/test");
 
 			BOOST_CHECK_EQUAL(line.callMethod().path(), "controllers::Index::default4");
 			BOOST_REQUIRE_EQUAL(line.callMethod().params().size(), 2);
@@ -75,25 +76,31 @@ BOOST_AUTO_TEST_CASE(route_group)
 	}
 
 	{
-		const icarus::routes::Group &group = *dynamic_cast<icarus::routes::Group *>(parserData.pieces()[1].get());
-		BOOST_CHECK_EQUAL(group.uri(), "/user");
+		icarus::routes::Group &group = *dynamic_cast<icarus::routes::Group *>(parserData.pieces()[1].get());
+		BOOST_REQUIRE_EQUAL(group.uri().tokens().size(), 3);
+		BOOST_CHECK_EQUAL(group.uri().tokens()[0].regex(), "/u/");
+		BOOST_CHECK_EQUAL(group.uri().tokens()[0].name(), "");
+		BOOST_CHECK_EQUAL(group.uri().tokens()[1].regex(), "");
+		BOOST_CHECK_EQUAL(group.uri().tokens()[1].name(), "user");
+		BOOST_CHECK_EQUAL(group.uri().tokens()[2].regex(), "/");
+		BOOST_CHECK_EQUAL(group.uri().tokens()[2].name(), "");
 
 		BOOST_REQUIRE_EQUAL(group.pieces().size(), 1);
 		{
-			const icarus::routes::Route &line = *dynamic_cast<icarus::routes::Route *>(group.pieces()[0].get());
+			icarus::routes::Route &line = *dynamic_cast<icarus::routes::Route *>(group.pieces()[0].get());
 			BOOST_CHECK_EQUAL(line.httpMethod(), "PUT");
 
-			BOOST_REQUIRE_EQUAL(line.regex().size(), 5);
-			BOOST_CHECK(line.regex()[0].name().empty());
-			BOOST_CHECK_EQUAL(line.regex()[0].regex(), "/testing/");
-			BOOST_CHECK_EQUAL(line.regex()[1].name(), "count");
-			BOOST_CHECK_EQUAL(line.regex()[1].regex(), "");
-			BOOST_CHECK(line.regex()[2].name().empty());
-			BOOST_CHECK_EQUAL(line.regex()[2].regex(), "x");
-			BOOST_CHECK_EQUAL(line.regex()[3].name(), "id");
-			BOOST_CHECK_EQUAL(line.regex()[3].regex(), "");
-			BOOST_CHECK(line.regex()[4].name().empty());
-			BOOST_CHECK_EQUAL(line.regex()[4].regex(), "test");
+			BOOST_REQUIRE_EQUAL(line.uri().tokens().size(), 5);
+			BOOST_CHECK(line.uri().tokens()[0].name().empty());
+			BOOST_CHECK_EQUAL(line.uri().tokens()[0].regex(), "/testing/");
+			BOOST_CHECK_EQUAL(line.uri().tokens()[1].name(), "count");
+			BOOST_CHECK_EQUAL(line.uri().tokens()[1].regex(), "");
+			BOOST_CHECK(line.uri().tokens()[2].name().empty());
+			BOOST_CHECK_EQUAL(line.uri().tokens()[2].regex(), "x");
+			BOOST_CHECK_EQUAL(line.uri().tokens()[3].name(), "id");
+			BOOST_CHECK_EQUAL(line.uri().tokens()[3].regex(), "");
+			BOOST_CHECK(line.uri().tokens()[4].name().empty());
+			BOOST_CHECK_EQUAL(line.uri().tokens()[4].regex(), "test");
 
 			BOOST_CHECK_EQUAL(line.callMethod().path(), "controllers::Index::default5");
 			BOOST_REQUIRE_EQUAL(line.callMethod().params().size(), 2);

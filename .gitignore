@@ -1,4 +1,4 @@
-build/
+.idea
 libs/double-conversion/
 libs/folly/
 libs/gflags/
