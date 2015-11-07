@@ -1,0 +1,17 @@
+
+// Line comment
+
+/**
+ * Multiline comment
+ */
+
+on /testing
+{
+	POST		/<count>/<id>/						controllers::Index::default3(unsigned int count, std::string id)
+	PUT			/testing/<count>/<id>/test			controllers::Index::default4(uint8_t count, std::string id)
+}
+
+on /user
+{
+	PUT			/testing/<count>x<id>test			controllers::Index::default5(unsigned int count, std::string id)
+}

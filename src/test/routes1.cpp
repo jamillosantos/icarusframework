@@ -1,5 +1,5 @@
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE Routes
+#define BOOST_TEST_MODULE Routes1
 
 #include <boost/test/included/unit_test.hpp>
 
@@ -10,12 +10,12 @@ BOOST_AUTO_TEST_CASE(route1)
 	boost::filesystem::path resourceDir(TEST_RESOURCE_DIR);
 
 	boost::filesystem::path routePath();
-	icarus::routes::Parser parser;
-	icarus::routes::RoutesData parserData;
+	icarus::routes::Parser parser((resourceDir / "routes").string());
+	icarus::routes::Routes parserData;
 	parser.compile((resourceDir / "routes" / "routes1").string(), parserData);
 
 	{
-		const icarus::routes::RoutesLine &line = parserData.lines()[0];
+		const icarus::routes::Route &line = *dynamic_cast<icarus::routes::Route *>(parserData.pieces()[0].get());
 		BOOST_CHECK_EQUAL(line.httpMethod(), "GET");
 
 		BOOST_REQUIRE_EQUAL(line.regex().size(), 1);
@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_CASE(route1)
 	}
 
 	{
-		const icarus::routes::RoutesLine &line = parserData.lines()[1];
+		const icarus::routes::Route &line = *dynamic_cast<icarus::routes::Route *>(parserData.pieces()[1].get());
 		BOOST_CHECK_EQUAL(line.httpMethod(), "GET");
 
 		BOOST_REQUIRE_EQUAL(line.regex().size(), 2);
@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE(route1)
 	}
 
 	{
-		const icarus::routes::RoutesLine &line = parserData.lines()[2];
+		const icarus::routes::Route &line = *dynamic_cast<icarus::routes::Route *>(parserData.pieces()[2].get());
 		BOOST_CHECK_EQUAL(line.httpMethod(), "POST");
 
 		BOOST_REQUIRE_EQUAL(line.regex().size(), 2);
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(route1)
 	}
 
 	{
-		const icarus::routes::RoutesLine &line = parserData.lines()[3];
+		const icarus::routes::Route &line = *dynamic_cast<icarus::routes::Route *>(parserData.pieces()[3].get());
 		BOOST_CHECK_EQUAL(line.httpMethod(), "POST");
 
 		BOOST_REQUIRE_EQUAL(line.regex().size(), 5);
@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE(route1)
 	}
 
 	{
-		const icarus::routes::RoutesLine &line = parserData.lines()[4];
+		const icarus::routes::Route &line = *dynamic_cast<icarus::routes::Route *>(parserData.pieces()[4].get());
 		BOOST_CHECK_EQUAL(line.httpMethod(), "PUT");
 
 		BOOST_REQUIRE_EQUAL(line.regex().size(), 5);
@@ -107,7 +107,7 @@ BOOST_AUTO_TEST_CASE(route1)
 	}
 
 	{
-		const icarus::routes::RoutesLine &line = parserData.lines()[5];
+		const icarus::routes::Route &line = *dynamic_cast<icarus::routes::Route *>(parserData.pieces()[5].get());
 		BOOST_CHECK_EQUAL(line.httpMethod(), "PUT");
 
 		BOOST_REQUIRE_EQUAL(line.regex().size(), 5);
@@ -125,7 +125,7 @@ BOOST_AUTO_TEST_CASE(route1)
 		BOOST_CHECK_EQUAL(line.callMethod().path(), "controllers::Index::default5");
 		BOOST_REQUIRE_EQUAL(line.callMethod().params().size(), 2);
 		BOOST_CHECK_EQUAL(line.callMethod().params()[0].name(), "count");
-		BOOST_CHECK_EQUAL(line.callMethod().params()[0].type(), "uint8_t");
+		BOOST_CHECK_EQUAL(line.callMethod().params()[0].type(), "unsigned int");
 		BOOST_CHECK_EQUAL(line.callMethod().params()[1].name(), "id");
 		BOOST_CHECK_EQUAL(line.callMethod().params()[1].type(), "std::string");
 	}

@@ -10,4 +10,4 @@ GET			/match/<param1:[0-9]+>				controllers::Index::default1(unsigned int parame
 POST		/<count>							controllers::Index::default2(uint8_t count)
 POST		/<count>/<id>/						controllers::Index::default3(unsigned int count, std::string id)
 PUT			/testing/<count>/<id>/test			controllers::Index::default4(uint8_t count, std::string id)
-PUT			/testing/<count>x<id>test			controllers::Index::default5(uint8_t count, std::string id)
+PUT			/testing/<count>x<id>test					controllers::Index::default5(unsigned int count, std::string id)

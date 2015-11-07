@@ -14,6 +14,10 @@
 #include <fstream>
 #include <sstream>
 #include "data.hpp"
+#include "../exceptions.hpp"
+#include "exceptions.hpp"
+
+#include <boost/locale.hpp>
 
 #include <boost/regex.hpp>
 
@@ -28,7 +32,7 @@ private:
 
 	std::unique_ptr<std::istream> istream;
 
-	std::string outputFolder;
+	std::string inputFolder;
 
 	char inputStreamBuffer[INPUT_STREAM_BUFFER_SIZE];
 	size_t inputStreamBufferSize;
@@ -74,27 +78,29 @@ private:
 			if (!((*cc == '\n') || (*cc == '\r') || (*cc == ' ') || (*cc == '\t')))
 				return;
 		}
-		// TODO: Specialize exception
-		std::cerr << "Unexpected end of file." << std::endl;
-		throw new std::exception();
+		throw exceptions::PrematureEOF();
 	}
 
 	std::string readUntil(std::string chars)
 	{
 		char cc;
 		std::string result;
+		unsigned int i;
 		while (this->readChar(&cc))
 		{
-			if (result.find(cc) == std::string::npos)
-				result += cc;
-			else
-				return result;
+			for (i = 0; i < chars.size(); i++)
+			{
+				if (chars[i] == cc)
+					return result;
+			}
+			result += cc;
 		}
-		// TODO: Specialize exception
-		std::cerr << "Unexpected end of file." << std::endl;
-		throw new std::exception();
+		throw exceptions::PrematureEOF();
 	}
 
+	/**
+	 * Reads bytes untilfind the end of the comment.
+	 */
 	void runCommentLine()
 	{
 		char cc;
@@ -105,6 +111,9 @@ private:
 		}
 	}
 
+	/**
+	 * Reads bytes until find the end of the comment.
+	 */
 	void runCommentMultiLine()
 	{
 		char cc;
@@ -150,9 +159,7 @@ private:
 				return stream.str();
 			}
 		}
-		// TODO: Specialize exception
-		std::cerr << "Unexpected end of file." << std::endl;
-		throw std::exception();
+		throw exceptions::PrematureEOF();
 	}
 
 	std::string runSkipRegexBrackets()
@@ -182,9 +189,7 @@ private:
 				}
 			}
 		}
-		// TODO: Specialize exception
-		std::cerr << "Unexpected end of file." << std::endl;
-		throw std::exception();
+		throw exceptions::PrematureEOF();
 	}
 
 	void runLineMethodParameters(CallMethod &callMethod)
@@ -200,7 +205,7 @@ private:
 					break;
 				else
 				{
-					callMethod.addParam(paramstream.str(), MethodParam::MethodType::NORMAL, stream.str());
+					callMethod.add(paramstream.str(), MethodParam::MethodType::NORMAL, stream.str());
 					paramstream.str("");
 					stream.str("");
 					if (cc == ')')
@@ -222,17 +227,34 @@ private:
 				stream << cc;
 				if (!this->readChar(&cc))
 				{
-					// TODO: Specialize exception
-					std::cerr << "Unexpected end of file." << std::endl;
-					throw std::exception();
+					throw exceptions::PrematureEOF();
 				}
 			}
 		}
 	}
 
-	void runLine(RoutesData &data)
+	void runGroup(Routes &data, unsigned int level)
 	{
-		RoutesLine line(this->currentLine);
+		unsigned int cl = this->currentLine;
+		std::stringstream stream;
+		std::string uri = this->readUntil("\n{ ");
+		if (uri.empty())
+		{
+			throw exceptions::routes::InvalidURI(uri);
+		}
+		else
+		{
+			Group *group;
+			data.add(group = new Group(uri, cl));
+			if (this->currentChar != '{')
+				this->readUntil("{");
+			this->runDoc(*group, level+1);
+		}
+	}
+
+	void runLine(Routes &data, unsigned int level)
+	{
+		Route route(this->currentLine);
 		std::stringstream stream;
 		char cc = this->lastChar();
 		stream << cc;
@@ -240,157 +262,154 @@ private:
 		{
 			if ((cc == ' ') || (cc == '\t'))
 			{
-				line.httpMethod(stream.str());
-				stream.str("");
-
-				this->readUntilNonBlank(&cc);
-				stream << cc;
-				while (this->readChar(&cc))
+				if (stream.str() == "on")
 				{
-					if (cc == '\\')
-					{
-						if (this->readChar(&cc))
-							stream << '\\' << cc;
-						else
-						{
-							// TODO: Specialize exception
-							std::cerr << "Unexpected end of file." << std::endl;
-							throw std::exception();
-						}
-					}
-					else if (cc == '<')
-					{
-						bool success = false;
-						std::string tmpstr = stream.str();
-						if (!tmpstr.empty())
-						{
-							line.addToken(tmpstr);
-							stream.str("");
-						}
-						while (this->readChar(&cc))
-						{
-							if (cc == ':')
-							{
-								tmpstr = stream.str();
-								stream.str("");
+					this->runGroup(data, level);
+					return;
+				}
+				else
+				{
+					route.httpMethod(stream.str());
+					stream.str("");    // clear stream
 
-								while (this->readChar(&cc))
+					this->readUntilNonBlank(&cc);
+					stream << cc;
+					while (this->readChar(&cc))
+					{
+						if (cc == '\\')
+						{
+							if (this->readChar(&cc))
+								stream << '\\' << cc;
+							else
+							{
+								throw exceptions::PrematureEOF();
+							}
+						}
+						else if (cc == '<')
+						{
+							bool success = false;
+							std::string tmpstr = stream.str();
+							if (!tmpstr.empty())
+							{
+								route.add(tmpstr);
+								stream.str("");
+							}
+							while (this->readChar(&cc))
+							{
+								if (cc == ':')
 								{
-									if (cc == '>')
+									tmpstr = stream.str();
+									stream.str("");
+
+									while (this->readChar(&cc))
 									{
-										line.addToken(tmpstr, stream.str());
-										stream.str("");
-										success = true;
-										break;
-									}
-									else if (cc == '\\')
-									{
-										stream << cc;
-										if (!this->readChar(&cc))
+										if (cc == '>')
+										{
+											route.add(tmpstr, stream.str());
+											stream.str("");
+											success = true;
 											break;
-										stream << cc;
+										}
+										else if (cc == '\\')
+										{
+											stream << cc;
+											if (!this->readChar(&cc))
+												break;
+											stream << cc;
+										}
+										else
+											stream << cc;
 									}
-									else
-										stream << cc;
+								}
+								else if (cc == '>')
+								{
+									route.add(stream.str(), "");
+									stream.str("");
+									success = true;
+									break;
+								}
+								else if ((cc == ' ') || (cc == '\t') || (cc == '\r') || (cc == '\n'))
+									break;
+								else if (boost::regex_match(std::to_string(cc), variablesName))
+									stream << cc;
+								else
+								{
+									throw exceptions::routes::InvalidChar(this->currentLine, this->currentChar);
 								}
 							}
-							else if (cc == '>')
+							if (!success)
 							{
-								line.addToken(stream.str(), "");
-								stream.str("");
-								success = true;
-								break;
-							}
-							else if ((cc == ' ') || (cc == '\t') || (cc == '\r') || (cc == '\n'))
-								break;
-							else if (boost::regex_match(std::to_string(cc), variablesName))
-								stream << cc;
-							else
-							{
-								// TODO: specialize exception
-								std::cerr << "Invalid char." << std::endl;
-								throw std::exception();
+								throw exceptions::PrematureEOF();
 							}
 						}
-						if(!success)
+						else if ((cc == ' ') || (cc == '\t'))
 						{
-							// TODO: specialize exception
-							std::cerr << "Unexpected end of file." << std::endl;
-							throw std::exception();
-						}
-					}
-					else if ((cc == ' ') || (cc == '\t'))
-					{
-						std::string tmpstr = stream.str();
-						if (!tmpstr.empty())
-							line.addToken(tmpstr);
-						stream.str("");
+							std::string tmpstr = stream.str();
+							if (!tmpstr.empty())
+								route.add(tmpstr);
+							stream.str("");
 
-						this->readUntilNonBlank(&cc);
-						stream << cc;
-						CallMethod callMethod;
-						while (this->readChar(&cc))
-						{
-							if (cc == '(')
+							this->readUntilNonBlank(&cc);
+							stream << cc;
+							CallMethod callMethod;
+							while (this->readChar(&cc))
 							{
-								callMethod.path(stream.str());
-								stream.str("");
-								this->runLineMethodParameters(callMethod);
-								line.callMethod(callMethod);
-								data.addLine(line);
-								return;
-							}
-							else if (cc == '\n')
-							{
-								// TODO: specialize exception
-								std::cerr << "Route declaration incomplete." << std::endl;
-								throw std::exception();
-							}
-							else
-							{
-								stream << cc;
+								if (cc == '(')
+								{
+									callMethod.path(stream.str());
+									stream.str("");
+									this->runLineMethodParameters(callMethod);
+									route.callMethod(callMethod);
+									data.add(new Route(route));
+									return;
+								}
+								else if (cc == '\n')
+								{
+									throw exceptions::routes::IncompleteDeclaration(this->currentLine, this->currentChar);
+								}
+								else
+								{
+									stream << cc;
+								}
 							}
 						}
-					}
-					else if (cc == '\n')
-					{
-						// TODO: specialize exception
-						std::cerr << "Route declaration incomplete." << std::endl;
-						throw std::exception();
-					}
-					else
-					{
-						stream << cc;
+						else if (cc == '\n')
+						{
+							throw exceptions::routes::IncompleteDeclaration(this->currentLine, this->currentChar);
+						}
+						else
+						{
+							stream << cc;
+						}
 					}
 				}
 			}
 			else if (cc == '\n')
 			{
-				// TODO: Specialize exception
-				std::cerr << "Incomplete declaration." << std::endl;
-				throw std::exception();
+				throw exceptions::routes::IncompleteDeclaration(this->currentLine, this->currentChar);
 			}
 			else
 				stream << cc;
 		}
-		// TODO: Specialize exception
-		std::cerr << "Unexpected end of file." << std::endl;
-		throw std::exception();
+		throw exceptions::PrematureEOF();
 	}
 
-	void runDoc(RoutesData &data)
+	void runDoc(Routes &data, unsigned int level)
 	{
 		char cc;
 		while (this->readChar(&cc))
 		{
+			// Finds a first char to be a comment.
 			if (cc == '/')
 			{
 				if (this->readChar(&cc))
 				{
+					// Line comment
 					if (cc == '/')
 					{
 						this->runCommentLine();
 					}
+					// Multiline comment
 					else if (cc == '*')
 					{
 						this->runCommentMultiLine();
@@ -398,44 +417,53 @@ private:
 				}
 				else
 				{
-					// Throw an exception
-					std::cerr << "Unexpected end of file." << std::endl;
-					throw std::exception();
+					throw exceptions::PrematureEOF();
+				}
+			}
+			else if (cc == '}')
+			{
+				if (level > 0)
+				{
+					return;
+				}
+				else
+				{
+					throw new exceptions::routes::InvalidChar(this->currentLine, this->currentChar);
 				}
 			}
 			else if ((cc != '\n') && (cc != '\r') && (cc != ' ') && (cc != '\t'))
 			{
-				this->runLine(data);
+				this->runLine(data, level);
 			}
 		}
 	}
 public:
-	Parser()
-		: inputStreamBufferSize(0), currentInputStreamChar(0), currentLine(0), currentChar(0)
+	Parser(std::string inputFolder)
+		: inputFolder(inputFolder), inputStreamBufferSize(0), currentInputStreamChar(0), currentLine(0), currentChar(0)
 	{ }
 
-	void compile(std::string inputFile, RoutesData &data)
+	void compile(std::string inputFile, Routes &data)
 	{
 		boost::filesystem::path ifp(inputFile);
 		if (boost::filesystem::exists(ifp))
 		{
-			this->istream.reset(new std::ifstream(ifp.string()));
-			if (this->istream)
+			std::ifstream *s;
+			this->istream.reset(s = new std::ifstream());
+			std::ios_base::iostate exceptionMask = s->exceptions() | std::ios::failbit;
+			s->exceptions(exceptionMask);
+			try
 			{
-				this->runDoc(data);
+				s->open(ifp.string());
+				this->runDoc(data, 0);
 			}
-			else
+			catch (std::ios_base::failure& e)
 			{
-				// TODO: specialize exception
-				std::cerr << "Cannot open file." << std::endl;
-				throw std::exception();
+				throw exceptions::OpenFile((boost::locale::format(boost::locale::translate("Cannot open file '{1}'")) % ifp).str(), &e);
 			}
 		}
 		else
 		{
-			// TODO: specialize exception
-			std::cerr << "Input file doesn't exists." << std::endl;
-			throw std::exception();
+			throw exceptions::FileNotFound(ifp.string());
 		}
 	}
 };

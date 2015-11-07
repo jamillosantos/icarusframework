@@ -18,6 +18,10 @@ namespace icarus
 {
 namespace routes
 {
+
+/**
+ * Regex tokens in a route rule.
+ */
 class RegexToken
 {
 private:
@@ -43,6 +47,9 @@ public:
 	}
 };
 
+/**
+ * Class that represents the parameters of a method called in a route.
+ */
 class MethodParam
 {
 public:
@@ -94,6 +101,9 @@ private:
 	std::string _name;
 };
 
+/**
+ * Class that represents the calling method in a route.
+ */
 class CallMethod
 {
 private:
@@ -141,24 +151,52 @@ public:
 		return this->_params;
 	}
 
-	CallMethod& addParam(std::string type, MethodParam::MethodType attribute, std::string name)
+	CallMethod &add(std::string type, MethodParam::MethodType attribute, std::string name)
 	{
 		this->_params.emplace_back(type, attribute, name);
 		return *this;
 	}
 };
 
-class RoutesLine
+/**
+ * Abstraction of each part of a routes.
+ */
+class Piece
 {
 private:
-	size_t line;
+	size_t _line;
+public:
+	Piece(size_t line)
+		: _line(line)
+	{ }
 
+	virtual ~Piece()
+	{ }
+
+	size_t line() const
+	{
+		return this->_line;
+	}
+
+	void line(size_t line)
+	{
+		this->_line = line;
+	}
+};
+
+/**
+ * Represents a route.
+ */
+class Route
+	: public Piece
+{
+private:
 	std::string _httpMethod;
 	std::vector<RegexToken> _regex;
 	CallMethod _callMethod;
 public:
-	RoutesLine(size_t line)
-		: line(line)
+	Route(size_t line)
+		: Piece(line)
 	{ }
 
 	const std::string &httpMethod() const
@@ -166,7 +204,7 @@ public:
 		return this->_httpMethod;
 	}
 
-	RoutesLine &httpMethod(const std::string &httpMethod)
+	Route &httpMethod(const std::string &httpMethod)
 	{
 		this->_httpMethod = httpMethod;
 		return *this;
@@ -177,13 +215,13 @@ public:
 		return this->_regex;
 	}
 
-	RoutesLine& addToken(std::string name, std::string regex)
+	Route & add(std::string name, std::string regex)
 	{
 		this->_regex.emplace_back(name, regex);
 		return *this;
 	}
 
-	RoutesLine& addToken(std::string expression)
+	Route & add(std::string expression)
 	{
 		this->_regex.emplace_back(expression);
 		return *this;
@@ -194,26 +232,71 @@ public:
 		return this->_callMethod;
 	}
 
-	RoutesLine& callMethod(CallMethod &callMethod)
+	Route & callMethod(CallMethod &callMethod)
 	{
 		this->_callMethod = callMethod;
 		return *this;
 	}
 };
 
-class RoutesData
+class Routes
+	: public Piece
 {
 private:
-	std::vector<RoutesLine> _lines;
+	std::vector<std::unique_ptr<Piece>> _pieces;
+
+	std::vector<std::string> _package;
+
+	std::string _prefix;
 public:
-	const std::vector<RoutesLine> &lines() const
+	Routes(size_t line)
+		: Piece(line)
+	{ }
+
+	Routes()
+		: Routes(0)
+	{ }
+
+	const std::vector<std::unique_ptr<Piece>> &pieces() const
 	{
-		return this->_lines;
+		return this->_pieces;
 	}
 
-	void addLine(RoutesLine &line)
+	Piece *add(Piece *piece)
 	{
-		this->_lines.push_back(line);
+		this->_pieces.emplace_back(piece);
+	}
+
+	const std::vector<std::string> &package() const
+	{
+		return this->_package;
+	}
+
+	const std::string &prefix() const
+	{
+		return this->_prefix;
+	}
+
+	Routes &prefix(std::string prefix)
+	{
+		this->_prefix = prefix;
+	}
+};
+
+
+class Group
+	: public Routes
+{
+private:
+	std::string _uri;
+public:
+	Group(std::string uri, size_t line)
+		: Routes(line), _uri(uri)
+	{ }
+
+	const std::string uri() const
+	{
+		return this->_uri;
 	}
 };
 
