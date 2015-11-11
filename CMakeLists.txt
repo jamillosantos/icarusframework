@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.0)
 project(icarusframework)
 
+SET (CMAKE_C_COMPILER               "/usr/bin/clang")
+SET (CMAKE_CXX_COMPILER             "/usr/bin/clang++")
+
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall")
 
 set(CMAKE_MODULE_PATH ${icarusframework_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
@@ -59,7 +63,9 @@ set(SOURCE_FILES
 		src/framework/routes/writers/simpleweb.hpp
 		src/framework/exceptions.hpp
 		src/framework/routes/exceptions.hpp
-		src/test/routes_groups.cpp)
+		src/framework/action.hpp
+		src/test/routes_groups.cpp
+		src/framework/routes/to_url.hpp)
 
 set(ICARUS_LIBRARIES
 	soci_core
@@ -124,13 +130,18 @@ target_link_libraries(mntr
 
 enable_testing()
 
-file(GLOB TEST_SRCS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} src/test/*.cpp)
+file(GLOB_RECURSE TEST_SRCS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} src/test/*.cpp)
 set(TEST_OUTPUT ${CMAKE_BINARY_DIR}/tests)
 add_definitions(-DTEST_RESOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/src/test/resources")
 
+message("\nTests\n=====")
 foreach(testSrc ${TEST_SRCS})
 	get_filename_component(testName ${testSrc} NAME_WE)
-	set(testName "test_${testName}")
+	string(REPLACE "src/test/" "" testPackage "${testSrc}")
+	string(REPLACE "${testName}.cpp" "" testPackage "${testPackage}")
+	string(REPLACE "/" "_" testPackage "${testPackage}")
+	set(testName "test_${testPackage}${testName}")
+	message("+ ${testSrc} as ${testName}")
 
 	add_executable(${testName} ${testSrc})
 
@@ -143,3 +154,4 @@ foreach(testSrc ${TEST_SRCS})
 		COMMAND ${TEST_OUTPUT}/${testName}
 	)
 endforeach(testSrc)
+message("")

@@ -7,29 +7,100 @@
 #define ICARUSFRAMEWORK_ROUTESWRITER_HPP
 
 #include <ostream>
+#include <sstream>
 #include "data.hpp"
 
 namespace icarus
+{
+namespace framework
 {
 namespace routes
 {
 class RoutesWriter
 {
 protected:
-	virtual void writeBeginDoc(std::ostream &stream, Routes &data) = 0;
-	virtual void writeEndDoc(std::ostream &stream, Routes &data) = 0;
+	virtual void writeBeginDoc(std::ostream &stream, Document &document) = 0;
+	virtual void writeEndDoc(std::ostream &stream, Document &document) = 0;
 
 	virtual void write(std::ostream &stream, const Route &route) = 0;
 	virtual void write(std::ostream &stream, const Group &group) = 0;
 
 	virtual void write(std::ostream &stream, const Piece &piece)
 	{ }
+
+	virtual void writeReverseRoutes(std::ostream &stream, Document &document)
+	{
+		std::string item, del("::");
+		for (const std::unique_ptr<Piece> &piece : document.pieces())
+		{
+			Group* group = dynamic_cast<Group*>(piece.get());
+			if (group)
+			{
+				//
+			}
+			else
+			{
+				Route* route = dynamic_cast<Route*>(piece.get());
+				if (route)
+				{
+					stream << "/**\n * Auto-generated\n**/\n\n";
+					for (std::string ns : route->callMethod().path())
+					{
+						stream << "namespace " << ns << "\n{\n";
+					}
+					stream << "static icarus::framework::Action " << route->callMethod().name() << "(";
+					unsigned int i = 0;
+					for (const icarus::framework::routes::MethodParam &param : route->callMethod().params())
+					{
+						if (i > 0)
+							stream << ", ";
+						stream << param.type() << " ";
+						if (param.attribute() == icarus::framework::routes::MethodParamType::POINTER)
+							stream << "*";
+						if (param.attribute() == icarus::framework::routes::MethodParamType::REFERENCE)
+							stream << "&";
+						stream << param.name();
+						i++;
+					}
+					stream << ")\n\t{\n";
+					stream << "\t\tstd::string tmp;\n";
+					for (const RegexToken &rt : route->uri().tokens())
+					{
+						if (rt.name().empty())
+							stream << "\t\ttmp += \"" << rt.regex() << "\";\n";
+						else
+						{
+							bool found = false;
+							for (const MethodParam &p : route->callMethod().params())
+							{
+								if (rt.name() == p.name())
+								{
+									stream << "\t\ttmp += icarus::to_url(" << p.name() << ");\n";
+									found = true;
+									break;
+								}
+							}
+							if (!found)
+								throw exceptions::routes::InvalidParamName(route->line(), rt.name());
+						}
+					}
+					stream << "\t\treturn icarus::framework::Action(\"" << route->httpMethod() << "\", tmp);\n";
+					stream << "\t}\n";
+					for (std::string ns : route->callMethod().path())
+					{
+						stream << "} // " << ns << "\n";
+					}
+				}
+				// TODO: Decide what to do with this else.
+			}
+		}
+	}
 public:
 
-	void write(std::ostream &stream, Routes &data)
+	virtual void write(std::ostream &stream, Document &document)
 	{
-		this->writeBeginDoc(stream, data);
-		for (const std::unique_ptr<Piece> piece : data.pieces())
+		this->writeBeginDoc(stream, document);
+		for (const std::unique_ptr<Piece> &piece : document.pieces())
 		{
 			Route *route = dynamic_cast<Route*>(piece.get());
 			if (route)
@@ -40,14 +111,15 @@ public:
 				if (group)
 					this->write(stream, *group);
 				else
-					this->write(stream, *piece));
+					this->write(stream, *piece);
 			}
 		}
-		this->writeEndDoc(stream, data);
+		this->writeReverseRoutes(stream, document);
+		this->writeEndDoc(stream, document);
 	}
 };
 }
 }
-
+}
 
 #endif //ICARUSFRAMEWORK_ROUTESWRITER_HPP

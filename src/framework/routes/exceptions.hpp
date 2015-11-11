@@ -18,7 +18,7 @@ namespace exceptions
 namespace routes
 {
 class InvalidURI
-	: public Exception
+	: public icarus::exceptions::Exception
 {
 public:
 	InvalidURI(std::string uri)
@@ -27,7 +27,7 @@ public:
 };
 
 class InvalidChar
-	: public Exception
+	: public icarus::exceptions::Exception
 {
 public:
 	InvalidChar(unsigned int line, unsigned int column)
@@ -36,15 +36,24 @@ public:
 };
 
 class IncompleteDeclaration
-	: public Exception
+	: public icarus::exceptions::Exception
 {
 public:
 	IncompleteDeclaration(unsigned int line, unsigned int column)
 		: Exception((boost::locale::format(boost::locale::translate("Incomplete declaration at {1}:{2}.")) % line % column).str(), nullptr)
 	{ }
 };
-}
-}
-}
+
+class InvalidParamName
+	: public icarus::exceptions::Exception
+{
+public:
+	InvalidParamName(unsigned int line, std::string paramName)
+		: Exception((boost::locale::format(boost::locale::translate("Param {2} was not found. (at {1})")) % line % paramName).str(), nullptr)
+	{ }
+};
+} // routes
+} // exceptions
+} // icarus
 
 #endif //ICARUSFRAMEWORK_ROUTES_EXCEPTIONS_HPP

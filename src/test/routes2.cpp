@@ -1,12 +1,12 @@
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE Routes1
+#define BOOST_TEST_MODULE routes2
 
 #include <boost/test/included/unit_test.hpp>
 
 #include "../framework/routes/parser.hpp"
 #include "../framework/routes/compiler.hpp"
 
-BOOST_AUTO_TEST_CASE(route1_parsing)
+BOOST_AUTO_TEST_CASE(route2_parsing)
 {
 	namespace ifr = icarus::framework::routes;
 
@@ -14,8 +14,8 @@ BOOST_AUTO_TEST_CASE(route1_parsing)
 
 	boost::filesystem::path routePath;
 	ifr::Parser parser((resourceDir / "routes").string());
-	ifr::Document parserData("routes1");
-	parser.parse((resourceDir / "routes" / "routes1").string(), parserData);
+	ifr::Document parserData("routes2");
+	parser.parse((resourceDir / "routes" / "routes2").string(), parserData);
 
 	{
 		ifr::Route &line = *dynamic_cast<ifr::Route *>(parserData.pieces()[0].get());
@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE(route1_parsing)
 		BOOST_CHECK_EQUAL(line.callMethod().path()[1], "Index");
 		BOOST_CHECK_EQUAL(line.callMethod().name(), "default1");
 		BOOST_REQUIRE_EQUAL(line.callMethod().params().size(), 1);
-		BOOST_CHECK_EQUAL(line.callMethod().params()[0].name(), "parameter1");
+		BOOST_CHECK_EQUAL(line.callMethod().params()[0].name(), "param1");
 		BOOST_CHECK_EQUAL(line.callMethod().params()[0].type(), "unsigned int");
 	}
 
@@ -152,7 +152,7 @@ BOOST_AUTO_TEST_CASE(route1_parsing)
 	}
 }
 
-BOOST_AUTO_TEST_CASE(route1_compiling)
+BOOST_AUTO_TEST_CASE(route2_compiling)
 {
 	namespace ifr = icarus::framework::routes;
 
@@ -160,6 +160,6 @@ BOOST_AUTO_TEST_CASE(route1_compiling)
 
 	boost::filesystem::path routePath;
 	ifr::Compiler compiler;
-	ifr::Document document("routes1");
-	BOOST_REQUIRE_THROW(compiler.compile((resourceDir / "routes" / "routes1").string(), (resourceDir / "routes" / "generated" / "route1.cpp").string()), icarus::exceptions::routes::InvalidParamName);
+	ifr::Document document("routes2");
+	compiler.compile((resourceDir / "routes" / "routes2").string(), (resourceDir / "routes" / "generated" / "route2.cpp").string());
 }

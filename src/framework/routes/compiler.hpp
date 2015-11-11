@@ -6,25 +6,36 @@
 #ifndef ICARUSFRAMEWORK_ROUTES_COMPILER_HPP
 #define ICARUSFRAMEWORK_ROUTES_COMPILER_HPP
 
+#include <sstream>
+#include <boost/filesystem.hpp>
+#include "parser.hpp"
+#include "routeswriter.hpp"
+#include "writers/simpleweb.hpp"
+
 namespace icarus
+{
+namespace framework
 {
 namespace routes
 {
 class Compiler
 {
-private:
+public:
 	void compile(std::string from, std::string to)
 	{
-		Parser parser;
-		RoutesData data;
-		parser.compile(from, data);
+		boost::filesystem::path fromPath(from);
+		Parser parser(fromPath.parent_path().string());
+		Document document(fromPath.stem().string());
+		parser.parse(from, document);
 
-		RoutesWriter writer;
-
+		writers::SimpleWebWriter writer;
 		std::stringstream memoryStream;
-		writer.write(memoryStream);
+		writer.write(memoryStream, document);
+
+		std::cout << memoryStream.str();
 	}
 };
+}
 }
 }
 

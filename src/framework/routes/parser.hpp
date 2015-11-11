@@ -23,6 +23,8 @@
 
 namespace icarus
 {
+namespace framework
+{
 namespace routes
 {
 class Parser
@@ -78,7 +80,7 @@ private:
 			if (!((*cc == '\n') || (*cc == '\r') || (*cc == ' ') || (*cc == '\t')))
 				return;
 		}
-		throw exceptions::PrematureEOF();
+		throw icarus::exceptions::PrematureEOF();
 	}
 
 	std::string readUntil(std::string chars)
@@ -95,7 +97,7 @@ private:
 			}
 			result += cc;
 		}
-		throw exceptions::PrematureEOF();
+		throw icarus::exceptions::PrematureEOF();
 	}
 
 	/**
@@ -159,7 +161,7 @@ private:
 				return stream.str();
 			}
 		}
-		throw exceptions::PrematureEOF();
+		throw icarus::exceptions::PrematureEOF();
 	}
 
 	std::string runSkipRegexBrackets()
@@ -189,7 +191,7 @@ private:
 				}
 			}
 		}
-		throw exceptions::PrematureEOF();
+		throw icarus::exceptions::PrematureEOF();
 	}
 
 	void runLineMethodParameters(CallMethod &callMethod)
@@ -197,7 +199,7 @@ private:
 		char cc;
 		std::stringstream stream, paramstream;
 		this->readUntilNonBlank(&cc);
-		for (;;)
+		for (; ;)
 		{
 			if ((cc == ')') || (cc == ','))
 			{
@@ -205,7 +207,7 @@ private:
 					break;
 				else
 				{
-					callMethod.add(paramstream.str(), MethodParam::MethodType::NORMAL, stream.str());
+					callMethod.add(paramstream.str(), MethodParamType::NORMAL, stream.str());
 					paramstream.str("");
 					stream.str("");
 					if (cc == ')')
@@ -227,7 +229,7 @@ private:
 				stream << cc;
 				if (!this->readChar(&cc))
 				{
-					throw exceptions::PrematureEOF();
+					throw icarus::exceptions::PrematureEOF();
 				}
 			}
 		}
@@ -299,12 +301,12 @@ private:
 						stream << cc;
 					else
 					{
-						throw exceptions::routes::InvalidChar(this->currentLine, this->currentChar);
+						throw icarus::exceptions::routes::InvalidChar(this->currentLine, this->currentChar);
 					}
 				}
 				if (!success)
 				{
-					throw exceptions::PrematureEOF();
+					throw icarus::exceptions::PrematureEOF();
 				}
 			}
 			else if ((cc == ' ') || (cc == '\t') || (cc == '\n') || (cc == '{'))
@@ -331,7 +333,7 @@ private:
 		char cc = this->readURI(group->uri());
 		if (cc != '{')
 			this->readUntil("{");
-		this->runDoc(*group, level+1);
+		this->runDoc(*group, level + 1);
 	}
 
 	void runLine(Routes &data, unsigned int level)
@@ -406,7 +408,7 @@ private:
 					{
 						this->runCommentLine();
 					}
-					// Multiline comment
+						// Multiline comment
 					else if (cc == '*')
 					{
 						this->runCommentMultiLine();
@@ -434,12 +436,14 @@ private:
 			}
 		}
 	}
+
 public:
 	Parser(std::string inputFolder)
-		: inputFolder(inputFolder), inputStreamBufferSize(0), currentInputStreamChar(0), currentLine(0), currentChar(0)
+			: inputFolder(inputFolder), inputStreamBufferSize(0), currentInputStreamChar(0), currentLine(0),
+			  currentChar(0)
 	{ }
 
-	void compile(std::string inputFile, Document &data)
+	void parse(std::string inputFile, Document &data)
 	{
 		boost::filesystem::path ifp(inputFile);
 		if (boost::filesystem::exists(ifp))
@@ -453,9 +457,10 @@ public:
 				s->open(ifp.string());
 				this->runDoc(data, 0);
 			}
-			catch (std::ios_base::failure& e)
+			catch (std::ios_base::failure &e)
 			{
-				throw exceptions::OpenFile((boost::locale::format(boost::locale::translate("Cannot open file '{1}'")) % ifp).str(), &e);
+				throw exceptions::OpenFile(
+						(boost::locale::format(boost::locale::translate("Cannot open file '{1}'")) % ifp).str(), &e);
 			}
 		}
 		else
@@ -468,5 +473,5 @@ public:
 boost::regex Parser::variablesName("[a-zA-Z_0-9]+");
 }
 }
-
+}
 #endif //ICARUSFRAMEWORK_ROUTES_PARSER_HPP
