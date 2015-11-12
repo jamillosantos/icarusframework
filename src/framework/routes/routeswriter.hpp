@@ -43,12 +43,12 @@ protected:
 				Route* route = dynamic_cast<Route*>(piece.get());
 				if (route)
 				{
-					stream << "/**\n * Auto-generated\n**/\n\n";
 					for (std::string ns : route->callMethod().path())
 					{
 						stream << "namespace " << ns << "\n{\n";
 					}
-					stream << "static icarus::framework::Action " << route->callMethod().name() << "(";
+					stream << "namespace routes\n{\n";
+					stream << "\ticarus::framework::Action " << route->callMethod().name() << "(";
 					unsigned int i = 0;
 					for (const icarus::framework::routes::MethodParam &param : route->callMethod().params())
 					{
@@ -86,6 +86,7 @@ protected:
 					}
 					stream << "\t\treturn icarus::framework::Action(\"" << route->httpMethod() << "\", tmp);\n";
 					stream << "\t}\n";
+					stream << "} // routes\n";
 					for (std::string ns : route->callMethod().path())
 					{
 						stream << "} // " << ns << "\n";
@@ -114,8 +115,9 @@ public:
 					this->write(stream, *piece);
 			}
 		}
-		this->writeReverseRoutes(stream, document);
 		this->writeEndDoc(stream, document);
+
+		this->writeReverseRoutes(stream, document);
 	}
 };
 }

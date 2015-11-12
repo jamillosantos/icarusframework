@@ -32,7 +32,10 @@ public:
 		std::stringstream memoryStream;
 		writer.write(memoryStream, document);
 
-		std::cout << memoryStream.str();
+		boost::filesystem::path toPath(to);
+		boost::filesystem::create_directories(toPath.parent_path());
+		std::ofstream of(toPath.string());
+		of << memoryStream.rdbuf();
 	}
 };
 }

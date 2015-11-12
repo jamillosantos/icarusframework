@@ -45,14 +45,16 @@ protected:
 		{
 			stream << "namespace " << package << std::endl << "{" << std::endl;
 		}
+		/*
 		stream << "class " << document.name() << std::endl << "{" << std::endl;
 		stream << "\ttemplate <class socket_type>" << std::endl << "{" << std::endl;
 		stream << "\tvoid apply(SimpleWeb::ServerBase<socket_type> &server)" << document.name() << std::endl << "{" << std::endl;
+		*/
 	}
 
 	virtual void writeEndDoc(std::ostream &stream, Document &document) override
 	{
-		stream << "}; // " << document.name() << std::endl;
+		// stream << "}; // " << document.name() << std::endl;
 		for (std::string &package : document.packages())
 		{
 			stream << "} // " << package << std::endl;
