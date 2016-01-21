@@ -146,7 +146,7 @@ add_executable(icarus-fastcgi
 	src/framework/http/fcgi/request.hpp
 
 	src/framework/http/fcgi/main.cpp
-	)
+	src/framework/http/fcgi/response.hpp)
 
 target_link_libraries(icarus-fastcgi
 	${ICARUS_LIBRARIES}
@@ -200,7 +200,7 @@ foreach (testSrc ${TEST_SRCS})
 	set(testName "test_${testPackage}${testName}")
 	message(" + ${testSrc} as ${testName}")
 
-	add_executable(${testName} ${testSrc} src/framework/http/cookies.hpp src/framework/log.hpp)
+	add_executable(${testName} ${testSrc} src/framework/http/cookies.hpp src/framework/log.hpp src/framework/routes/writers/fastcgi.hpp)
 
 	target_link_libraries(${testName} ${Boost_LIBRARIES} ${ICARUS_LIBRARIES})
 

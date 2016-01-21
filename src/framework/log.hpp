@@ -8,23 +8,17 @@
 
 #include <boost/log/trivial.hpp>
 
+#define LOG_ERROR(logdata)		BOOST_LOG_SEV(icarus::log::lg, boost::log::trivial::error)		<< logdata;
+#define LOG_WARNING(logdata)	BOOST_LOG_SEV(icarus::log::lg, boost::log::trivial::warning)	<< logdata;
+#define LOG_INFO(logdata)		BOOST_LOG_SEV(icarus::log::lg, boost::log::trivial::info)		<< logdata;
+#define LOG_TRACE(logdata)		BOOST_LOG_SEV(icarus::log::lg, boost::log::trivial::trace) 		<< logdata;
+
 namespace icarus
 {
-class Log
+namespace log
 {
-private:
 	boost::log::sources::severity_logger<boost::log::trivial::severity_level> lg;
-public:
-	template<class T>
-	Log &operator<<(const T& t)
-	{
-		BOOST_LOG_SEV(lg, boost::log::trivial::info) << t;
-
-		return *this;
-	}
-};
-
-Log log;
+}
 }
 
 #endif //ICARUSFRAMEWORK_LOG_HPP

@@ -9,7 +9,11 @@
 #include <boost/regex.hpp>
 #include <boost/concept_check.hpp>
 #include <boost/log/trivial.hpp>
+#include <chrono>
+#include <iomanip>
+#include <boost/optional/optional.hpp>
 #include "headers.hpp"
+
 #include "../log.hpp"
 
 namespace icarus
@@ -29,8 +33,37 @@ public:
 	{ }
 };
 
+class Cookie
+	: public Value
+{
+private:
+	boost::optional<std::chrono::system_clock::time_point> _expires;
+public:
+	Cookie()
+		: Value()
+	{ }
+
+	Cookie(const std::string &name, const std::string &value)
+		: Value(name, value)
+	{ }
+
+	Cookie(const std::string &name, const std::string &value, const boost::optional<std::chrono::system_clock::time_point> &expires)
+		: Value(name, value), _expires(expires)
+	{ }
+
+	const boost::optional<std::chrono::system_clock::time_point>& expires() const
+	{
+		return this->_expires;
+	}
+
+	void expires(const std::chrono::system_clock::time_point &dateTime)
+	{
+		this->_expires.reset(dateTime);
+	}
+};
+
 class Cookies
-	: public Values
+	: public Values<Cookie>
 {
 private:
 	static boost::regex regex;

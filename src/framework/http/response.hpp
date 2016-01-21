@@ -3,8 +3,8 @@
  * @date August 18, 2015
  */
 
-#ifndef ICARUSFRAMEWORK_RESPONSEHANDLER_H
-#define ICARUSFRAMEWORK_RESPONSEHANDLER_H
+#ifndef ICARUSFRAMEWORK_HTTP_RESPONSE_HPP
+#define ICARUSFRAMEWORK_HTTP_RESPONSE_HPP
 
 #include <sstream>
 #include "headers.hpp"
@@ -14,64 +14,76 @@ namespace icarus
 {
 namespace http
 {
+
+template <class ResponseWriter>
 class Response
 {
 public:
 	static std::string endh;
 private:
-	std::ostream &responseStream;
+	Status &status;
 	std::stringstream stream;
+
+	Values<Value> _headers;
+
+	bool _headerSent;
+protected:
+	std::unique_ptr<ResponseWriter> _responseWriter;
+
+	virtual void flushHeaders()
+	{
+		(*this->_responseWriter) << "HTTP/1.1 " << this->status.code << " " << this->status.value << endh;
+		for (Value &header : this->headers())
+		{
+
+		}
+		(*this->_responseWriter) << endh;
+
+		this->_headerSent = true;
+	}
 public:
-	Response(std::ostream &responseStream)
-		: responseStream(responseStream), stream(std::stringstream::binary | std::stringstream::in | std::stringstream::out)
+	Response()
+		: status(statuses::OK), stream(std::stringstream::binary | std::stringstream::in | std::stringstream::out),
+		  _headerSent(false)
 	{ }
 
-	~Response()
+	virtual ~Response()
 	{
-		this->responseStream << "HTTP/1.1 " << this->status << endh;
-
-		bool contentLength = false;
-		for (Value &header : this->headers)
-		{
-			if (header.name == "Content-Length")
-				contentLength = true;
-			this->responseStream << header.name << ": " << header.value << endh;
-		}
-
-		if (!contentLength)
-			this->responseStream << "Content-Length: " << this->stream.tellp() << endh << endh;
-		else
-			this->responseStream << endh;
-
-		this->stream.seekg(0, std::ios::beg);
-		this->responseStream << this->stream.rdbuf();
+		LOG_TRACE("~Response");
+		this->flush();
 	}
 
-	Status& status;
+	Values<Value> &headers()
+	{
+		return this->_headers;
+	}
 
-	Values headers;
+	virtual void flush()
+	{
+		if (!this->_headerSent)
+			this->flushHeaders();
+		(*this->_responseWriter) << this->stream.rdbuf();
+	}
 
-	template<class T>
-	Response &operator<<(const T& t)
+	template<typename T>
+	Response &operator<<(const T &t)
 	{
 		this->stream << t;
 		return *this;
 	}
 
-	Response & operator<<(std::ostream& (*manip)(std::ostream&))
+	Response &operator<<(std::ostream &(*manip)(std::ostream &))
 	{
 		this->stream << manip;
 		return *this;
 	}
-
-	Response & operator<<(Response & (*manip)(Response &))
-	{
-		return manip(*this);
-	}
 };
-std::string Response::endh("\r\n");
+
+template <typename T>
+std::string icarus::http::Response<T>::endh(
+	"\r\n");
 }
 }
 
 
-#endif //ICARUSFRAMEWORK_RESPONSEHANDLER_H
+#endif //ICARUSFRAMEWORK_HTTP_RESPONSE_HPP

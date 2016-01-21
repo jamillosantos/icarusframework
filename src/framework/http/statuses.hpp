@@ -13,6 +13,7 @@ namespace icarus
 {
 namespace http
 {
+
 class Status
 {
 public:
@@ -54,12 +55,6 @@ Status GATEWAY_TIMEOUT(504, "Gateway Timeout");
 Status VERSION_NOT_SUPORTED(50, "Version Not Suported");
 }
 }
-}
-
-icarus::http::Response &operator<<(icarus::http::Response &response, const icarus::http::Status& status)
-{
-	response << status.code << " " << status.value;
-	return *this;
 }
 
 #endif //ICARUSFRAMEWORK_HTTP_STATUSES_H

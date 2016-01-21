@@ -12,22 +12,22 @@ namespace icarus
 {
 namespace http
 {
-	class Request
-	{
-	private:
-		bool _headersWritten;
-	protected:
-		Values _headers;
-	public:
-		Request()
-			: _headersWritten(false)
-		{ }
+class Request
+{
+private:
+	bool _headersWritten;
+protected:
+	Values<Value> _headers;
+public:
+	Request()
+		: _headersWritten(false)
+	{ }
 
-		Values & headers()
-		{
-			return this->_headers;
-		}
-	};
+	Values<Value> &headers()
+	{
+		return this->_headers;
+	}
+};
 }
 }
 

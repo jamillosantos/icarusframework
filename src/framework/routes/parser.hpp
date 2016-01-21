@@ -23,8 +23,6 @@
 
 namespace icarus
 {
-namespace framework
-{
 namespace routes
 {
 class Parser
@@ -471,7 +469,6 @@ public:
 };
 
 boost::regex Parser::variablesName("[a-zA-Z_0-9]+");
-}
 }
 }
 #endif //ICARUSFRAMEWORK_ROUTES_PARSER_HPP

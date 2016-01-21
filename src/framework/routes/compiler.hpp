@@ -10,11 +10,9 @@
 #include <boost/filesystem.hpp>
 #include "parser.hpp"
 #include "routeswriter.hpp"
-#include "writers/simpleweb.hpp"
+#include "writers/fastcgi.hpp"
 
 namespace icarus
-{
-namespace framework
 {
 namespace routes
 {
@@ -28,7 +26,7 @@ public:
 		Document document(fromPath.stem().string());
 		parser.parse(from, document);
 
-		writers::SimpleWebWriter writer;
+		writers::FastCGI writer;
 		std::stringstream memoryStream;
 		writer.write(memoryStream, document);
 
@@ -38,7 +36,6 @@ public:
 		of << memoryStream.rdbuf();
 	}
 };
-}
 }
 }
 

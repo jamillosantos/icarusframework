@@ -12,8 +12,6 @@
 
 namespace icarus
 {
-namespace framework
-{
 namespace routes
 {
 class RoutesWriter
@@ -50,14 +48,14 @@ protected:
 					stream << "namespace routes\n{\n";
 					stream << "\ticarus::framework::Action " << route->callMethod().name() << "(";
 					unsigned int i = 0;
-					for (const icarus::framework::routes::MethodParam &param : route->callMethod().params())
+					for (const icarus::routes::MethodParam &param : route->callMethod().params())
 					{
 						if (i > 0)
 							stream << ", ";
 						stream << param.type() << " ";
-						if (param.attribute() == icarus::framework::routes::MethodParamType::POINTER)
+						if (param.attribute() == icarus::routes::MethodParamType::POINTER)
 							stream << "*";
-						if (param.attribute() == icarus::framework::routes::MethodParamType::REFERENCE)
+						if (param.attribute() == icarus::routes::MethodParamType::REFERENCE)
 							stream << "&";
 						stream << param.name();
 						i++;
@@ -120,7 +118,6 @@ public:
 		this->writeReverseRoutes(stream, document);
 	}
 };
-}
 }
 }
 

@@ -15,28 +15,50 @@ namespace http
 {
 class Value
 {
+private:
+	std::string _name;
+	std::string _value;
 public:
 	Value()
 	{ }
 
-	Value(const std::string &name, const std::string &value) : name(name), value(value)
+	Value(const std::string &name, const std::string &value)
+		: _name(name), _value(value)
 	{ }
 
-	std::string name;
-	std::string value;
+	const std::string &name()
+	{
+		return this->_name;
+	}
+
+	void name(const std::string &name)
+	{
+		this->_name = name;
+	}
+
+	const std::string &value()
+	{
+		return this->_value;
+	}
+
+	void value(const std::string &value)
+	{
+		this->_value = value;
+	}
 };
 
+template <class T>
 class Values
 {
 private:
-	std::vector<Value> values;
+	std::vector<T> values;
 
 	int indexOf(std::string &name)
 	{
 		int i = 0;
-		for (Value &value : this->values)
+		for (T &value : this->values)
 		{
-			if (value.name == name)
+			if (value.name() == name)
 				return i;
 			i++;
 		}
@@ -48,7 +70,7 @@ public:
 	{
 		int idx = this->indexOf(name);
 		if (idx > 0)
-			this->values[idx].value = value;
+			this->values[idx].value(value);
 		else
 			this->add(name, value);
 	}
@@ -69,7 +91,7 @@ public:
 	{
 		int idx = this->indexOf(name);
 		if (idx > 0)
-			return this->values[idx].value;
+			return this->values[idx].value();
 		return "";
 	}
 

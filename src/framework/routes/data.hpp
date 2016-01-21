@@ -19,8 +19,6 @@
 
 namespace icarus
 {
-namespace framework
-{
 namespace routes
 {
 
@@ -366,7 +364,6 @@ public:
 		return this->_packages;
 	}
 };
-}
 }
 }
 

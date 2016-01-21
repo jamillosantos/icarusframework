@@ -25,12 +25,12 @@ class Request
 {
 private:
 	std::unique_ptr<std::istream> _content;
-	Values _serverVariables;
+	Values<Value> _serverVariables;
 	std::string _contentType;
 	long long int _contentLength;
 	Cookies _cookies;
 public:
-	Values &serverVariables()
+	Values<Value> &serverVariables()
 	{
 		return this->_serverVariables;
 	}
@@ -41,13 +41,13 @@ public:
 
 		std::string header, headerName, headerValue;
 		size_t fr;
-		icarus::log << "Parsing headers:";
 		for (char **p = request.envp; *p; ++p)
 		{
 			header = *p;
 			fr = header.find('=');
 			if (fr != std::string::npos)
 			{
+				LOG_TRACE(header);
 				headerName = header.substr(0, fr);
 				headerValue = header.substr(fr + 1, header.length() - fr - 1);
 				if (headerName == "HTTP_COOKIE")
@@ -82,7 +82,7 @@ public:
 			}
 			else
 			{
-				icarus::log << "Malformed header: " << header;
+				LOG_ERROR("Malformed header: " << header);
 			}
 		}
 		this->_content.reset(new fcgi_istream(request.in));
