@@ -13,30 +13,30 @@ namespace icarus
 {
 namespace http
 {
-class Header
+class Value
 {
 public:
-	Header()
+	Value()
 	{ }
 
-	Header(const std::string &name, const std::string &value) : name(name), value(value)
+	Value(const std::string &name, const std::string &value) : name(name), value(value)
 	{ }
 
 	std::string name;
 	std::string value;
 };
 
-class Headers
+class Values
 {
 private:
-	std::vector<Header> headers;
+	std::vector<Value> values;
 
 	int indexOf(std::string &name)
 	{
 		int i = 0;
-		for (Header &header : this->headers)
+		for (Value &value : this->values)
 		{
-			if (header.name == name)
+			if (value.name == name)
 				return i;
 			i++;
 		}
@@ -48,39 +48,39 @@ public:
 	{
 		int idx = this->indexOf(name);
 		if (idx > 0)
-			this->headers[idx].value = value;
+			this->values[idx].value = value;
 		else
 			this->add(name, value);
 	}
 
 	virtual void add(std::string name, std::string value)
 	{
-		this->headers.emplace_back(name, value);
+		this->values.emplace_back(name, value);
 	}
 
 	virtual void erase(std::string name)
 	{
 		int idx = this->indexOf(name);
 		if (idx > 0)
-			this->headers.erase(this->headers.begin() + idx);
+			this->values.erase(this->values.begin() + idx);
 	}
 
 	virtual std::string get(std::string name)
 	{
 		int idx = this->indexOf(name);
 		if (idx > 0)
-			return this->headers[idx].value;
+			return this->values[idx].value;
 		return "";
 	}
 
-	std::vector<icarus::http::Header>::iterator begin()
+	std::vector<icarus::http::Value>::iterator begin()
 	{
-		return this->headers.begin();
+		return this->values.begin();
 	}
 
-	std::vector<icarus::http::Header>::iterator end()
+	std::vector<icarus::http::Value>::iterator end()
 	{
-		return this->headers.end();
+		return this->values.end();
 	}
 };
 }

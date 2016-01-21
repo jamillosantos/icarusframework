@@ -12,7 +12,7 @@
 
 BOOST_AUTO_TEST_CASE(CallMethodPath1)
 {
-	icarus::routes::CallMethod method;
+	icarus::framework::routes::CallMethod method;
 	method.path("package::for::methodName");
 
 	BOOST_REQUIRE_EQUAL(method.path().size(), 2);
@@ -23,7 +23,7 @@ BOOST_AUTO_TEST_CASE(CallMethodPath1)
 
 BOOST_AUTO_TEST_CASE(CallMethodPath2)
 {
-	icarus::routes::CallMethod method;
+	icarus::framework::routes::CallMethod method;
 	method.path("p::f::another::m");
 
 	BOOST_REQUIRE_EQUAL(method.path().size(), 3);

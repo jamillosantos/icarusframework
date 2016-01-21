@@ -11,3 +11,5 @@ tests
 libicarusframework.a
 libminotaur.a
 mntr
+icarus-fastcgi
+*.log

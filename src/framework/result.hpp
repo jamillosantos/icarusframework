@@ -8,7 +8,7 @@
 
 #include <boost/optional/optional.hpp>
 #include "../../minotaur/src/ochainstream.hpp"
-#include "http/statuses.h"
+#include "http/statuses.hpp"
 
 namespace icarus
 {

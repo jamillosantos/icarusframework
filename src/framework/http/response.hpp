@@ -6,9 +6,9 @@
 #ifndef ICARUSFRAMEWORK_RESPONSEHANDLER_H
 #define ICARUSFRAMEWORK_RESPONSEHANDLER_H
 
-#include <simpleweb/server_http.hpp>
+#include <sstream>
 #include "headers.hpp"
-#include "statuses.h"
+#include "statuses.hpp"
 
 namespace icarus
 {
@@ -28,10 +28,10 @@ public:
 
 	~Response()
 	{
-		this->responseStream << "HTTP/1.1 " << this->status << " OK" << endh;
+		this->responseStream << "HTTP/1.1 " << this->status << endh;
 
 		bool contentLength = false;
-		for (Header &header : this->headers)
+		for (Value &header : this->headers)
 		{
 			if (header.name == "Content-Length")
 				contentLength = true;
@@ -47,8 +47,9 @@ public:
 		this->responseStream << this->stream.rdbuf();
 	}
 
-	Status status;
-	Headers headers;
+	Status& status;
+
+	Values headers;
 
 	template<class T>
 	Response &operator<<(const T& t)
