@@ -15,6 +15,7 @@
 #include "headers.hpp"
 
 #include "../log.hpp"
+#include "../exceptions.hpp"
 
 namespace icarus
 {
@@ -63,7 +64,7 @@ public:
 };
 
 class Cookies
-	: public Values<Cookie>
+	: public ValuesHash<Cookie>
 {
 private:
 	static boost::regex regex;
@@ -77,7 +78,7 @@ public:
 
 		while (boost::regex_search(start, end, results, regex))
 		{
-			this->add(results[1], results[2]);
+			this->set(results[1], results[2]);
 			start = results[0].second;
 		}
 	}

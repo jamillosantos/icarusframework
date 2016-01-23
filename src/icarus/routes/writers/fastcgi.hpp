@@ -18,6 +18,18 @@ class FastCGI
 	: public RoutesWriter
 {
 
+protected:
+	virtual void writeBeginDoc(std::ostream &stream, Document &document) override
+	{ }
+
+	virtual void writeEndDoc(std::ostream &stream, Document &document) override
+	{ }
+
+	virtual void write(std::ostream &stream, const Route &route) override
+	{ }
+
+	virtual void write(std::ostream &stream, const Group &group) override
+	{ }
 };
 }
 }

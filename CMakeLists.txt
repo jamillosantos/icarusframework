@@ -89,22 +89,31 @@ include_directories(${CPPNETLIB_INCLUDE_DIRS})
 
 set(SOURCE_FILES
 	src/controllers/controller.hpp
-	src/framework/http/headers.hpp
-	src/framework/http/response.hpp
-	src/framework/http/statuses.hpp
-	src/framework/routes/data.hpp
-	src/framework/routes/parser.hpp
-	src/framework/routes/compiler.hpp
-	src/framework/routes/routeswriter.hpp
-	src/framework/result.hpp
-	src/framework/routes/writers/simpleweb.hpp
-	src/framework/exceptions.hpp
-	src/framework/routes/exceptions.hpp
-	src/framework/action.hpp
-	src/framework/routes/to_url.hpp
-	src/framework/http/request.hpp
-	src/framework/http/exceptions.hpp
-	)
+
+	src/icarus/log.hpp
+
+	src/icarus/http/headers.hpp
+	src/icarus/http/statuses.hpp
+	src/icarus/http/cookies.hpp
+	src/icarus/http/exceptions.hpp
+	src/icarus/http/request.hpp
+	src/icarus/http/response.hpp
+	src/icarus/http/fcgi/request.hpp
+	src/icarus/http/fcgi/response.hpp
+
+	src/icarus/routes/data.hpp
+	src/icarus/routes/parser.hpp
+	src/icarus/routes/compiler.hpp
+	src/icarus/routes/routeswriter.hpp
+	src/icarus/routes/to_url.hpp
+	src/icarus/routes/writers/fastcgi.hpp
+	src/icarus/routes/exceptions.hpp
+	src/icarus/routes/fieldtypes.hpp
+
+	src/icarus/result.hpp
+	src/icarus/exceptions.hpp
+	src/icarus/action.hpp
+)
 
 set(ICARUS_LIBRARIES
 	boost_log_setup
@@ -141,12 +150,8 @@ target_link_libraries(icarusframework
 set_target_properties(icarusframework PROPERTIES LINKER_LANGUAGE CXX)
 
 add_executable(icarus-fastcgi
-	${SOURCE_FILES}
-
-	src/framework/http/fcgi/request.hpp
-
-	src/framework/http/fcgi/main.cpp
-	src/framework/http/fcgi/response.hpp)
+	src/icarus/http/fcgi/main.cpp
+)
 
 target_link_libraries(icarus-fastcgi
 	${ICARUS_LIBRARIES}
@@ -154,6 +159,7 @@ target_link_libraries(icarus-fastcgi
 	fcgi
 	fcgi++
 
+	icarusframework
 	cppnetlib-uri
 	)
 
@@ -200,9 +206,9 @@ foreach (testSrc ${TEST_SRCS})
 	set(testName "test_${testPackage}${testName}")
 	message(" + ${testSrc} as ${testName}")
 
-	add_executable(${testName} ${testSrc} src/framework/http/cookies.hpp src/framework/log.hpp src/framework/routes/writers/fastcgi.hpp)
+	add_executable(${testName} ${testSrc})
 
-	target_link_libraries(${testName} ${Boost_LIBRARIES} ${ICARUS_LIBRARIES})
+	target_link_libraries(${testName} ${Boost_LIBRARIES} icarusframework)
 
 	set_target_properties(${testName} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${TEST_OUTPUT})
 

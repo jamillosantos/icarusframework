@@ -23,18 +23,7 @@ namespace fcgi
 class Request
 	: public icarus::http::Request
 {
-private:
-	std::unique_ptr<std::istream> _content;
-	Values<Value> _serverVariables;
-	std::string _contentType;
-	long long int _contentLength;
-	Cookies _cookies;
 public:
-	Values<Value> &serverVariables()
-	{
-		return this->_serverVariables;
-	}
-
 	virtual void init(const FCGX_Request &request)
 	{
 		this->_contentLength = -1;
@@ -47,7 +36,6 @@ public:
 			fr = header.find('=');
 			if (fr != std::string::npos)
 			{
-				LOG_TRACE(header);
 				headerName = header.substr(0, fr);
 				headerValue = header.substr(fr + 1, header.length() - fr - 1);
 				if (headerName == "HTTP_COOKIE")
@@ -93,26 +81,6 @@ public:
 	{
 		(*this->_content) >> t;
 		return *this;
-	}
-
-	std::istream &content()
-	{
-		return *this->_content.get();
-	}
-
-	const std::string &contentType()
-	{
-		return this->_contentType;
-	}
-
-	long long int contentLength()
-	{
-		return this->_contentLength;
-	}
-
-	Cookies &cookies()
-	{
-		return this->_cookies;
 	}
 };
 }

@@ -24,7 +24,7 @@ private:
 	Status &status;
 	std::stringstream stream;
 
-	Values<Value> _headers;
+	ValueList<Value> _headers;
 
 	bool _headerSent;
 protected:
@@ -34,11 +34,8 @@ protected:
 	{
 		(*this->_responseWriter) << "HTTP/1.1 " << this->status.code << " " << this->status.value << endh;
 		for (Value &header : this->headers())
-		{
-
-		}
+			(*this->_responseWriter) << header.name() << ": " << header.value() << endh;
 		(*this->_responseWriter) << endh;
-
 		this->_headerSent = true;
 	}
 public:
@@ -49,11 +46,10 @@ public:
 
 	virtual ~Response()
 	{
-		LOG_TRACE("~Response");
 		this->flush();
 	}
 
-	Values<Value> &headers()
+	ValueList<Value> &headers()
 	{
 		return this->_headers;
 	}

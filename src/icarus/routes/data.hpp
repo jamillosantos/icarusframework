@@ -16,6 +16,9 @@
 #include <iostream>
 
 #include <boost/filesystem.hpp>
+#include <boost/regex.hpp>
+#include "../http/headers.hpp"
+#include "../log.hpp"
 
 namespace icarus
 {
@@ -30,13 +33,14 @@ class RegexToken
 private:
 	std::string _name;
 	std::string _regex;
+	int _index;
 public:
 	RegexToken(const std::string &name, const std::string &regex)
-			: _name(name), _regex(regex)
+		: _name(name), _regex(regex)
 	{ }
 
 	RegexToken(const std::string &regex)
-			: _name(""), _regex(regex)
+		: _name(""), _regex(regex)
 	{ }
 
 	const std::string &name() const
@@ -48,33 +52,135 @@ public:
 	{
 		return this->_regex;
 	}
+
+	RegexToken &regex(const std::string &regex)
+	{
+		this->_regex = regex;
+		return *this;
+	}
+
+	const int index() const
+	{
+		return this->_index;
+	}
+
+	RegexToken &index(int index)
+	{
+		this->_index = index;
+		return *this;
+	}
 };
 
 class ComposedURI
 {
 private:
 	std::vector<RegexToken> _tokens;
+
+	std::string _prefix;
+	std::string _sufix;
+
+	std::unique_ptr<boost::regex> regex;
+protected:
+	virtual void compile()
+	{
+		std::string pattern(this->_prefix);
+		int i = 1;
+		for (RegexToken &token : this->_tokens)
+		{
+			if (token.name().empty())
+				pattern += token.regex();
+			else
+			{
+				pattern += "(";
+				pattern += token.regex();
+				pattern += ")";
+				token.index(i);
+				++i;
+			}
+		}
+		pattern += this->_sufix;
+		LOG_TRACE("Preparing regex: " << pattern);
+		this->regex.reset(new boost::regex(pattern));
+	}
+
 public:
+	ComposedURI()
+	{ }
+
+	ComposedURI(const ComposedURI &uri)
+		: _tokens(uri._tokens), _prefix(uri._prefix), _sufix(uri._sufix)
+	{
+		if (uri.regex)
+			this->regex.reset(new boost::regex(*uri.regex));
+	}
+
+	ComposedURI(const std::string &prefix, const std::string &sufix)
+		: _prefix(prefix), _sufix(sufix)
+	{ }
+
 	ComposedURI &add(std::string name, std::string regex)
 	{
 		this->_tokens.emplace_back(name, regex);
+		this->regex.reset();
 		return *this;
 	}
 
 	ComposedURI &add(std::string expression)
 	{
 		this->_tokens.emplace_back(expression);
+		this->regex.reset();
 		return *this;
 	}
 
-	const std::vector<RegexToken> &tokens() const
+	std::vector<RegexToken> &tokens()
 	{
 		return this->_tokens;
 	}
 
-	bool match(std::string requestUri)
+	const std::string prefix() const
 	{
-		// TODO
+		return this->_prefix;
+	}
+
+	ComposedURI &prefix(const std::string &prefix)
+	{
+		this->_prefix = prefix;
+		return *this;
+	}
+
+	const std::string sufix() const
+	{
+		return this->_sufix;
+	}
+
+	ComposedURI &sufix(const std::string &sufix)
+	{
+		this->_sufix = sufix;
+		return *this;
+	}
+
+	bool match(std::string requestUri, icarus::http::Values<http::Value> &params)
+	{
+		if (!this->regex)
+			this->compile();
+
+		if (this->regex)
+		{
+			boost::smatch results;
+
+			if (boost::regex_match(requestUri, results, *this->regex))
+			{
+				for (RegexToken &token : this->_tokens)
+				{
+					if (!token.name().empty())
+					{
+						LOG_TRACE("Adding " << token.name() << ":" << results[token.index()])
+						params.set(token.name(), results[token.index()]);
+					}
+				}
+				return true;
+			}
+		}
 		return false;
 	}
 
@@ -90,6 +196,21 @@ public:
 		}
 		return stream.str();
 	}
+
+	ComposedURI &operator=(const ComposedURI &uri)
+	{
+		this->_prefix = uri._prefix;
+		this->_sufix = uri._sufix;
+		for (const RegexToken &token : uri._tokens)
+		{
+			this->add(token.name(), token.regex());
+		}
+		if (uri.regex)
+			this->regex.reset(new boost::regex(*uri.regex));
+		else
+			this->regex.reset();
+		return *this;
+	}
 };
 
 /**
@@ -102,13 +223,18 @@ enum class MethodParamType
 
 class MethodParam
 {
+private:
+	std::string _type;
+	MethodParamType _attribute;
+	std::string _name;
+
 public:
 
 	MethodParam()
 	{ }
 
 	MethodParam(const std::string type, const MethodParamType attribute, const std::string name)
-			: _type(type), _attribute(attribute), _name(name)
+		: _type(type), _attribute(attribute), _name(name)
 	{ }
 
 	const std::string &type() const
@@ -144,10 +270,13 @@ public:
 		return *this;
 	}
 
-private:
-	std::string _type;
-	MethodParamType _attribute;
-	std::string _name;
+	MethodParam &operator=(const MethodParam &param)
+	{
+		this->_attribute = param._attribute;
+		this->_name = param._name;
+		this->_type = param._type;
+		return *this;
+	}
 };
 
 /**
@@ -167,7 +296,7 @@ public:
 	{ }
 
 	CallMethod(const CallMethod &callMethod)
-			: _path(callMethod._path), _name(callMethod._name), _params(callMethod._params)
+		: _path(callMethod._path), _name(callMethod._name), _params(callMethod._params)
 	{ }
 
 	bool isStatic()
@@ -189,8 +318,8 @@ public:
 	CallMethod &path(const std::string &path)
 	{
 		unsigned long
-				lFind = 0,
-				cFind = path.find("::");
+			lFind = 0,
+			cFind = path.find("::");
 		while (cFind != std::string::npos)
 		{
 			this->_path.emplace_back(path.substr(lFind, cFind - lFind));
@@ -222,6 +351,15 @@ public:
 		this->_params.emplace_back(type, attribute, name);
 		return *this;
 	}
+
+	CallMethod &operator=(const CallMethod &method)
+	{
+		this->_name = method._name;
+		this->_params = method._params;			// TODO
+		this->_path = method._path;				// TODO
+		this->_static = method._static;
+		return *this;
+	}
 };
 
 /**
@@ -233,7 +371,7 @@ private:
 	size_t _line;
 public:
 	Piece(size_t line)
-			: _line(line)
+		: _line(line)
 	{ }
 
 	virtual ~Piece()
@@ -248,13 +386,15 @@ public:
 	{
 		this->_line = line;
 	}
+
+	virtual Piece *match(std::string method, std::string requestUri, http::Values<http::Value> &values) = 0;
 };
 
 /**
  * Represents a route.
  */
 class Route
-		: public Piece
+	: public Piece
 {
 private:
 	std::string _httpMethod;
@@ -262,12 +402,12 @@ private:
 	CallMethod _callMethod;
 public:
 	Route(Route &route)
-			: Piece(route.line()), _httpMethod(route._httpMethod), _composedURI(route._composedURI),
-			  _callMethod(route._callMethod)
+		: Piece(route.line()), _httpMethod(route._httpMethod), _composedURI(route._composedURI),
+		  _callMethod(route._callMethod)
 	{ }
 
 	Route(size_t line)
-			: Piece(line)
+		: Piece(line), _composedURI("^", "$")
 	{ }
 
 	const std::string &httpMethod() const
@@ -296,16 +436,27 @@ public:
 		this->_callMethod = callMethod;
 		return *this;
 	}
+
+	virtual Piece *match(std::string method, std::string uri, http::Values<http::Value> &params) override
+	{
+		LOG_TRACE("Route::match: " << this->uri().str());
+		if (this->httpMethod() == method)
+		{
+			if (this->uri().match(uri, params))
+				return this;
+		}
+		return nullptr;
+	}
 };
 
 class Routes
-		: public Piece
+	: public Piece
 {
 private:
 	std::vector<std::unique_ptr<Piece>> _pieces;
 public:
 	Routes(size_t line)
-			: Piece(line)
+		: Piece(line)
 	{ }
 
 	const std::vector<std::unique_ptr<Piece>> &pieces() const
@@ -313,31 +464,51 @@ public:
 		return this->_pieces;
 	}
 
-	Piece *add(Piece *piece)
+	virtual Piece *add(Piece *piece)
 	{
 		this->_pieces.emplace_back(piece);
 		return piece;
 	}
+
+	virtual Piece *match(std::string method, std::string requestUri, http::Values<http::Value> &values)
+	{
+		LOG_TRACE("routes::match");
+		Piece *result = nullptr;
+		for (const std::unique_ptr<Piece> &piece : this->_pieces)
+		{
+			result = piece->match(method, requestUri, values);
+			if (result)
+				break;
+		}
+		return result;
+	}
 };
 
 class Group
-		: public Routes
+	: public Routes
 {
 private:
 	ComposedURI _composedURI;
 public:
 	Group(size_t line)
-			: Routes(line)
+		: Routes(line), _composedURI("^", "")
 	{ }
 
 	ComposedURI &uri()
 	{
 		return this->_composedURI;
 	}
+
+	virtual Piece* match(std::string method, std::string uri, http::Values<http::Value> &params) override
+	{
+		if (this->_composedURI.match(uri, params))
+			return Routes::match(method, uri, params);
+		return nullptr;
+	}
 };
 
 class Document
-		: public Routes
+	: public Routes
 {
 private:
 	std::string _name;
@@ -345,7 +516,7 @@ private:
 	std::vector<std::string> _packages;
 public:
 	Document(const std::string &name)
-			: Routes(0), _name(name)
+		: Routes(0), _name(name)
 	{ }
 
 	const std::string &name()

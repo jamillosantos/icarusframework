@@ -28,7 +28,7 @@ public:
 
 		writers::FastCGI writer;
 		std::stringstream memoryStream;
-		writer.write(memoryStream, document);
+		// writer.write(memoryStream, document);
 
 		boost::filesystem::path toPath(to);
 		boost::filesystem::create_directories(toPath.parent_path());

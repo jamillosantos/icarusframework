@@ -26,6 +26,9 @@ protected:
 	virtual void write(std::ostream &stream, const Piece &piece)
 	{ }
 
+	virtual void write(std::ostream &stream, const Document &document)
+	{ }
+
 	virtual void writeReverseRoutes(std::ostream &stream, Document &document)
 	{
 		std::string item, del("::");
@@ -34,7 +37,7 @@ protected:
 			Group* group = dynamic_cast<Group*>(piece.get());
 			if (group)
 			{
-				//
+				// TODO Implement this part.
 			}
 			else
 			{
@@ -46,7 +49,7 @@ protected:
 						stream << "namespace " << ns << "\n{\n";
 					}
 					stream << "namespace routes\n{\n";
-					stream << "\ticarus::framework::Action " << route->callMethod().name() << "(";
+					stream << "\ticarus::icarus::Action " << route->callMethod().name() << "(";
 					unsigned int i = 0;
 					for (const icarus::routes::MethodParam &param : route->callMethod().params())
 					{
@@ -82,7 +85,7 @@ protected:
 								throw exceptions::routes::InvalidParamName(route->line(), rt.name());
 						}
 					}
-					stream << "\t\treturn icarus::framework::Action(\"" << route->httpMethod() << "\", tmp);\n";
+					stream << "\t\treturn icarus::icarus::Action(\"" << route->httpMethod() << "\", tmp);\n";
 					stream << "\t}\n";
 					stream << "} // routes\n";
 					for (std::string ns : route->callMethod().path())

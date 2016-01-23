@@ -16,6 +16,7 @@
 #include "data.hpp"
 #include "../exceptions.hpp"
 #include "exceptions.hpp"
+#include "fieldtypes.hpp"
 
 #include <boost/locale.hpp>
 
@@ -367,6 +368,55 @@ private:
 							stream.str("");
 							this->runLineMethodParameters(callMethod);
 							route.callMethod(callMethod);
+							int i = 0;
+							for (RegexToken &token : route.uri().tokens())
+							{
+								if (token.regex().empty())
+								{
+									for (const MethodParam &param : callMethod.params())
+									{
+										if (param.name() == token.name())
+										{
+											if (param.type() == "string")
+											{
+												if (i+1 < route.uri().tokens().size())
+												{
+													const RegexToken &nextToken = route.uri().tokens()[i+1];
+													if (nextToken.name().empty())
+													{
+														std::string nregex("[^");
+														nregex += nextToken.regex()[0];
+														nregex += "]+";
+														token.regex(nregex);
+													}
+													else
+													{
+														// TODO Throw an exception, cannot have two parameter without separation.
+														LOG_ERROR("cannot have two parameter without separation");
+														std::exit(0);
+													}
+												}
+												else
+													token.regex(".+");
+											}
+											else
+											{
+												const std::string &regex = icarus::routes::fieldTypes.get(param.type());
+												if (!regex.empty())
+												{
+													token.regex(regex);
+												}
+											}
+											break;
+										}
+									}
+								}
+								// TODO throw a exception: Data type is not assigned.
+								// if (token.regex().empty())
+								// 		// throw an exception
+								i++;
+							}
+
 							data.add(new Route(route));
 							return;
 						}

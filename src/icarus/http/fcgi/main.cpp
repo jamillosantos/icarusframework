@@ -105,11 +105,17 @@ int main (void)
 			response << "<dt>" << variable.name() << "</dt><dd>" << variable.value() << "</dd>";
 		}
 		response << "</dl>";
+		response << "<H4>Cookies</H4>\n";
+		response << "<dl>";
+		for (std::pair<const std::string, icarus::http::Cookie> &cookie : request.cookies())
+		{
+			response << "<dt>" << cookie.first << "</dt><dd>" << cookie.second.value() << "</dd>";
+		}
+		response << "</dl>";
 
 		response << "<H4>Standard Input</H4>\n";
 		response << "<dl><dt>Content length</dt><dd>" << request.contentLength() << "</dd></dl>" << std::endl;
 		response << "<pre>";
-
 		for (std::string line; std::getline(request.content(), line);)
 		{
 			response << line << std::endl;
