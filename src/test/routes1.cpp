@@ -82,7 +82,7 @@ BOOST_AUTO_TEST_CASE(route1_parsing)
 		BOOST_CHECK(line.uri().tokens()[2].name().empty());
 		BOOST_CHECK_EQUAL(line.uri().tokens()[2].regex(), "/");
 		BOOST_CHECK_EQUAL(line.uri().tokens()[3].name(), "id");
-		BOOST_CHECK_EQUAL(line.uri().tokens()[3].regex(), ".+");
+		BOOST_CHECK_EQUAL(line.uri().tokens()[3].regex(), "");
 
 		BOOST_REQUIRE_EQUAL(line.callMethod().path().size(), 2);
 		BOOST_CHECK_EQUAL(line.callMethod().path()[0], "controllers");
@@ -107,7 +107,7 @@ BOOST_AUTO_TEST_CASE(route1_parsing)
 		BOOST_CHECK(line.uri().tokens()[2].name().empty());
 		BOOST_CHECK_EQUAL(line.uri().tokens()[2].regex(), "/");
 		BOOST_CHECK_EQUAL(line.uri().tokens()[3].name(), "id");
-		BOOST_CHECK_EQUAL(line.uri().tokens()[3].regex(), "[^/]+");
+		BOOST_CHECK_EQUAL(line.uri().tokens()[3].regex(), "");
 		BOOST_CHECK(line.uri().tokens()[4].name().empty());
 		BOOST_CHECK_EQUAL(line.uri().tokens()[4].regex(), "/test");
 
@@ -134,7 +134,7 @@ BOOST_AUTO_TEST_CASE(route1_parsing)
 		BOOST_CHECK(line.uri().tokens()[2].name().empty());
 		BOOST_CHECK_EQUAL(line.uri().tokens()[2].regex(), "x");
 		BOOST_CHECK_EQUAL(line.uri().tokens()[3].name(), "id");
-		BOOST_CHECK_EQUAL(line.uri().tokens()[3].regex(), "[^t]+");
+		BOOST_CHECK_EQUAL(line.uri().tokens()[3].regex(), "");
 		BOOST_CHECK(line.uri().tokens()[4].name().empty());
 		BOOST_CHECK_EQUAL(line.uri().tokens()[4].regex(), "test");
 

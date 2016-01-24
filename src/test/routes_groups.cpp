@@ -8,13 +8,13 @@
 
 #include <boost/test/included/unit_test.hpp>
 
-#include "../framework/routes/parser.hpp"
+#include "../icarus/routes/parser.hpp"
 
 BOOST_AUTO_TEST_CASE(route_group)
 {
 	boost::filesystem::path resourceDir(TEST_RESOURCE_DIR);
 	
-	namespace ifr = icarus::framework::routes;
+	namespace ifr = icarus::routes;
 
 	boost::filesystem::path routePath;
 	ifr::Parser parser((resourceDir / "routes").string());
@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE(route_group)
 	{
 		ifr::Group &group = *dynamic_cast<ifr::Group *>(parserData.pieces()[0].get());
 		BOOST_REQUIRE_EQUAL(group.uri().tokens().size(), 1);
-		BOOST_CHECK_EQUAL(group.uri().tokens()[0].regex(), "/testing/");
+		BOOST_CHECK_EQUAL(group.uri().tokens()[0].regex(), "/testing");
 		BOOST_CHECK_EQUAL(group.uri().tokens()[0].name(), "");
 
 		BOOST_REQUIRE_EQUAL(group.pieces().size(), 2);
@@ -32,17 +32,19 @@ BOOST_AUTO_TEST_CASE(route_group)
 			ifr::Route &line = *dynamic_cast<ifr::Route *>(group.pieces()[0].get());
 			BOOST_CHECK_EQUAL(line.httpMethod(), "POST");
 
-			BOOST_REQUIRE_EQUAL(line.uri().tokens().size(), 5);
+			BOOST_REQUIRE_EQUAL(line.uri().tokens().size(), 6);
 			BOOST_CHECK(line.uri().tokens()[0].name().empty());
-			BOOST_CHECK_EQUAL(line.uri().tokens()[0].regex(), "/");
-			BOOST_CHECK_EQUAL(line.uri().tokens()[1].name(), "count");
-			BOOST_CHECK_EQUAL(line.uri().tokens()[1].regex(), "");
-			BOOST_CHECK(line.uri().tokens()[2].name().empty());
-			BOOST_CHECK_EQUAL(line.uri().tokens()[2].regex(), "/");
-			BOOST_CHECK_EQUAL(line.uri().tokens()[3].name(), "id");
-			BOOST_CHECK_EQUAL(line.uri().tokens()[3].regex(), "");
-			BOOST_CHECK(line.uri().tokens()[4].name().empty());
-			BOOST_CHECK_EQUAL(line.uri().tokens()[4].regex(), "/");
+			BOOST_CHECK_EQUAL(line.uri().tokens()[0].regex(), "/testing");
+			BOOST_CHECK(line.uri().tokens()[1].name().empty());
+			BOOST_CHECK_EQUAL(line.uri().tokens()[1].regex(), "/");
+			BOOST_CHECK_EQUAL(line.uri().tokens()[2].name(), "count");
+			BOOST_CHECK_EQUAL(line.uri().tokens()[2].regex(), ifr::fieldTypes.get("unsigned int"));
+			BOOST_CHECK(line.uri().tokens()[3].name().empty());
+			BOOST_CHECK_EQUAL(line.uri().tokens()[3].regex(), "/");
+			BOOST_CHECK_EQUAL(line.uri().tokens()[4].name(), "id");
+			BOOST_CHECK_EQUAL(line.uri().tokens()[4].regex(), "");
+			BOOST_CHECK(line.uri().tokens()[5].name().empty());
+			BOOST_CHECK_EQUAL(line.uri().tokens()[5].regex(), "/");
 
 			BOOST_REQUIRE_EQUAL(line.callMethod().path().size(), 2);
 			BOOST_CHECK_EQUAL(line.callMethod().path()[0], "controllers");
@@ -53,24 +55,26 @@ BOOST_AUTO_TEST_CASE(route_group)
 			BOOST_CHECK_EQUAL(line.callMethod().params()[0].name(), "count");
 			BOOST_CHECK_EQUAL(line.callMethod().params()[0].type(), "unsigned int");
 			BOOST_CHECK_EQUAL(line.callMethod().params()[1].name(), "id");
-			BOOST_CHECK_EQUAL(line.callMethod().params()[1].type(), "std::string");
+			BOOST_CHECK_EQUAL(line.callMethod().params()[1].type(), "string");
 		}
 
 		{
 			ifr::Route &line = *dynamic_cast<ifr::Route *>(group.pieces()[1].get());
 			BOOST_CHECK_EQUAL(line.httpMethod(), "PUT");
 
-			BOOST_REQUIRE_EQUAL(line.uri().tokens().size(), 5);
+			BOOST_REQUIRE_EQUAL(line.uri().tokens().size(), 6);
 			BOOST_CHECK(line.uri().tokens()[0].name().empty());
-			BOOST_CHECK_EQUAL(line.uri().tokens()[0].regex(), "/testing/");
-			BOOST_CHECK_EQUAL(line.uri().tokens()[1].name(), "count");
-			BOOST_CHECK_EQUAL(line.uri().tokens()[1].regex(), "");
-			BOOST_CHECK(line.uri().tokens()[2].name().empty());
-			BOOST_CHECK_EQUAL(line.uri().tokens()[2].regex(), "/");
-			BOOST_CHECK_EQUAL(line.uri().tokens()[3].name(), "id");
-			BOOST_CHECK_EQUAL(line.uri().tokens()[3].regex(), "");
-			BOOST_CHECK(line.uri().tokens()[4].name().empty());
-			BOOST_CHECK_EQUAL(line.uri().tokens()[4].regex(), "/test");
+			BOOST_CHECK_EQUAL(line.uri().tokens()[0].regex(), "/testing");
+			BOOST_CHECK(line.uri().tokens()[1].name().empty());
+			BOOST_CHECK_EQUAL(line.uri().tokens()[1].regex(), "/testing/");
+			BOOST_CHECK_EQUAL(line.uri().tokens()[2].name(), "count");
+			BOOST_CHECK_EQUAL(line.uri().tokens()[2].regex(), ifr::fieldTypes.get("uint8_t"));
+			BOOST_CHECK(line.uri().tokens()[3].name().empty());
+			BOOST_CHECK_EQUAL(line.uri().tokens()[3].regex(), "/");
+			BOOST_CHECK_EQUAL(line.uri().tokens()[4].name(), "id");
+			BOOST_CHECK_EQUAL(line.uri().tokens()[4].regex(), "");
+			BOOST_CHECK(line.uri().tokens()[5].name().empty());
+			BOOST_CHECK_EQUAL(line.uri().tokens()[5].regex(), "/test");
 
 			BOOST_REQUIRE_EQUAL(line.callMethod().path().size(), 2);
 			BOOST_CHECK_EQUAL(line.callMethod().path()[0], "controllers");
@@ -81,36 +85,38 @@ BOOST_AUTO_TEST_CASE(route_group)
 			BOOST_CHECK_EQUAL(line.callMethod().params()[0].name(), "count");
 			BOOST_CHECK_EQUAL(line.callMethod().params()[0].type(), "uint8_t");
 			BOOST_CHECK_EQUAL(line.callMethod().params()[1].name(), "id");
-			BOOST_CHECK_EQUAL(line.callMethod().params()[1].type(), "std::string");
+			BOOST_CHECK_EQUAL(line.callMethod().params()[1].type(), "string");
 		}
 	}
 
 	{
 		ifr::Group &group = *dynamic_cast<ifr::Group *>(parserData.pieces()[1].get());
-		BOOST_REQUIRE_EQUAL(group.uri().tokens().size(), 3);
+		BOOST_REQUIRE_EQUAL(group.uri().tokens().size(), 2);
 		BOOST_CHECK_EQUAL(group.uri().tokens()[0].regex(), "/u/");
 		BOOST_CHECK_EQUAL(group.uri().tokens()[0].name(), "");
 		BOOST_CHECK_EQUAL(group.uri().tokens()[1].regex(), "");
 		BOOST_CHECK_EQUAL(group.uri().tokens()[1].name(), "user");
-		BOOST_CHECK_EQUAL(group.uri().tokens()[2].regex(), "/");
-		BOOST_CHECK_EQUAL(group.uri().tokens()[2].name(), "");
 
 		BOOST_REQUIRE_EQUAL(group.pieces().size(), 1);
 		{
 			ifr::Route &line = *dynamic_cast<ifr::Route *>(group.pieces()[0].get());
 			BOOST_CHECK_EQUAL(line.httpMethod(), "PUT");
 
-			BOOST_REQUIRE_EQUAL(line.uri().tokens().size(), 5);
+			BOOST_REQUIRE_EQUAL(line.uri().tokens().size(), 7);
 			BOOST_CHECK(line.uri().tokens()[0].name().empty());
-			BOOST_CHECK_EQUAL(line.uri().tokens()[0].regex(), "/testing/");
-			BOOST_CHECK_EQUAL(line.uri().tokens()[1].name(), "count");
+			BOOST_CHECK_EQUAL(line.uri().tokens()[0].regex(), "/u/");
+			BOOST_CHECK_EQUAL(line.uri().tokens()[1].name(), "user");
 			BOOST_CHECK_EQUAL(line.uri().tokens()[1].regex(), "");
 			BOOST_CHECK(line.uri().tokens()[2].name().empty());
-			BOOST_CHECK_EQUAL(line.uri().tokens()[2].regex(), "x");
-			BOOST_CHECK_EQUAL(line.uri().tokens()[3].name(), "id");
-			BOOST_CHECK_EQUAL(line.uri().tokens()[3].regex(), "");
+			BOOST_CHECK_EQUAL(line.uri().tokens()[2].regex(), "/testing/");
+			BOOST_CHECK_EQUAL(line.uri().tokens()[3].name(), "count");
+			BOOST_CHECK_EQUAL(line.uri().tokens()[3].regex(), ifr::fieldTypes.get("unsigned int"));
 			BOOST_CHECK(line.uri().tokens()[4].name().empty());
-			BOOST_CHECK_EQUAL(line.uri().tokens()[4].regex(), "test");
+			BOOST_CHECK_EQUAL(line.uri().tokens()[4].regex(), "x");
+			BOOST_CHECK_EQUAL(line.uri().tokens()[5].name(), "id");
+			BOOST_CHECK_EQUAL(line.uri().tokens()[5].regex(), "");
+			BOOST_CHECK(line.uri().tokens()[6].name().empty());
+			BOOST_CHECK_EQUAL(line.uri().tokens()[6].regex(), "test");
 
 			BOOST_REQUIRE_EQUAL(line.callMethod().path().size(), 2);
 			BOOST_CHECK_EQUAL(line.callMethod().path()[0], "controllers");
@@ -121,8 +127,44 @@ BOOST_AUTO_TEST_CASE(route_group)
 			BOOST_CHECK_EQUAL(line.callMethod().params()[0].name(), "count");
 			BOOST_CHECK_EQUAL(line.callMethod().params()[0].type(), "unsigned int");
 			BOOST_CHECK_EQUAL(line.callMethod().params()[1].name(), "id");
-			BOOST_CHECK_EQUAL(line.callMethod().params()[1].type(), "std::string");
+			BOOST_CHECK_EQUAL(line.callMethod().params()[1].type(), "string");
 		}
 	}
+}
 
+BOOST_AUTO_TEST_CASE(route_group_match1)
+{
+	boost::filesystem::path resourceDir(TEST_RESOURCE_DIR);
+
+	namespace ifr = icarus::routes;
+
+	boost::filesystem::path routePath;
+	ifr::Parser parser((resourceDir / "routes").string());
+	ifr::Document parserData("routes_groups");
+	parser.parse((resourceDir / "routes" / "routes_groups").string(), parserData);
+
+
+	icarus::http::ValuesHash<icarus::http::Value> values;
+	ifr::Piece *piece = parserData.match("POST", "/testing/123/abc/", values);
+	BOOST_REQUIRE_MESSAGE(piece != nullptr, "Could not find the piece.");
+}
+
+BOOST_AUTO_TEST_CASE(route_group_match2)
+{
+	boost::filesystem::path resourceDir(TEST_RESOURCE_DIR);
+
+	namespace ifr = icarus::routes;
+
+	boost::filesystem::path routePath;
+	ifr::Parser parser((resourceDir / "routes").string());
+	ifr::Document parserData("routes_groups");
+	parser.parse((resourceDir / "routes" / "routes_groups").string(), parserData);
+
+
+	icarus::http::ValuesHash<icarus::http::Value> values;
+	ifr::Piece *piece = parserData.match("PUT", "/u/username/testing/123xabctest", values);
+	BOOST_REQUIRE_MESSAGE(piece != nullptr, "Could not find the piece.");
+	BOOST_CHECK_EQUAL(values.get("user"), "username");
+	BOOST_CHECK_EQUAL(values.get("count"), "123");
+	BOOST_CHECK_EQUAL(values.get("id"), "abc");
 }

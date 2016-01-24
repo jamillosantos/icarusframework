@@ -3,12 +3,12 @@
 
 #include <boost/test/included/unit_test.hpp>
 
-#include "../framework/routes/parser.hpp"
-#include "../framework/routes/compiler.hpp"
+#include "../icarus/routes/parser.hpp"
+#include "../icarus/routes/compiler.hpp"
 
 BOOST_AUTO_TEST_CASE(route2_parsing)
 {
-	namespace ifr = icarus::framework::routes;
+	namespace ifr = icarus::routes;
 
 	boost::filesystem::path resourceDir(TEST_RESOURCE_DIR);
 
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(route2_parsing)
 		BOOST_CHECK(line.uri().tokens()[0].name().empty());
 		BOOST_CHECK_EQUAL(line.uri().tokens()[0].regex(), "/");
 		BOOST_CHECK_EQUAL(line.uri().tokens()[1].name(), "count");
-		BOOST_CHECK_EQUAL(line.uri().tokens()[1].regex(), "");
+		BOOST_CHECK_EQUAL(line.uri().tokens()[1].regex(), ifr::fieldTypes.get("uint8_t"));
 
 		BOOST_REQUIRE_EQUAL(line.callMethod().path().size(), 2);
 		BOOST_CHECK_EQUAL(line.callMethod().path()[0], "controllers");
@@ -74,17 +74,15 @@ BOOST_AUTO_TEST_CASE(route2_parsing)
 		ifr::Route &line = *dynamic_cast<ifr::Route *>(parserData.pieces()[3].get());
 		BOOST_CHECK_EQUAL(line.httpMethod(), "POST");
 
-		BOOST_REQUIRE_EQUAL(line.uri().tokens().size(), 5);
+		BOOST_REQUIRE_EQUAL(line.uri().tokens().size(), 4);
 		BOOST_CHECK(line.uri().tokens()[0].name().empty());
 		BOOST_CHECK_EQUAL(line.uri().tokens()[0].regex(), "/");
 		BOOST_CHECK_EQUAL(line.uri().tokens()[1].name(), "count");
-		BOOST_CHECK_EQUAL(line.uri().tokens()[1].regex(), "");
+		BOOST_CHECK_EQUAL(line.uri().tokens()[1].regex(), ifr::fieldTypes.get("uint8_t"));
 		BOOST_CHECK(line.uri().tokens()[2].name().empty());
 		BOOST_CHECK_EQUAL(line.uri().tokens()[2].regex(), "/");
 		BOOST_CHECK_EQUAL(line.uri().tokens()[3].name(), "id");
 		BOOST_CHECK_EQUAL(line.uri().tokens()[3].regex(), "");
-		BOOST_CHECK(line.uri().tokens()[4].name().empty());
-		BOOST_CHECK_EQUAL(line.uri().tokens()[4].regex(), "/");
 
 		BOOST_REQUIRE_EQUAL(line.callMethod().path().size(), 2);
 		BOOST_CHECK_EQUAL(line.callMethod().path()[0], "controllers");
@@ -94,7 +92,7 @@ BOOST_AUTO_TEST_CASE(route2_parsing)
 		BOOST_CHECK_EQUAL(line.callMethod().params()[0].name(), "count");
 		BOOST_CHECK_EQUAL(line.callMethod().params()[0].type(), "unsigned int");
 		BOOST_CHECK_EQUAL(line.callMethod().params()[1].name(), "id");
-		BOOST_CHECK_EQUAL(line.callMethod().params()[1].type(), "std::string");
+		BOOST_CHECK_EQUAL(line.callMethod().params()[1].type(), "string");
 	}
 
 	{
@@ -105,7 +103,7 @@ BOOST_AUTO_TEST_CASE(route2_parsing)
 		BOOST_CHECK(line.uri().tokens()[0].name().empty());
 		BOOST_CHECK_EQUAL(line.uri().tokens()[0].regex(), "/testing/");
 		BOOST_CHECK_EQUAL(line.uri().tokens()[1].name(), "count");
-		BOOST_CHECK_EQUAL(line.uri().tokens()[1].regex(), "");
+		BOOST_CHECK_EQUAL(line.uri().tokens()[1].regex(), ifr::fieldTypes.get("uint8_t"));
 		BOOST_CHECK(line.uri().tokens()[2].name().empty());
 		BOOST_CHECK_EQUAL(line.uri().tokens()[2].regex(), "/");
 		BOOST_CHECK_EQUAL(line.uri().tokens()[3].name(), "id");
@@ -121,7 +119,7 @@ BOOST_AUTO_TEST_CASE(route2_parsing)
 		BOOST_CHECK_EQUAL(line.callMethod().params()[0].name(), "count");
 		BOOST_CHECK_EQUAL(line.callMethod().params()[0].type(), "uint8_t");
 		BOOST_CHECK_EQUAL(line.callMethod().params()[1].name(), "id");
-		BOOST_CHECK_EQUAL(line.callMethod().params()[1].type(), "std::string");
+		BOOST_CHECK_EQUAL(line.callMethod().params()[1].type(), "string");
 	}
 
 	{
@@ -132,7 +130,7 @@ BOOST_AUTO_TEST_CASE(route2_parsing)
 		BOOST_CHECK(line.uri().tokens()[0].name().empty());
 		BOOST_CHECK_EQUAL(line.uri().tokens()[0].regex(), "/testing/");
 		BOOST_CHECK_EQUAL(line.uri().tokens()[1].name(), "count");
-		BOOST_CHECK_EQUAL(line.uri().tokens()[1].regex(), "");
+		BOOST_CHECK_EQUAL(line.uri().tokens()[1].regex(), ifr::fieldTypes.get("unsigned int"));
 		BOOST_CHECK(line.uri().tokens()[2].name().empty());
 		BOOST_CHECK_EQUAL(line.uri().tokens()[2].regex(), "x");
 		BOOST_CHECK_EQUAL(line.uri().tokens()[3].name(), "id");
@@ -148,13 +146,13 @@ BOOST_AUTO_TEST_CASE(route2_parsing)
 		BOOST_CHECK_EQUAL(line.callMethod().params()[0].name(), "count");
 		BOOST_CHECK_EQUAL(line.callMethod().params()[0].type(), "unsigned int");
 		BOOST_CHECK_EQUAL(line.callMethod().params()[1].name(), "id");
-		BOOST_CHECK_EQUAL(line.callMethod().params()[1].type(), "std::string");
+		BOOST_CHECK_EQUAL(line.callMethod().params()[1].type(), "string");
 	}
 }
 
 BOOST_AUTO_TEST_CASE(route2_compiling)
 {
-	namespace ifr = icarus::framework::routes;
+	namespace ifr = icarus::routes;
 
 	boost::filesystem::path resourceDir(TEST_RESOURCE_DIR);
 

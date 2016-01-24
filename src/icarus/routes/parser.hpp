@@ -355,6 +355,14 @@ private:
 					route.httpMethod(stream.str());
 					stream.str("");    // clear stream
 
+					Group *parentGroup = dynamic_cast<Group*>(&data);
+					if (parentGroup)
+					{
+						for (RegexToken &token : parentGroup->uri().tokens())
+						{
+							route.uri().add(token.name(), token.regex());
+						}
+					}
 					this->readURI(route.uri());
 					this->readUntilNonBlank(&cc);
 					stream << cc;
@@ -377,35 +385,16 @@ private:
 									{
 										if (param.name() == token.name())
 										{
-											if (param.type() == "string")
-											{
-												if (i+1 < route.uri().tokens().size())
-												{
-													const RegexToken &nextToken = route.uri().tokens()[i+1];
-													if (nextToken.name().empty())
-													{
-														std::string nregex("[^");
-														nregex += nextToken.regex()[0];
-														nregex += "]+";
-														token.regex(nregex);
-													}
-													else
-													{
-														// TODO Throw an exception, cannot have two parameter without separation.
-														LOG_ERROR("cannot have two parameter without separation");
-														std::exit(0);
-													}
-												}
-												else
-													token.regex(".+");
-											}
+											if (
+												(param.type() == "string") ||
+												(param.type() == "std::string")
+											)
+												token.regex("");
 											else
 											{
 												const std::string &regex = icarus::routes::fieldTypes.get(param.type());
 												if (!regex.empty())
-												{
 													token.regex(regex);
-												}
 											}
 											break;
 										}

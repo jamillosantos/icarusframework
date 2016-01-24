@@ -84,7 +84,9 @@ protected:
 	virtual void compile()
 	{
 		std::string pattern(this->_prefix);
-		int i = 1;
+		int
+			i = 1,
+			j = 0;
 		for (RegexToken &token : this->_tokens)
 		{
 			if (token.name().empty())
@@ -92,11 +94,39 @@ protected:
 			else
 			{
 				pattern += "(";
-				pattern += token.regex();
+				if (token.regex().empty())
+				{
+					if (j+1 < this->_tokens.size())
+					{
+						const RegexToken &nextToken = this->_tokens[j+1];
+						if (nextToken.name().empty())
+						{
+							std::string nregex("[^");
+							nregex += nextToken.regex()[0];
+							nregex += "]+";
+							pattern += nregex;
+							token.regex(nregex);
+						}
+						else
+						{
+							// TODO Thrown an exception.
+							LOG_ERROR("cannot have two parameter without separation.");
+							std::exit(0);
+						}
+					}
+					else
+					{
+						pattern += ".+";
+						token.regex(".+");
+					}
+				}
+				else
+					pattern += token.regex();
 				pattern += ")";
 				token.index(i);
 				++i;
 			}
+			j++;
 		}
 		pattern += this->_sufix;
 		LOG_TRACE("Preparing regex: " << pattern);
@@ -390,6 +420,8 @@ public:
 	virtual Piece *match(std::string method, std::string requestUri, http::Values<http::Value> &values) = 0;
 };
 
+class Routes;
+
 /**
  * Represents a route.
  */
@@ -498,13 +530,15 @@ public:
 	{
 		return this->_composedURI;
 	}
-
+/*
 	virtual Piece* match(std::string method, std::string uri, http::Values<http::Value> &params) override
 	{
+		LOG_TRACE("Group::match - " << this->_composedURI.str());
 		if (this->_composedURI.match(uri, params))
 			return Routes::match(method, uri, params);
 		return nullptr;
 	}
+*/
 };
 
 class Document
