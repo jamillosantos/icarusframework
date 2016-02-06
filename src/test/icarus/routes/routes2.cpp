@@ -3,8 +3,8 @@
 
 #include <boost/test/included/unit_test.hpp>
 
-#include "../icarus/routes/parser.hpp"
-#include "../icarus/routes/compiler.hpp"
+#include "../../../icarus/routes/parser.hpp"
+#include "../../../icarus/routes/compiler.hpp"
 
 BOOST_AUTO_TEST_CASE(route2_parsing)
 {
@@ -103,11 +103,11 @@ BOOST_AUTO_TEST_CASE(route2_parsing)
 		BOOST_CHECK(line.uri().tokens()[0].name().empty());
 		BOOST_CHECK_EQUAL(line.uri().tokens()[0].regex(), "/testing/");
 		BOOST_CHECK_EQUAL(line.uri().tokens()[1].name(), "count");
-		BOOST_CHECK_EQUAL(line.uri().tokens()[1].regex(), ifr::fieldTypes.get("uint8_t"));
+		BOOST_CHECK_EQUAL(line.uri().tokens()[1].regex(), "");
 		BOOST_CHECK(line.uri().tokens()[2].name().empty());
 		BOOST_CHECK_EQUAL(line.uri().tokens()[2].regex(), "/");
 		BOOST_CHECK_EQUAL(line.uri().tokens()[3].name(), "id");
-		BOOST_CHECK_EQUAL(line.uri().tokens()[3].regex(), "");
+		BOOST_CHECK_EQUAL(line.uri().tokens()[3].regex(), ifr::fieldTypes.get("uint8_t"));
 		BOOST_CHECK(line.uri().tokens()[4].name().empty());
 		BOOST_CHECK_EQUAL(line.uri().tokens()[4].regex(), "/test");
 
@@ -116,9 +116,9 @@ BOOST_AUTO_TEST_CASE(route2_parsing)
 		BOOST_CHECK_EQUAL(line.callMethod().path()[1], "Index");
 		BOOST_CHECK_EQUAL(line.callMethod().name(), "default4");
 		BOOST_REQUIRE_EQUAL(line.callMethod().params().size(), 2);
-		BOOST_CHECK_EQUAL(line.callMethod().params()[0].name(), "count");
+		BOOST_CHECK_EQUAL(line.callMethod().params()[0].name(), "id");
 		BOOST_CHECK_EQUAL(line.callMethod().params()[0].type(), "uint8_t");
-		BOOST_CHECK_EQUAL(line.callMethod().params()[1].name(), "id");
+		BOOST_CHECK_EQUAL(line.callMethod().params()[1].name(), "count");
 		BOOST_CHECK_EQUAL(line.callMethod().params()[1].type(), "string");
 	}
 

@@ -57,6 +57,8 @@ public:
 
 	virtual std::string get(const std::string &name) = 0;
 
+	virtual std::string get(const unsigned int index) = 0;
+
 	virtual void erase(const std::string &name) = 0;
 
 	virtual void clear() = 0;
@@ -98,16 +100,21 @@ public:
 	virtual void erase(const std::string &name) override
 	{
 		int idx = this->indexOf(name);
-		if (idx > 0)
+		if (idx >= 0)
 			this->values.erase(this->values.begin() + idx);
 	}
 
 	virtual std::string get(const std::string &name) override
 	{
 		int idx = this->indexOf(name);
-		if (idx > 0)
+		if (idx >= 0)
 			return this->values[idx].value();
 		return "";
+	}
+
+	virtual std::string get(const unsigned int index) override
+	{
+		return this->values[index].value();
 	}
 
 	virtual void add(std::string name, std::string value)
@@ -163,6 +170,14 @@ public:
 			LOG_TRACE("ValuesHash::get - Found " << name);
 			return search->second.value();
 		}
+	}
+
+	virtual std::string get(const unsigned int index)
+	{
+		auto b = this->_container.begin();
+		for (unsigned int i = 0; i < index; i++)
+			++b;
+		return b->second.value();
 	}
 
 	virtual void erase(const std::string &name) override

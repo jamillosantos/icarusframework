@@ -1,0 +1,20 @@
+
+server
+{
+	threads 25
+}
+
+databases
+{
+	default
+	{
+		string mysql://root@localhost/test
+		password 12345
+	}
+
+	test
+	{
+		string mysql://root@localhost/test
+		password 12345
+	}
+}

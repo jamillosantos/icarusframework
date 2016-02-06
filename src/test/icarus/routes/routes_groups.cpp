@@ -8,7 +8,7 @@
 
 #include <boost/test/included/unit_test.hpp>
 
-#include "../icarus/routes/parser.hpp"
+#include "../../../icarus/routes/parser.hpp"
 
 BOOST_AUTO_TEST_CASE(route_group)
 {

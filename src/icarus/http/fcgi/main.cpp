@@ -13,6 +13,7 @@
 #include "request.hpp"
 #include "response.hpp"
 #include "../../log.hpp"
+#include "../../routes/data.hpp"
 
 void init()
 {
@@ -89,6 +90,8 @@ int main (void)
 			"<title>echo-cpp</title>\n"
 			"<H1>echo-cpp</H1>\n"
 			"<H4>PID: " << pid << "</H4>\n"
+			"<H4>URI: " << request.uri() << "</H4>\n"
+			"<H4>Query string: " << request.queryString() << "</H4>\n"
 			"<H4>Request Number: " << ++count << "</H4>\n";
 
 		response << "<H4>Headers</H4>\n";

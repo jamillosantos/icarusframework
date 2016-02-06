@@ -23,7 +23,11 @@ protected:
 	long long int _contentLength;
 
 	Cookies _cookies;
+
 	std::unique_ptr<std::istream> _content;
+
+	std::string _uri;
+	std::string _queryString;
 public:
 	Request()
 	{ }
@@ -56,6 +60,16 @@ public:
 	Cookies &cookies()
 	{
 		return this->_cookies;
+	}
+
+	const std::string &uri()
+	{
+		return this->_uri;
+	}
+
+	const std::string &queryString()
+	{
+		return this->_queryString;
 	}
 };
 }

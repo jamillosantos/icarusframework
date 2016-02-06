@@ -227,6 +227,11 @@ public:
 		return stream.str();
 	}
 
+	unsigned int size()
+	{
+		return this->_tokens.size();
+	}
+
 	ComposedURI &operator=(const ComposedURI &uri)
 	{
 		this->_prefix = uri._prefix;
@@ -323,13 +328,14 @@ private:
 	std::vector<MethodParam> _params;
 public:
 	CallMethod()
+		: _static(true)
 	{ }
 
 	CallMethod(const CallMethod &callMethod)
-		: _path(callMethod._path), _name(callMethod._name), _params(callMethod._params)
+		: _static(callMethod._static), _path(callMethod._path), _name(callMethod._name), _params(callMethod._params)
 	{ }
 
-	bool isStatic()
+	const bool isStatic() const
 	{
 		return this->_static;
 	}
@@ -371,7 +377,7 @@ public:
 		return *this;
 	}
 
-	const std::vector<MethodParam> &params() const
+	std::vector<MethodParam> &params()
 	{
 		return this->_params;
 	}
@@ -380,6 +386,29 @@ public:
 	{
 		this->_params.emplace_back(type, attribute, name);
 		return *this;
+	}
+
+	std::string str()
+	{
+		std::string result;
+		for (std::string &p : this->_path)
+		{
+			result += p;
+		}
+		result += "::";
+		result += this->_name;
+		result += "(";
+		unsigned int i = 0;
+		for (MethodParam &param : this->_params)
+		{
+			if (i++ > 0)
+				result += ", ";
+			result += param.type();
+			result += " ";
+			result += param.name();
+		}
+		result += ")";
+		return result;
 	}
 
 	CallMethod &operator=(const CallMethod &method)
@@ -429,18 +458,39 @@ class Route
 	: public Piece
 {
 private:
+	unsigned int _id;
 	std::string _httpMethod;
 	ComposedURI _composedURI;
 	CallMethod _callMethod;
 public:
 	Route(Route &route)
-		: Piece(route.line()), _httpMethod(route._httpMethod), _composedURI(route._composedURI),
+		: Piece(route.line()), _id(0), _httpMethod(route._httpMethod), _composedURI(route._composedURI),
 		  _callMethod(route._callMethod)
 	{ }
 
 	Route(size_t line)
-		: Piece(line), _composedURI("^", "$")
+		: Piece(line), _id(0), _composedURI("^", "$")
 	{ }
+
+	Route(size_t line, std::initializer_list<std::pair<std::string, std::string>> list)
+		: Piece(line), _id(0), _composedURI("^", "$")
+	{
+		for (auto &c : list)
+		{
+			this->uri().add(c.first, c.second);
+		}
+	}
+
+	const unsigned int id() const
+	{
+		return this->_id;
+	}
+
+	Route &id(unsigned int id)
+	{
+		this->_id = id;
+		return *this;
+	}
 
 	const std::string &httpMethod() const
 	{
@@ -458,7 +508,7 @@ public:
 		return this->_composedURI;
 	}
 
-	const CallMethod &callMethod() const
+	CallMethod &callMethod()
 	{
 		return this->_callMethod;
 	}

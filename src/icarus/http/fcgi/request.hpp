@@ -57,6 +57,14 @@ public:
 					);
 					if (headerName == "CONTENT_TYPE")
 						this->_contentType = headerValue;
+					else if (headerName == "DOCUMENT_URI")
+					{
+						this->_uri = headerValue;
+					}
+					else if (headerName == "QUERY_STRING")
+					{
+						this->_queryString = headerValue;
+					}
 					else if (headerName == "CONTENT_LENGTH")
 					{
 						char *estr;

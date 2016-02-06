@@ -10,7 +10,6 @@
 #include <boost/filesystem.hpp>
 #include "parser.hpp"
 #include "routeswriter.hpp"
-#include "writers/fastcgi.hpp"
 
 namespace icarus
 {
@@ -26,9 +25,9 @@ public:
 		Document document(fromPath.stem().string());
 		parser.parse(from, document);
 
-		writers::FastCGI writer;
+		RoutesWriter writer;
 		std::stringstream memoryStream;
-		// writer.write(memoryStream, document);
+		writer.write(memoryStream, document);
 
 		boost::filesystem::path toPath(to);
 		boost::filesystem::create_directories(toPath.parent_path());

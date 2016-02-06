@@ -3,8 +3,8 @@
 
 #include <boost/test/included/unit_test.hpp>
 
-#include "../icarus/routes/parser.hpp"
-#include "../icarus/routes/compiler.hpp"
+#include "../../../icarus/routes/parser.hpp"
+#include "../../../icarus/routes/compiler.hpp"
 
 BOOST_AUTO_TEST_CASE(route1_parsing)
 {
@@ -149,20 +149,6 @@ BOOST_AUTO_TEST_CASE(route1_parsing)
 		BOOST_CHECK_EQUAL(line.callMethod().params()[1].type(), "string");
 	}
 }
-
-/*
-BOOST_AUTO_TEST_CASE(route1_compiling)
-{
-	namespace ifr = icarus::routes;
-
-	boost::filesystem::path resourceDir(TEST_RESOURCE_DIR);
-
-	boost::filesystem::path routePath;
-	ifr::Compiler compiler;
-	ifr::Document document("routes1");
-	BOOST_REQUIRE_THROW(compiler.compile((resourceDir / "routes" / "routes1").string(), (resourceDir / "routes" / "generated" / "route1.cpp").string()), icarus::exceptions::routes::InvalidParamName);
-}
-*/
 
 BOOST_AUTO_TEST_CASE(route1_match1)
 {

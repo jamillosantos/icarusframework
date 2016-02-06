@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.0)
 project(icarusframework)
 
-SET (CMAKE_C_COMPILER               "/usr/bin/clang")
-SET (CMAKE_CXX_COMPILER             "/usr/bin/clang++")
+# SET (CMAKE_C_COMPILER               "/usr/bin/clang")
+# SET (CMAKE_CXX_COMPILER             "/usr/bin/clang++")
 
 if(NOT WIN32)
 	string(ASCII 27 Esc)
@@ -100,19 +100,25 @@ set(SOURCE_FILES
 	src/icarus/http/response.hpp
 	src/icarus/http/fcgi/request.hpp
 	src/icarus/http/fcgi/response.hpp
+	src/icarus/http/client.hpp
+	src/icarus/http/dataconversion.hpp
 
 	src/icarus/routes/data.hpp
 	src/icarus/routes/parser.hpp
 	src/icarus/routes/compiler.hpp
 	src/icarus/routes/routeswriter.hpp
 	src/icarus/routes/to_url.hpp
-	src/icarus/routes/writers/fastcgi.hpp
 	src/icarus/routes/exceptions.hpp
 	src/icarus/routes/fieldtypes.hpp
 
 	src/icarus/result.hpp
 	src/icarus/exceptions.hpp
 	src/icarus/action.hpp
+	src/icarus/application.hpp
+	src/icarus/config.hpp
+	src/icarus/multithreadedapplication.hpp
+	src/icarus/interfaces.hpp
+	src/test/icarus/http/headers.cpp
 )
 
 set(ICARUS_LIBRARIES
@@ -172,22 +178,28 @@ add_library(minotaur
 	src/minotaur/compiler/exceptions.hpp
 	src/minotaur/compiler/metainfo.hpp
 	src/minotaur/compiler/templatebuilder.hpp
-	)
+)
+
+target_link_libraries(minotaur
+	boost_system
+	boost_filesystem
+	boost_program_options
+)
 
 set_target_properties(minotaur PROPERTIES LINKER_LANGUAGE CXX)
 
 add_executable(mntr
 	src/minotaur/mntr.cpp
-	)
+)
 
 target_link_libraries(mntr
-	boost_program_options
-	boost_filesystem
 	boost_system
+	boost_filesystem
+	boost_program_options
 	boost_regex
 
 	minotaur
-	)
+)
 
 # Test configuration thanks to http://neyasystems.com/an-engineers-guide-to-unit-testing-cmake-and-boost-unit-tests/
 
