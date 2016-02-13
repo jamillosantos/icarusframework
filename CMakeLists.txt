@@ -145,6 +145,8 @@ set(ICARUS_LIBRARIES
 	${OPENSSL_CRYPTO_LIBRARIES}
 )
 
+include_directories(${CMAKE_SOURCE_DIR}/src)
+
 add_library(icarusframework
 	${SOURCE_FILES}
 	)
@@ -205,7 +207,7 @@ target_link_libraries(mntr
 
 enable_testing()
 
-file(GLOB_RECURSE TEST_SRCS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} src/test/*.cpp)
+file(GLOB_RECURSE TEST_SRCS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} src/test/icarus/*.cpp)
 set(TEST_OUTPUT ${CMAKE_BINARY_DIR}/tests)
 add_definitions(-DTEST_RESOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/src/test/resources")
 

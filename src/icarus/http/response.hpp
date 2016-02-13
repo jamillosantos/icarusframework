@@ -14,28 +14,28 @@ namespace icarus
 {
 namespace http
 {
-
-template <class ResponseWriter>
 class Response
 {
 public:
 	static std::string endh;
 private:
 	Status &status;
-	std::stringstream stream;
 
 	ValueList<Value> _headers;
 
 	bool _headerSent;
 protected:
-	std::unique_ptr<ResponseWriter> _responseWriter;
+	std::stringstream stream;
+
+	std::ostream *outStream;
 
 	virtual void flushHeaders()
 	{
-		(*this->_responseWriter) << "HTTP/1.1 " << this->status.code << " " << this->status.value << endh;
+		(*this->outStream) << "HTTP/1.1 " << this->status.code << " " << this->status.value << endh;
 		for (Value &header : this->headers())
-			(*this->_responseWriter) << header.name() << ": " << header.value() << endh;
-		(*this->_responseWriter) << endh;
+			(*this->outStream) << header.name() << ": " << header.value() << endh;
+		(*this->outStream) << endh;
+
 		this->_headerSent = true;
 	}
 public:
@@ -58,7 +58,7 @@ public:
 	{
 		if (!this->_headerSent)
 			this->flushHeaders();
-		(*this->_responseWriter) << this->stream.rdbuf();
+		(*this->outStream) << this->stream.rdbuf();
 	}
 
 	template<typename T>
@@ -75,9 +75,7 @@ public:
 	}
 };
 
-template <typename T>
-std::string icarus::http::Response<T>::endh(
-	"\r\n");
+std::string icarus::http::Response::endh("\r\n");
 }
 }
 

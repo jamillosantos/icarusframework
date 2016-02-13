@@ -28,6 +28,7 @@ protected:
 
 	std::string _uri;
 	std::string _queryString;
+	std::string _method;
 public:
 	Request()
 	{ }
@@ -70,6 +71,11 @@ public:
 	const std::string &queryString()
 	{
 		return this->_queryString;
+	}
+
+	const std::string &method()
+	{
+		return this->_method;
 	}
 };
 }

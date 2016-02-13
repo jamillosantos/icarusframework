@@ -65,6 +65,10 @@ public:
 					{
 						this->_queryString = headerValue;
 					}
+					else if (headerName == "REQUEST_METHOD")
+					{
+						this->_method = headerValue;
+					}
 					else if (headerName == "CONTENT_LENGTH")
 					{
 						char *estr;

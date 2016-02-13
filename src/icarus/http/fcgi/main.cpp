@@ -49,8 +49,7 @@ void init()
 	core->add_sink(sink);
 }
 
-template <typename T>
-static void penv(icarus::http::Response<T> &response, const char * const * envp)
+static void penv(icarus::http::Response &response, const char * const * envp)
 {
 	response << "<PRE>\n";
 	for ( ; *envp; ++envp)

@@ -6,17 +6,20 @@
 #ifndef ICARUSFRAMEWORK_CLIENT_HPP
 #define ICARUSFRAMEWORK_CLIENT_HPP
 
+#include "request.hpp"
+#include "response.hpp"
+
 namespace icarus
 {
 namespace http
 {
-class ClientRequest
+class ClientContext
 {
 private:
 	Request &_request;
 	Response &_response;
 public:
-	ClientRequest(Request &request, Response &response)
+	ClientContext(Request &request, Response &response)
 		: _request(request), _response(response)
 	{ }
 
