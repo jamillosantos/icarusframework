@@ -45,9 +45,7 @@ public:
 	{ }
 
 	virtual ~Response()
-	{
-		this->flush();
-	}
+	{ }
 
 	ValueList<Value> &headers()
 	{

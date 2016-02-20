@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.0)
 project(icarusframework)
 
-# SET (CMAKE_C_COMPILER               "/usr/bin/clang")
-# SET (CMAKE_CXX_COMPILER             "/usr/bin/clang++")
+SET (CMAKE_C_COMPILER               "/usr/bin/clang")
+SET (CMAKE_CXX_COMPILER             "/usr/bin/clang++")
 
 if(NOT WIN32)
 	string(ASCII 27 Esc)
@@ -28,8 +28,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall")
 
 set(CMAKE_MODULE_PATH ${icarusframework_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 
-add_definitions(-DOUTPUT_DIRECTORY=${CMAKE_BINARY_DIR})
-add_definitions(-DSOURCE_DIRECTORY=${CMAKE_CURRENT_SOURCE_DIR})
+add_definitions(-DOUTPUT_DIRECTORY="${CMAKE_BINARY_DIR}")
+add_definitions(-DSOURCE_DIRECTORY="${CMAKE_CURRENT_SOURCE_DIR}")
 
 set(SOCI_LIBRARY_DIR "$ENV{HOME}/libs/soci3.2.3/usr/local")
 find_library(soci_core soci_core REQUIRED PATHS "${SOCI_LIBRARY_DIR}" PATH_SUFFIXES lib lib64)

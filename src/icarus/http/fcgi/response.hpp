@@ -17,9 +17,12 @@ namespace fcgi
 class Response
 	: public icarus::http::Response
 {
+private:
+	std::streambuf *_rdbuf;
 public:
 	virtual ~Response()
 	{
+		this->flush();
 		delete this->outStream;
 		LOG_TRACE("~fcgi::Response");
 	}
