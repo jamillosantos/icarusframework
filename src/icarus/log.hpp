@@ -8,16 +8,23 @@
 
 #include <boost/log/trivial.hpp>
 
-#define LOG_ERROR(logdata)		BOOST_LOG_SEV(icarus::log::lg, boost::log::trivial::error)		<< __FILE__ << ":" << __LINE__ << "] " << logdata;
-#define LOG_WARNING(logdata)	BOOST_LOG_SEV(icarus::log::lg, boost::log::trivial::warning)	<< __FILE__ << ":" << __LINE__ << "] " << logdata;
-#define LOG_INFO(logdata)		BOOST_LOG_SEV(icarus::log::lg, boost::log::trivial::info)		<< __FILE__ << ":" << __LINE__ << "] " << logdata;
-#define LOG_TRACE(logdata)		BOOST_LOG_SEV(icarus::log::lg, boost::log::trivial::trace) 		<< __FILE__ << ":" << __LINE__ << "] " << logdata;
+#define LOG_ERROR(logdata)		BOOST_LOG_SEV(icarus::log::lg, boost::log::trivial::error)		<< icarus::log::fname(__FILE__) << ":" << __LINE__ << "] " << logdata;
+#define LOG_WARNING(logdata)	BOOST_LOG_SEV(icarus::log::lg, boost::log::trivial::warning)	<< icarus::log::fname(__FILE__) << ":" << __LINE__ << "] " << logdata;
+#define LOG_INFO(logdata)		BOOST_LOG_SEV(icarus::log::lg, boost::log::trivial::info)		<< icarus::log::fname(__FILE__) << ":" << __LINE__ << "] " << logdata;
+#define LOG_TRACE(logdata)		BOOST_LOG_SEV(icarus::log::lg, boost::log::trivial::trace) 		<< icarus::log::fname(__FILE__) << ":" << __LINE__ << "] " << logdata;
 
 namespace icarus
 {
 namespace log
 {
 	boost::log::sources::severity_logger<boost::log::trivial::severity_level> lg;
+
+	const unsigned int SOURCE_DIRECTORY_LENGTH = strlen(SOURCE_DIRECTORY) + 1;
+
+	const std::string fname(const std::string &name)
+	{
+		return name.substr(SOURCE_DIRECTORY_LENGTH);
+	}
 }
 }
 
