@@ -111,6 +111,8 @@ set(SOURCE_FILES
 	src/icarus/routes/exceptions.hpp
 	src/icarus/routes/fieldtypes.hpp
 
+	src/icarus/session/sessionmanager.hpp
+
 	src/icarus/result.hpp
 	src/icarus/exceptions.hpp
 	src/icarus/action.hpp
@@ -118,8 +120,7 @@ set(SOURCE_FILES
 	src/icarus/config.hpp
 	src/icarus/multithreadedapplication.hpp
 	src/icarus/interfaces.hpp
-	src/test/icarus/http/headers.cpp
-)
+	src/icarus/session/session.hpp)
 
 set(ICARUS_LIBRARIES
 	boost_log_setup
@@ -159,7 +160,7 @@ set_target_properties(icarusframework PROPERTIES LINKER_LANGUAGE CXX)
 
 add_executable(icarus-fastcgi
 	src/icarus/http/fcgi/main.cpp
-)
+	src/icarus/http/fcgi/application.hpp src/icarus/http/fcgi/client.hpp)
 
 target_link_libraries(icarus-fastcgi
 	${ICARUS_LIBRARIES}

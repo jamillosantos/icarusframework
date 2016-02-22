@@ -6,6 +6,7 @@
 #ifndef ICARUSFRAMEWORK_APPLICATION_HPP
 #define ICARUSFRAMEWORK_APPLICATION_HPP
 
+#include <icarus/http/fcgi/client.hpp>
 #include "http/request.hpp"
 #include "http/response.hpp"
 #include "http/client.hpp"
@@ -14,24 +15,29 @@ namespace icarus
 {
 class Application
 {
-private:
-	volatile bool _running;
 protected:
-	virtual void init()
-	{}
+	volatile bool _running;
 
-	virtual void accept() = 0;
+	virtual void init()
+	{ }
+
+	virtual http::ClientContext* accept() = 0;
 
 	virtual void cleanup()
-	{}
+	{ }
 
 public:
+	Application()
+	{
+		this->_running = true;
+	}
+
 	virtual void terminate()
 	{
 		this->_running = false;
 	}
 
-	bool isRunning()
+	virtual bool isRunning()
 	{
 		return this->_running;
 	}
@@ -42,7 +48,9 @@ public:
 		this->_running = true;
 		while (this->_running)
 		{
-			this->accept();
+			http::ClientContext *client = this->accept();
+			client->process();
+			delete client;
 		}
 		this->cleanup();
 	}

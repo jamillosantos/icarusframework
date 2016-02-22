@@ -6,6 +6,7 @@
 #ifndef ICARUSFRAMEWORK_HTTP_FCGI_RESPONSE_HPP
 #define ICARUSFRAMEWORK_HTTP_FCGI_RESPONSE_HPP
 
+#include <fcgio.h>
 #include "../response.hpp"
 
 namespace icarus
@@ -18,18 +19,34 @@ class Response
 	: public icarus::http::Response
 {
 private:
-	std::streambuf *_rdbuf;
+	fcgi_streambuf *_streambuf;
 public:
-	virtual ~Response()
+	Response()
+		: _streambuf(nullptr), icarus::http::Response::Response()
+	{ }
+
+	Response(Response &response)
+		: _streambuf(response._streambuf)
 	{
-		this->flush();
-		delete this->outStream;
-		LOG_TRACE("~fcgi::Response");
+		this->outStream = response.outStream;
 	}
 
-	void init(fcgi_streambuf *outStreamBuf)
+	virtual ~Response() override
 	{
-		this->outStream = new std::ostream(outStreamBuf);
+		LOG_TRACE("~Response");
+		this->flush();
+
+		if (this->outStream)
+			delete this->outStream;
+
+		if (this->_streambuf)
+			delete this->_streambuf;
+	}
+
+	void init(FCGX_Request &fcgiRequest)
+	{
+		this->_streambuf = new fcgi_streambuf(fcgiRequest.out);
+		this->outStream = new std::ostream(this->_streambuf);
 	}
 };
 }

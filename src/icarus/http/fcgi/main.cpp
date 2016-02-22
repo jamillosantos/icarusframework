@@ -14,21 +14,10 @@
 #include "response.hpp"
 #include "../../log.hpp"
 #include "../../routes/data.hpp"
+#include "application.hpp"
 
 void init()
 {
-	/*boost::log::add_file_log(
-		boost::log::keywords::file_name = "icarus_%N.log",                                        *//*< file name pattern >*//*
-		boost::log::keywords::rotation_size = 10 * 1024 * 1024,                                   *//*< rotate files every 10 MiB... >*//*
-		boost::log::keywords::time_based_rotation = boost::log::sinks::file::rotation_at_time_point(0, 0, 0), *//*< ...or at midnight >*//*
-		boost::log::keywords::format = "[%TimeStamp%]: %Message%"                                 *//*< log record format >*//*
-	);
-
-	boost::log::core::get()->set_filter(
-		boost::log::trivial::severity >= boost::log::trivial::info
-	);*/
-	//boost::log::add_file_log("icarus.log");
-
 	boost::shared_ptr<boost::log::core> core = boost::log::core::get();
 
 	// Create a backend and attach a couple of streams to it
@@ -66,78 +55,10 @@ int main(void)
 
 	LOG_INFO("System initializing ...");
 	LOG_INFO("PID: " << getpid());
+	LOG_INFO("-----------------------");
 
-	FCGX_Request fcgiRequest;
-
-	FCGX_Init();
-	FCGX_InitRequest(&fcgiRequest, 0, 0);
-
-	LOG_INFO("Ok.");
-	LOG_INFO("Waiting client...");
-	while (FCGX_Accept_r(&fcgiRequest) == 0)
-	{
-		{
-			LOG_INFO("Accepted client.");
-
-			fcgi_streambuf cout_fcgi_streambuf(fcgiRequest.out);
-			fcgi_streambuf cerr_fcgi_streambuf(fcgiRequest.err);
-
-			LOG_TRACE("Creating request");
-			icarus::http::fcgi::Request request;
-			LOG_TRACE("Initializing request");
-			request.init(fcgiRequest);
-			LOG_TRACE("OK");
-
-			LOG_TRACE("Creating response");
-			icarus::http::fcgi::Response response;
-			LOG_TRACE("Initializing response");
-			response.init(&cout_fcgi_streambuf);
-			LOG_TRACE("OK");
-
-			response << "<html>\n"
-				"<title>echo-cpp</title>\n"
-				"<H1>echo-cpp</H1>\n"
-				"<H4>PID: " << pid << "</H4>\n"
-				"<H4>URI: " << request.uri() << "</H4>\n"
-				"<H4>Query string: " << request.queryString() << "</H4>\n"
-				"<H4>Request Number: " << ++count << "</H4>\n";
-
-			response << "<H4>Headers</H4>\n";
-			response << "<dl>";
-			for (icarus::http::Value &h : request.headers())
-			{
-				response << "<dt>" << h.name() << "</dt><dd>" << h.value() << "</dd>";
-			}
-			response << "</dl>";
-			response << "<H4>Server Variables</H4>\n";
-			response << "<dl>";
-			for (icarus::http::Value &variable : request.serverVariables())
-			{
-				response << "<dt>" << variable.name() << "</dt><dd>" << variable.value() << "</dd>";
-			}
-			response << "</dl>";
-			response << "<H4>Cookies</H4>\n";
-			response << "<dl>";
-			for (std::pair<const std::string, icarus::http::Cookie> &cookie : request.cookies())
-			{
-				response << "<dt>" << cookie.first << "</dt><dd>" << cookie.second.value() << "</dd>";
-			}
-			response << "</dl>";
-
-			response << "<H4>Standard Input</H4>\n";
-			response << "<dl><dt>Content length</dt><dd>" << request.contentLength() << "</dd></dl>" << std::endl;
-			response << "<pre>";
-			for (std::string line; std::getline(request.content(), line);)
-			{
-				response << line << std::endl;
-			}
-			response << "</pre></body></html>";
-
-			response.flush();
-			LOG_TRACE("bye client...");
-		}
-		LOG_INFO("Waiting client...");
-	}
+	icarus::http::fcgi::Application app;
+	app.run();
 
 	return 0;
 }

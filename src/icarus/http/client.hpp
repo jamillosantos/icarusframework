@@ -15,13 +15,27 @@ namespace http
 {
 class ClientContext
 {
-private:
+protected:
+	bool _valid;
+
 	Request &_request;
 	Response &_response;
 public:
-	ClientContext(Request &request, Response &response)
-		: _request(request), _response(response)
+	ClientContext(ClientContext &clientContext)
+		: _valid(clientContext._valid), _request(clientContext._request), _response(clientContext._response)
 	{ }
+
+	ClientContext(Request &request, Response &response)
+		: _valid(true), _request(request), _response(response)
+	{ }
+
+	virtual ~ClientContext()
+	{ }
+
+	virtual bool isValid()
+	{
+		return this->_valid;
+	}
 
 	Request &request()
 	{
@@ -31,6 +45,13 @@ public:
 	Response &response()
 	{
 		return this->_response;
+	}
+
+	void process()
+	{
+		LOG_INFO("PERFORMED!");
+		this->response() << "<html>Test</html>";
+		//icarus::routes::find(*this);
 	}
 };
 }

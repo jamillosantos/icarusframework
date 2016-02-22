@@ -9,6 +9,7 @@
 #include <sstream>
 #include "headers.hpp"
 #include "statuses.hpp"
+#include <icarus/log.hpp>
 
 namespace icarus
 {
@@ -32,8 +33,12 @@ protected:
 	virtual void flushHeaders()
 	{
 		(*this->outStream) << "HTTP/1.1 " << this->status.code << " " << this->status.value << endh;
+		LOG_TRACE("HTTP/1.1 " << this->status.code << " " << this->status.value << endh);
 		for (Value &header : this->headers())
+		{
 			(*this->outStream) << header.name() << ": " << header.value() << endh;
+			LOG_TRACE(header.name() << ": " << header.value() << endh);
+		}
 		(*this->outStream) << endh;
 
 		this->_headerSent = true;
@@ -41,7 +46,7 @@ protected:
 public:
 	Response()
 		: status(statuses::OK), stream(std::stringstream::binary | std::stringstream::in | std::stringstream::out),
-		  _headerSent(false)
+		  _headerSent(false), outStream(nullptr)
 	{ }
 
 	virtual ~Response()
