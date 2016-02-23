@@ -6,6 +6,8 @@
 #ifndef ICARUSFRAMEWORK_SESSIONMANAGER_HPP
 #define ICARUSFRAMEWORK_SESSIONMANAGER_HPP
 
+#include <thread>
+
 #include "session.hpp"
 
 namespace icarus
@@ -16,7 +18,20 @@ class SessionManager
 {
 private:
 	unsigned int _maxAge;
+	volatile bool _running;
+	std::unique_ptr<std::thread> _thread;
+protected:
+	virtual void check() = 0;
+
+	virtual Session* createSession(session_id_t id)
+	{
+		return new Session(id);
+	}
 public:
+	SessionManager()
+		: _maxAge(600), _running(false)
+	{ }
+
 	unsigned int maxAge()
 	{
 		return this->_maxAge;
@@ -28,12 +43,33 @@ public:
 		return *this;
 	}
 
-	virtual Session get(unsigned long long clientId) = 0;
+	virtual Session* get(session_id_t id) = 0;
 
-	virtual void clear(unsigned long long clientId) = 0;
+	virtual void clear(session_id_t id) = 0;
 
-	void check()
+	virtual void startTrampolin()
 	{
+		while (true)
+		{
+			this->check();
+			sleep(this->maxAge());
+		}
+	}
+
+	virtual void start()
+	{
+		this->_running = true;
+		this->_thread.reset(new std::thread(startTrampolin, this));
+	}
+
+	virtual void stop()
+	{
+		this->_running = false;
+		if (this->_thread)
+		{
+			this->_thread->join();
+			this->_thread.reset();
+		}
 	}
 };
 }

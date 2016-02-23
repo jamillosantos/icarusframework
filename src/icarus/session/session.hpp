@@ -14,14 +14,23 @@ namespace icarus
 {
 namespace session
 {
+typedef unsigned long long session_id_t;
+
 class Session
 {
 private:
 	std::chrono::system_clock::time_point _lastUsed;
+	session_id_t _id;
 public:
-	Session()
+	Session(session_id_t id)
+		: _id(id)
 	{
 		this->renew();
+	}
+
+	const session_id_t id()
+	{
+		return this->_id;
 	}
 
 	const std::chrono::system_clock::time_point &lastUsed()
