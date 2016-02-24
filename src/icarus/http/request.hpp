@@ -33,6 +33,9 @@ public:
 	Request()
 	{ }
 
+	virtual ~Request()
+	{ }
+
 	ValueList<Value> &headers()
 	{
 		return this->_headers;

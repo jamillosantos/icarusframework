@@ -50,6 +50,7 @@ public:
 	void process()
 	{
 		LOG_INFO("PERFORMED!");
+		LOG_INFO("<html>Test</html>");
 		this->response() << "<html>Test</html>";
 		//icarus::routes::find(*this);
 	}

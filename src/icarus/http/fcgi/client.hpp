@@ -21,23 +21,29 @@ class ClientContext
 	: public icarus::http::ClientContext
 {
 private:
-	fcgi::Request _fcgiRequest;
-	fcgi::Response _fcgiResponse;
+	FCGX_Request *_fcgxRequest;
+
+	fcgi::Request *_fcgiRequest;
+	fcgi::Response *_fcgiResponse;
 public:
-	ClientContext()
-		: icarus::http::ClientContext::ClientContext(_fcgiRequest, _fcgiResponse)
-	{ }
+	ClientContext(FCGX_Request *fcgiRequest)
+		: icarus::http::ClientContext::ClientContext(*(this->_fcgiRequest = new fcgi::Request()), *(this->_fcgiResponse = new fcgi::Response())), _fcgxRequest(fcgiRequest)
+	{
+	}
 
 	virtual ~ClientContext() override
 	{
 		LOG_TRACE("~ClientContext");
+		delete this->_fcgiRequest;
+		delete this->_fcgiResponse;
+		FCGX_Finish_r(_fcgxRequest);
 	}
 
-	void init(FCGX_Request &request)
+	void init()
 	{
-		this->_fcgiRequest.init(request);
-		LOG_TRACE("Request URI: " << this->_fcgiRequest.uri());
-		this->_fcgiResponse.init(request);
+		this->_fcgiRequest->init(*this->_fcgxRequest);
+		LOG_TRACE("Request URI: " << this->_fcgiRequest->uri());
+		this->_fcgiResponse->init(*this->_fcgxRequest);
 	}
 };
 }

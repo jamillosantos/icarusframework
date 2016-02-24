@@ -59,7 +59,7 @@ public:
 	virtual void start()
 	{
 		this->_running = true;
-		this->_thread.reset(new std::thread(startTrampolin, this));
+		this->_thread.reset(new std::thread(&startTrampolin, this));
 	}
 
 	virtual void stop()

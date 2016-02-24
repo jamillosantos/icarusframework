@@ -45,8 +45,8 @@ protected:
 	}
 public:
 	Response()
-		: status(statuses::OK), stream(std::stringstream::binary | std::stringstream::in | std::stringstream::out),
-		  _headerSent(false), outStream(nullptr)
+		: status(statuses::OK), _headerSent(false),
+		  stream(std::stringstream::binary | std::stringstream::in | std::stringstream::out), outStream(nullptr)
 	{ }
 
 	virtual ~Response()

@@ -172,7 +172,7 @@ public:
 		}
 	}
 
-	virtual std::string get(const unsigned int index)
+	virtual std::string get(const unsigned int index) override
 	{
 		auto b = this->_container.begin();
 		for (unsigned int i = 0; i < index; i++)

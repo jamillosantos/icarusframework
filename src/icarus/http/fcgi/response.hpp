@@ -22,7 +22,7 @@ private:
 	fcgi_streambuf *_streambuf;
 public:
 	Response()
-		: _streambuf(nullptr), icarus::http::Response::Response()
+		: icarus::http::Response::Response(), _streambuf(nullptr)
 	{ }
 
 	Response(Response &response)
@@ -35,6 +35,7 @@ public:
 	{
 		LOG_TRACE("~Response");
 		this->flush();
+		LOG_TRACE("flushed");
 
 		if (this->outStream)
 			delete this->outStream;

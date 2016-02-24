@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.0)
-project(icarusframework)
+project(icarusframework VERSION 0.0.0.0)
+
+add_definitions(-DVERSION_MAJOR="${PROJECT_VERSION_MAJOR}")
+add_definitions(-DVERSION_MINOR="${PROJECT_VERSION_MINOR}")
+add_definitions(-DVERSION_PATCH="${PROJECT_VERSION_PATCH}")
+add_definitions(-DVERSION_TWEAK="${PROJECT_VERSION_TWEAK}")
 
 SET (CMAKE_C_COMPILER               "/usr/bin/clang")
 SET (CMAKE_CXX_COMPILER             "/usr/bin/clang++")
@@ -51,14 +56,9 @@ message("     SOCI (mysql): ${soci_mysql}")
 message("SOCI (postgresql): ${soci_postgresql}")
 
 
-#include_directories(${soci_core})
-
-#include_directories(
-#	"$ENV{HOME}/libs/soci3.2.3/include"
-#)
-#link_directories(
-#	"$ENV{HOME}/libs/soci3.2.3/lib"
-#)
+include_directories(
+	"${SOCI_LIBRARY_DIR}/include"
+)
 
 set(BOOST_ROOT "$ENV{HOME}/libs/libboost_1_60_0")
 set(BOOST_INCLUDEDIR "${BOOST_ROOT}/include")
@@ -78,6 +78,7 @@ message("OpenSSL SSL libraries: ${OPENSSL_SSL_LIBRARIES}")
 message("OpenSSL crypto libraries: ${OPENSSL_CRYPTO_LIBRARIES}")
 include_directories(${OPENSSL_INCLUDE_DIR})
 
+
 # cpp-netlib
 find_package(cppnetlib 0.11.0 REQUIRED PATHS "$ENV{HOME}/libs/cpp-netlib-0.11.2/usr/local/lib64")
 if("${cppnetlib}" STREQUAL "cppnetlib-NOTFOUND")
@@ -87,9 +88,12 @@ message("CPPNETLIB_INCLUDE_DIRS: ${CPPNETLIB_INCLUDE_DIRS}")
 message("CPPNETLIB_LIBRARIES: ${CPPNETLIB_LIBRARIES}")
 include_directories(${CPPNETLIB_INCLUDE_DIRS})
 
-set(SOURCE_FILES
-	src/controllers/controller.hpp
+configure_file(
+	src/config.h.in
+	"${PROJECT_BINARY_DIR}/config.h"
+)
 
+set(SOURCE_FILES
 	src/icarus/log.hpp
 
 	src/icarus/http/headers.hpp
@@ -98,10 +102,13 @@ set(SOURCE_FILES
 	src/icarus/http/exceptions.hpp
 	src/icarus/http/request.hpp
 	src/icarus/http/response.hpp
-	src/icarus/http/fcgi/request.hpp
-	src/icarus/http/fcgi/response.hpp
 	src/icarus/http/client.hpp
 	src/icarus/http/dataconversion.hpp
+
+	src/icarus/http/fcgi/request.hpp
+	src/icarus/http/fcgi/response.hpp
+	src/icarus/http/fcgi/application.hpp
+	src/icarus/http/fcgi/client.hpp
 
 	src/icarus/routes/data.hpp
 	src/icarus/routes/parser.hpp
@@ -112,6 +119,8 @@ set(SOURCE_FILES
 	src/icarus/routes/fieldtypes.hpp
 
 	src/icarus/session/sessionmanager.hpp
+	src/icarus/session/session.hpp
+	src/icarus/session/memory.hpp
 
 	src/icarus/result.hpp
 	src/icarus/exceptions.hpp
@@ -120,7 +129,7 @@ set(SOURCE_FILES
 	src/icarus/config.hpp
 	src/icarus/multithreadedapplication.hpp
 	src/icarus/interfaces.hpp
-	src/icarus/session/session.hpp)
+	src/icarus/db/databases.hpp)
 
 set(ICARUS_LIBRARIES
 	boost_log_setup
@@ -150,17 +159,17 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 
 add_library(icarusframework
 	${SOURCE_FILES}
-	)
+)
 
 target_link_libraries(icarusframework
 	${ICARUS_LIBRARIES}
-	)
+)
 
 set_target_properties(icarusframework PROPERTIES LINKER_LANGUAGE CXX)
 
 add_executable(icarus-fastcgi
 	src/icarus/http/fcgi/main.cpp
-	src/icarus/http/fcgi/application.hpp src/icarus/http/fcgi/client.hpp)
+)
 
 target_link_libraries(icarus-fastcgi
 	${ICARUS_LIBRARIES}

@@ -10,11 +10,13 @@ databases
 	{
 		string mysql://root@localhost/test
 		password 12345
+		pool_size 10
 	}
 
 	test
 	{
 		string mysql://root@localhost/test
 		password 12345
+		pool_size 10
 	}
 }

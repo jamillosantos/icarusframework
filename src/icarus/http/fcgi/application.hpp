@@ -21,29 +21,28 @@ namespace fcgi
 class Application
 	: public icarus::Application
 {
-private:
-	volatile int _acceptStatus;
-	FCGX_Request _fcgiRequest;
 protected:
 	virtual void init() override
 	{
 		FCGX_Init();
-		FCGX_InitRequest(&_fcgiRequest, 0, 0);
 	}
 
 	virtual http::ClientContext *accept() override
 	{
-		LOG_TRACE("Accept()");
-		this->_acceptStatus = FCGX_Accept_r(&this->_fcgiRequest);
-		if (this->_acceptStatus == 0)
+		LOG_TRACE("Accept(): " << std::this_thread::get_id());
+		FCGX_Request *fcgiRequest = new FCGX_Request();
+		FCGX_InitRequest(fcgiRequest, 0, 0);
+		int acceptStatus = FCGX_Accept_r(fcgiRequest);
+		if (acceptStatus == 0)
 		{
-			LOG_TRACE("Accepted");
-			http::fcgi::ClientContext *result = new icarus::http::fcgi::ClientContext();
-			LOG_TRACE("Initializing");
-			result->init(this->_fcgiRequest);
+			LOG_TRACE("Accepted: " << std::this_thread::get_id());
+			http::fcgi::ClientContext *result = new icarus::http::fcgi::ClientContext(fcgiRequest);
+			LOG_TRACE("Initializing: " << std::this_thread::get_id());
+			result->init();
 			return result;
 		}
-		LOG_TRACE("Rejected with: " << this->_acceptStatus);
+		LOG_TRACE("Rejected with: " << acceptStatus);
+		FCGX_Free(fcgiRequest, true);
 		return nullptr;
 	}
 };
