@@ -13,52 +13,52 @@ namespace icarus
 namespace data
 {
 
-void fromString(int8_t &dest, const std::string &string)
+void from_string(int8_t &dest, const std::string &string)
 {
 	dest = std::stoi(string);
 }
 
-void fromString(short int &dest, const std::string &string)
+void from_string(short int &dest, const std::string &string)
 {
 	dest = std::stoi(string);
 }
 
-void fromString(int &dest, const std::string &string)
+void from_string(int &dest, const std::string &string)
 {
 	dest = std::stoi(string);
 }
 
-void fromString(long int &dest, const std::string &string)
+void from_string(long int &dest, const std::string &string)
 {
 	dest = std::stoi(string);
 }
 
-void fromString(long long int &dest, const std::string &string)
+void from_string(long long int &dest, const std::string &string)
 {
 	dest = std::stoi(string);
 }
 
-void fromString(uint8_t &dest, const std::string &string)
+void from_string(uint8_t &dest, const std::string &string)
 {
 	dest = std::stoi(string);
 }
 
-void fromString(unsigned short int &dest, const std::string &string)
+void from_string(unsigned short int &dest, const std::string &string)
 {
 	dest = std::stoi(string);
 }
 
-void fromString(unsigned int &dest, const std::string &string)
+void from_string(unsigned int &dest, const std::string &string)
 {
 	dest = std::stoi(string);
 }
 
-void fromString(unsigned long int &dest, const std::string &string)
+void from_string(unsigned long int &dest, const std::string &string)
 {
 	dest = std::stoi(string);
 }
 
-void fromString(unsigned long long int &dest, const std::string &string)
+void from_string(unsigned long long int &dest, const std::string &string)
 {
 	dest = std::stoi(string);
 }

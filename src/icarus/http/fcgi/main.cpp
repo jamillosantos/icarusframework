@@ -75,7 +75,7 @@ int main(int argc, char **argv)
 		LOG_INFO("Logging '" << log << "' to '" << logFile << "'");
 		LOG_INFO("-----------------------");
 
-		icarus::http::fcgi::Application app;
+		icarus::http::fcgi::application app;
 		app.config().loadFromFile(configFile);
 
 		LOG_INFO("Config dump:");
@@ -86,7 +86,7 @@ int main(int argc, char **argv)
 			LOG_INFO("\t + " << db.first << " at '" << db.second.string() << "' with " << db.second.poolSize() << " connections");
 		}
 
-		icarus::MultiThreadedApplication mapp(app);
+		icarus::multi_threaded_application mapp(app);
 		mapp.run();
 	}
 	return 0;

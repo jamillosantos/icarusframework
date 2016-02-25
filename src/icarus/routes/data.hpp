@@ -28,18 +28,18 @@ namespace routes
 /**
  * Regex tokens in a route rule.
  */
-class RegexToken
+class regex_token
 {
 private:
 	std::string _name;
 	std::string _regex;
 	int _index;
 public:
-	RegexToken(const std::string &name, const std::string &regex)
+	regex_token(const std::string &name, const std::string &regex)
 		: _name(name), _regex(regex)
 	{ }
 
-	RegexToken(const std::string &regex)
+	regex_token(const std::string &regex)
 		: _name(""), _regex(regex)
 	{ }
 
@@ -53,7 +53,7 @@ public:
 		return this->_regex;
 	}
 
-	RegexToken &regex(const std::string &regex)
+	regex_token &regex(const std::string &regex)
 	{
 		this->_regex = regex;
 		return *this;
@@ -64,17 +64,17 @@ public:
 		return this->_index;
 	}
 
-	RegexToken &index(int index)
+	regex_token &index(int index)
 	{
 		this->_index = index;
 		return *this;
 	}
 };
 
-class ComposedURI
+class composed_uri
 {
 private:
-	std::vector<RegexToken> _tokens;
+	std::vector<regex_token> _tokens;
 
 	std::string _prefix;
 	std::string _sufix;
@@ -87,7 +87,7 @@ protected:
 		int
 			i = 1,
 			j = 0;
-		for (RegexToken &token : this->_tokens)
+		for (regex_token &token : this->_tokens)
 		{
 			if (token.name().empty())
 				pattern += token.regex();
@@ -98,7 +98,7 @@ protected:
 				{
 					if (j+1 < this->_tokens.size())
 					{
-						const RegexToken &nextToken = this->_tokens[j+1];
+						const regex_token &nextToken = this->_tokens[j+1];
 						if (nextToken.name().empty())
 						{
 							std::string nregex("[^");
@@ -134,35 +134,35 @@ protected:
 	}
 
 public:
-	ComposedURI()
+	composed_uri()
 	{ }
 
-	ComposedURI(const ComposedURI &uri)
+	composed_uri(const composed_uri &uri)
 		: _tokens(uri._tokens), _prefix(uri._prefix), _sufix(uri._sufix)
 	{
 		if (uri.regex)
 			this->regex.reset(new boost::regex(*uri.regex));
 	}
 
-	ComposedURI(const std::string &prefix, const std::string &sufix)
+	composed_uri(const std::string &prefix, const std::string &sufix)
 		: _prefix(prefix), _sufix(sufix)
 	{ }
 
-	ComposedURI &add(std::string name, std::string regex)
+	composed_uri &add(std::string name, std::string regex)
 	{
 		this->_tokens.emplace_back(name, regex);
 		this->regex.reset();
 		return *this;
 	}
 
-	ComposedURI &add(std::string expression)
+	composed_uri &add(std::string expression)
 	{
 		this->_tokens.emplace_back(expression);
 		this->regex.reset();
 		return *this;
 	}
 
-	std::vector<RegexToken> &tokens()
+	std::vector<regex_token> &tokens()
 	{
 		return this->_tokens;
 	}
@@ -172,7 +172,7 @@ public:
 		return this->_prefix;
 	}
 
-	ComposedURI &prefix(const std::string &prefix)
+	composed_uri &prefix(const std::string &prefix)
 	{
 		this->_prefix = prefix;
 		return *this;
@@ -183,13 +183,13 @@ public:
 		return this->_sufix;
 	}
 
-	ComposedURI &sufix(const std::string &sufix)
+	composed_uri &sufix(const std::string &sufix)
 	{
 		this->_sufix = sufix;
 		return *this;
 	}
 
-	bool match(std::string requestUri, icarus::http::Values<http::Value> &params)
+	bool match(std::string requestUri, icarus::http::values<http::values_value> &params)
 	{
 		if (!this->regex)
 			this->compile();
@@ -200,7 +200,7 @@ public:
 
 			if (boost::regex_match(requestUri, results, *this->regex))
 			{
-				for (RegexToken &token : this->_tokens)
+				for (regex_token &token : this->_tokens)
 				{
 					if (!token.name().empty())
 					{
@@ -217,7 +217,7 @@ public:
 	std::string str()
 	{
 		std::stringstream stream;
-		for (RegexToken &t : this->_tokens)
+		for (regex_token &t : this->_tokens)
 		{
 			if (t.name().empty())
 				stream << t.regex();
@@ -232,11 +232,11 @@ public:
 		return this->_tokens.size();
 	}
 
-	ComposedURI &operator=(const ComposedURI &uri)
+	composed_uri &operator=(const composed_uri &uri)
 	{
 		this->_prefix = uri._prefix;
 		this->_sufix = uri._sufix;
-		for (const RegexToken &token : uri._tokens)
+		for (const regex_token &token : uri._tokens)
 		{
 			this->add(token.name(), token.regex());
 		}
@@ -251,24 +251,24 @@ public:
 /**
  * Class that represents the parameters of a method called in a route.
  */
-enum class MethodParamType
+enum class method_param_type
 {
 	NORMAL, REFERENCE, POINTER
 };
 
-class MethodParam
+class method_param
 {
 private:
 	std::string _type;
-	MethodParamType _attribute;
+	method_param_type _attribute;
 	std::string _name;
 
 public:
 
-	MethodParam()
+	method_param()
 	{ }
 
-	MethodParam(const std::string type, const MethodParamType attribute, const std::string name)
+	method_param(const std::string type, const method_param_type attribute, const std::string name)
 		: _type(type), _attribute(attribute), _name(name)
 	{ }
 
@@ -277,18 +277,18 @@ public:
 		return this->_type;
 	}
 
-	MethodParam &type(const std::string &type)
+	method_param &type(const std::string &type)
 	{
 		this->_type = type;
 		return *this;
 	}
 
-	const MethodParamType &attribute() const
+	const method_param_type &attribute() const
 	{
 		return this->_attribute;
 	}
 
-	MethodParam &attribute(const MethodParamType &attr)
+	method_param &attribute(const method_param_type &attr)
 	{
 		this->_attribute = attr;
 		return *this;
@@ -299,13 +299,13 @@ public:
 		return this->_name;
 	}
 
-	MethodParam &name(const std::string &name)
+	method_param &name(const std::string &name)
 	{
 		this->_name = name;
 		return *this;
 	}
 
-	MethodParam &operator=(const MethodParam &param)
+	method_param &operator=(const method_param &param)
 	{
 		this->_attribute = param._attribute;
 		this->_name = param._name;
@@ -317,7 +317,7 @@ public:
 /**
  * Class that represents the calling method in a route.
  */
-class CallMethod
+class call_method
 {
 private:
 	bool _static;
@@ -325,13 +325,13 @@ private:
 	std::vector<std::string> _path;
 	std::string _name;
 
-	std::vector<MethodParam> _params;
+	std::vector<method_param> _params;
 public:
-	CallMethod()
+	call_method()
 		: _static(true)
 	{ }
 
-	CallMethod(const CallMethod &callMethod)
+	call_method(const call_method &callMethod)
 		: _static(callMethod._static), _path(callMethod._path), _name(callMethod._name), _params(callMethod._params)
 	{ }
 
@@ -340,7 +340,7 @@ public:
 		return this->_static;
 	}
 
-	CallMethod &setStatic(bool _static)
+	call_method &setStatic(bool _static)
 	{
 		this->_static = _static;
 		return *this;
@@ -351,7 +351,7 @@ public:
 		return this->_path;
 	}
 
-	CallMethod &path(const std::string &path)
+	call_method &path(const std::string &path)
 	{
 		unsigned long
 			lFind = 0,
@@ -371,18 +371,18 @@ public:
 		return this->_name;
 	}
 
-	CallMethod &name(const std::string &name)
+	call_method &name(const std::string &name)
 	{
 		this->_name = name;
 		return *this;
 	}
 
-	std::vector<MethodParam> &params()
+	std::vector<method_param> &params()
 	{
 		return this->_params;
 	}
 
-	CallMethod &add(std::string type, MethodParamType attribute, std::string name)
+	call_method &add(std::string type, method_param_type attribute, std::string name)
 	{
 		this->_params.emplace_back(type, attribute, name);
 		return *this;
@@ -399,7 +399,7 @@ public:
 		result += this->_name;
 		result += "(";
 		unsigned int i = 0;
-		for (MethodParam &param : this->_params)
+		for (method_param &param : this->_params)
 		{
 			if (i++ > 0)
 				result += ", ";
@@ -411,7 +411,7 @@ public:
 		return result;
 	}
 
-	CallMethod &operator=(const CallMethod &method)
+	call_method &operator=(const call_method &method)
 	{
 		this->_name = method._name;
 		this->_params = method._params;			// TODO
@@ -424,16 +424,16 @@ public:
 /**
  * Abstraction of each part of a routes.
  */
-class Piece
+class piece
 {
 private:
 	size_t _line;
 public:
-	Piece(size_t line)
+	piece(size_t line)
 		: _line(line)
 	{ }
 
-	virtual ~Piece()
+	virtual ~piece()
 	{ }
 
 	size_t line() const
@@ -446,34 +446,34 @@ public:
 		this->_line = line;
 	}
 
-	virtual Piece *match(std::string method, std::string requestUri, http::Values<http::Value> &values) = 0;
+	virtual piece *match(std::string method, std::string requestUri, http::values<http::values_value> &values) = 0;
 };
 
-class Routes;
+class routes;
 
 /**
  * Represents a route.
  */
-class Route
-	: public Piece
+class route
+	: public piece
 {
 private:
 	unsigned int _id;
 	std::string _httpMethod;
-	ComposedURI _composedURI;
-	CallMethod _callMethod;
+	composed_uri _composedURI;
+	call_method _callMethod;
 public:
-	Route(Route &route)
-		: Piece(route.line()), _id(0), _httpMethod(route._httpMethod), _composedURI(route._composedURI),
+	route(icarus::routes::route &route)
+		: piece(route.line()), _id(0), _httpMethod(route._httpMethod), _composedURI(route._composedURI),
 		  _callMethod(route._callMethod)
 	{ }
 
-	Route(size_t line)
-		: Piece(line), _id(0), _composedURI("^", "$")
+	route(size_t line)
+		: piece(line), _id(0), _composedURI("^", "$")
 	{ }
 
-	Route(size_t line, std::initializer_list<std::pair<std::string, std::string>> list)
-		: Piece(line), _id(0), _composedURI("^", "$")
+	route(size_t line, std::initializer_list<std::pair<std::string, std::string>> list)
+		: piece(line), _id(0), _composedURI("^", "$")
 	{
 		for (auto &c : list)
 		{
@@ -486,7 +486,7 @@ public:
 		return this->_id;
 	}
 
-	Route &id(unsigned int id)
+	route &id(unsigned int id)
 	{
 		this->_id = id;
 		return *this;
@@ -497,29 +497,29 @@ public:
 		return this->_httpMethod;
 	}
 
-	Route &httpMethod(const std::string &httpMethod)
+	route &httpMethod(const std::string &httpMethod)
 	{
 		this->_httpMethod = httpMethod;
 		return *this;
 	}
 
-	ComposedURI &uri()
+	composed_uri &uri()
 	{
 		return this->_composedURI;
 	}
 
-	CallMethod &callMethod()
+	call_method &callMethod()
 	{
 		return this->_callMethod;
 	}
 
-	Route &callMethod(CallMethod &callMethod)
+	route &callMethod(call_method &callMethod)
 	{
 		this->_callMethod = callMethod;
 		return *this;
 	}
 
-	virtual Piece *match(std::string method, std::string uri, http::Values<http::Value> &params) override
+	virtual piece *match(std::string method, std::string uri, http::values<http::values_value> &params) override
 	{
 		LOG_TRACE("Route::match: " << this->uri().str());
 		if (this->httpMethod() == method)
@@ -531,32 +531,32 @@ public:
 	}
 };
 
-class Routes
-	: public Piece
+class routes
+	: public piece
 {
 private:
-	std::vector<std::unique_ptr<Piece>> _pieces;
+	std::vector<std::unique_ptr<piece>> _pieces;
 public:
-	Routes(size_t line)
-		: Piece(line)
+	routes(size_t line)
+		: piece(line)
 	{ }
 
-	const std::vector<std::unique_ptr<Piece>> &pieces() const
+	const std::vector<std::unique_ptr<piece>> &pieces() const
 	{
 		return this->_pieces;
 	}
 
-	virtual Piece *add(Piece *piece)
+	virtual piece *add(piece *piece)
 	{
 		this->_pieces.emplace_back(piece);
 		return piece;
 	}
 
-	virtual Piece *match(std::string method, std::string requestUri, http::Values<http::Value> &values)
+	virtual piece *match(std::string method, std::string requestUri, http::values<http::values_value> &values)
 	{
 		LOG_TRACE("routes::match");
-		Piece *result = nullptr;
-		for (const std::unique_ptr<Piece> &piece : this->_pieces)
+		piece *result = nullptr;
+		for (const std::unique_ptr<piece> &piece : this->_pieces)
 		{
 			result = piece->match(method, requestUri, values);
 			if (result)
@@ -567,16 +567,16 @@ public:
 };
 
 class Group
-	: public Routes
+	: public routes
 {
 private:
-	ComposedURI _composedURI;
+	composed_uri _composedURI;
 public:
 	Group(size_t line)
-		: Routes(line), _composedURI("^", "")
+		: routes(line), _composedURI("^", "")
 	{ }
 
-	ComposedURI &uri()
+	composed_uri &uri()
 	{
 		return this->_composedURI;
 	}
@@ -591,16 +591,16 @@ public:
 */
 };
 
-class Document
-	: public Routes
+class document
+	: public routes
 {
 private:
 	std::string _name;
 
 	std::vector<std::string> _packages;
 public:
-	Document(const std::string &name)
-		: Routes(0), _name(name)
+	document(const std::string &name)
+		: routes(0), _name(name)
 	{ }
 
 	const std::string &name()
@@ -608,7 +608,7 @@ public:
 		return this->_name;
 	}
 
-	Document &name(std::string name)
+	document &name(std::string name)
 	{
 		this->_name = name;
 		return *this;

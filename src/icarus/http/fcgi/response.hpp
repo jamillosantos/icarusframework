@@ -15,30 +15,30 @@ namespace http
 {
 namespace fcgi
 {
-class Response
-	: public icarus::http::Response
+class response
+	: public icarus::http::response
 {
 private:
 	fcgi_streambuf *_streambuf;
 public:
-	Response()
-		: icarus::http::Response::Response(), _streambuf(nullptr)
+	response()
+		: icarus::http::response::response(), _streambuf(nullptr)
 	{ }
 
-	Response(Response &response)
+	response(response &response)
 		: _streambuf(response._streambuf)
 	{
-		this->outStream = response.outStream;
+		this->ostream = response.ostream;
 	}
 
-	virtual ~Response() override
+	virtual ~response() override
 	{
 		LOG_TRACE("~Response");
 		this->flush();
 		LOG_TRACE("flushed");
 
-		if (this->outStream)
-			delete this->outStream;
+		if (this->ostream)
+			delete this->ostream;
 
 		if (this->_streambuf)
 			delete this->_streambuf;
@@ -47,7 +47,7 @@ public:
 	void init(FCGX_Request &fcgiRequest)
 	{
 		this->_streambuf = new fcgi_streambuf(fcgiRequest.out);
-		this->outStream = new std::ostream(this->_streambuf);
+		this->ostream = new std::ostream(this->_streambuf);
 	}
 };
 }

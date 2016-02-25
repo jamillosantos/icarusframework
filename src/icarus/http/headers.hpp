@@ -15,16 +15,16 @@ namespace icarus
 {
 namespace http
 {
-class Value
+class values_value
 {
 private:
 	std::string _name;
 	std::string _value;
 public:
-	Value()
+	values_value()
 	{ }
 
-	Value(const std::string &name, const std::string &value)
+	values_value(const std::string &name, const std::string &value)
 		: _name(name), _value(value)
 	{ }
 
@@ -50,7 +50,7 @@ public:
 };
 
 template <typename T>
-class Values
+class values
 {
 public:
 	virtual void set(const std::string &name, const std::string &value) = 0;
@@ -67,15 +67,15 @@ public:
 };
 
 template <typename T>
-class ValueList
-	: public Values<T>
+class value_list
+	: public values<T>
 {
 public:
 	typedef typename std::vector<T>::iterator iterator;
 private:
 	std::vector<T> values;
 
-	int indexOf(const std::string &name)
+	int index_of(const std::string &name)
 	{
 		int i = 0;
 		for (T &value : this->values)
@@ -90,7 +90,7 @@ private:
 public:
 	virtual void set(const std::string &name, const std::string &value) override
 	{
-		int idx = this->indexOf(name);
+		int idx = this->index_of(name);
 		if (idx > 0)
 			this->values[idx].value(value);
 		else
@@ -99,14 +99,14 @@ public:
 
 	virtual void erase(const std::string &name) override
 	{
-		int idx = this->indexOf(name);
+		int idx = this->index_of(name);
 		if (idx >= 0)
 			this->values.erase(this->values.begin() + idx);
 	}
 
 	virtual std::string get(const std::string &name) override
 	{
-		int idx = this->indexOf(name);
+		int idx = this->index_of(name);
 		if (idx >= 0)
 			return this->values[idx].value();
 		return "";
@@ -144,8 +144,8 @@ public:
 };
 
 template <typename T>
-class ValuesHash
-	: public Values<T>
+class value_hash
+	: public values<T>
 {
 	typedef typename std::map<std::string, T>::iterator iterator;
 private:

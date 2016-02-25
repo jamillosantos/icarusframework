@@ -55,7 +55,6 @@ message("      SOCI (core): ${soci_core}")
 message("     SOCI (mysql): ${soci_mysql}")
 message("SOCI (postgresql): ${soci_postgresql}")
 
-
 include_directories(
 	"${SOCI_LIBRARY_DIR}/include"
 )
@@ -129,7 +128,8 @@ set(SOURCE_FILES
 	src/icarus/config.hpp
 	src/icarus/multithreadedapplication.hpp
 	src/icarus/interfaces.hpp
-	src/icarus/db/databases.hpp)
+	src/icarus/db/databases.hpp
+)
 
 set(ICARUS_LIBRARIES
 	boost_log_setup
@@ -217,14 +217,14 @@ target_link_libraries(mntr
 
 enable_testing()
 
-file(GLOB_RECURSE TEST_SRCS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} src/test/icarus/*.cpp)
+file(GLOB_RECURSE TEST_SRCS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} test/icarus/*.cpp)
 set(TEST_OUTPUT ${CMAKE_BINARY_DIR}/tests)
-add_definitions(-DTEST_RESOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/src/test/resources")
+add_definitions(-DTEST_RESOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/test/resources")
 
 message("\nTests\n=====")
 foreach (testSrc ${TEST_SRCS})
 	get_filename_component(testName ${testSrc} NAME_WE)
-	string(REPLACE "src/test/" "" testPackage "${testSrc}")
+	string(REPLACE "test/" "" testPackage "${testSrc}")
 	string(REPLACE "${testName}.cpp" "" testPackage "${testPackage}")
 	string(REPLACE "/" "_" testPackage "${testPackage}")
 	set(testName "test_${testPackage}${testName}")

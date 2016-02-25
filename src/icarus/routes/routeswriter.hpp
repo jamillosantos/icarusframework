@@ -15,14 +15,14 @@ namespace icarus
 {
 namespace routes
 {
-class RoutesWriter
+class routes_writer
 {
 protected:
 	unsigned int _routeId;
 
 	unsigned int _routesWritten;
 
-	virtual void writeBeginDoc(std::ostream &stream, Document &document)
+	virtual void writeBeginDoc(std::ostream &stream, document &document)
 	{
 		// File header
 		stream << "/**" << std::endl << " * Auto generated routes file" << std::endl << " */" << std::endl << std::endl;
@@ -51,11 +51,11 @@ protected:
 		stream << "namespace " << document.name() << std::endl << "{" << std::endl;
 
 		// Route instance initialization.
-		Route *route;
+		route *route;
 		Group *group;
-		for (const std::unique_ptr<Piece> &piece : document.pieces())
+		for (const std::unique_ptr<piece> &piece : document.pieces())
 		{
-			if (route = dynamic_cast<Route*>(piece.get()))			// If a route
+			if (route = dynamic_cast<route*>(piece.get()))			// If a route
 			{
 				this->writeBeginDoc(stream, *route);
 			}
@@ -80,11 +80,11 @@ protected:
 
 	virtual void writeBeginDoc(std::ostream &stream, Group& group)
 	{
-		Route *route;
+		route *route;
 		Group *subgroup;
-		for (const std::unique_ptr<Piece> &piece : group.pieces())
+		for (const std::unique_ptr<piece> &piece : group.pieces())
 		{
-			if (route = dynamic_cast<Route*>(piece.get()))
+			if (route = dynamic_cast<route*>(piece.get()))
 			{
 				this->writeBeginDoc(stream, *route);
 			}
@@ -103,7 +103,7 @@ protected:
 	/**
 	 * Write the initialization of the route.
 	 */
-	virtual void writeBeginDoc(std::ostream &stream, Route& route)
+	virtual void writeBeginDoc(std::ostream &stream, route& route)
 	{
 		// If needed, sets the route id, a unique ID route per compilation.
 		if (route.id() == 0)
@@ -116,7 +116,7 @@ protected:
 		stream << "icarus::routes::Route route" << route.id() << "(" << route.line() << ", {" << std::endl;
 		unsigned int i = 0, j = 0;
 		// Creating the static list initialization of the route with the match rule.
-		for (RegexToken &token : route.uri().tokens())
+		for (regex_token &token : route.uri().tokens())
 		{
 			if (i > 0)
 				stream << "," << std::endl;
@@ -131,7 +131,7 @@ protected:
 	/**
 	 * Writes the end of the routing file.
 	 */
-	virtual void writeEndDoc(std::ostream &stream, Document &document)
+	virtual void writeEndDoc(std::ostream &stream, document &document)
 	{
 		stream << "} // find()" << std::endl;
 		stream << "} // namespace " << document.name() << std::endl;
@@ -147,7 +147,7 @@ protected:
 	 *
 	 * @param route Route that will be evaluated.
 	 */
-	virtual void write(std::ostream &stream, Route &route)
+	virtual void write(std::ostream &stream, route &route)
 	{
 		stream << "\t";	// identation
 
@@ -170,10 +170,10 @@ protected:
 			unsigned int i = 0;
 			bool found;
 			// Places the parameter.
-			for (MethodParam &param : route.callMethod().params())
+			for (method_param &param : route.callMethod().params())
 			{
 				found = false;
-				for (RegexToken &token : route.uri().tokens())
+				for (regex_token &token : route.uri().tokens())
 				{
 					if (token.name() == param.name())
 					{
@@ -218,7 +218,7 @@ protected:
 	 */
 	virtual void write(std::ostream &stream, const Group &group)
 	{
-		for (const std::unique_ptr<Piece> &piece : group.pieces())
+		for (const std::unique_ptr<piece> &piece : group.pieces())
 		{
 			this->write(stream, *piece);
 		}
@@ -227,11 +227,11 @@ protected:
 	/**
 	 * Evaluates what `piece` is (class type) and call the proper `write` method for it.
 	 */
-	virtual void write(std::ostream &stream, Piece &piece)
+	virtual void write(std::ostream &stream, piece &piece)
 	{
-		Route *route;
+		route *route;
 		Group *group;
-		if (route = dynamic_cast<Route*>(&piece))		// If it is a route
+		if (route = dynamic_cast<route*>(&piece))		// If it is a route
 		{
 			this->write(stream, *route);
 		}
@@ -253,10 +253,10 @@ protected:
 	 * @param @std::ostream Document
 	 * @param icarus::routes::Document& Document that will be written
 	 */
-	virtual void writeReverseRoutes(std::ostream &stream, Document &document)
+	virtual void writeReverseRoutes(std::ostream &stream, document &document)
 	{
 		std::string item, del("::");
-		for (const std::unique_ptr<Piece> &piece : document.pieces())
+		for (const std::unique_ptr<piece> &piece : document.pieces())
 		{
 			Group* group = dynamic_cast<Group*>(piece.get());
 			if (group)
@@ -265,7 +265,7 @@ protected:
 			}
 			else
 			{
-				Route* route = dynamic_cast<Route*>(piece.get());
+				route* route = dynamic_cast<route*>(piece.get());
 				if (route)
 				{
 					this->writeReverseRoutes(stream, *route);
@@ -275,7 +275,7 @@ protected:
 		}
 	}
 
-	virtual void writeReverseRoutes(std::ostream &stream, Route &route)
+	virtual void writeReverseRoutes(std::ostream &stream, route &route)
 	{
 		for (std::string ns : route.callMethod().path())
 		{
@@ -287,28 +287,28 @@ protected:
 		{
 			stream << "\tstd::string " << route.callMethod().name() << "(";
 			unsigned int i = 0;
-			for (const icarus::routes::MethodParam &param : route.callMethod().params())
+			for (const icarus::routes::method_param &param : route.callMethod().params())
 			{
 				if (i > 0)
 					stream << ", ";
 				stream << param.type() << " ";
-				if (param.attribute() == icarus::routes::MethodParamType::POINTER)
+				if (param.attribute() == icarus::routes::method_param_type::POINTER)
 					stream << "*";
-				if (param.attribute() == icarus::routes::MethodParamType::REFERENCE)
+				if (param.attribute() == icarus::routes::method_param_type::REFERENCE)
 					stream << "&";
 				stream << param.name();
 				i++;
 			}
 			stream << ")\n\t{\n";
 			stream << "\t\tstd::string tmp;\n";
-			for (const RegexToken &rt : route.uri().tokens())
+			for (const regex_token &rt : route.uri().tokens())
 			{
 				if (rt.name().empty())
 					stream << "\t\ttmp += \"" << rt.regex() << "\";\n";
 				else
 				{
 					bool found = false;
-					for (const MethodParam &p : route.callMethod().params())
+					for (const method_param &p : route.callMethod().params())
 					{
 						if (rt.name() == p.name())
 						{
@@ -329,28 +329,28 @@ protected:
 		{
 			stream << "\ticarus::icarus::Action _" << route.callMethod().name() << "(";
 			unsigned int i = 0;
-			for (const icarus::routes::MethodParam &param : route.callMethod().params())
+			for (const icarus::routes::method_param &param : route.callMethod().params())
 			{
 				if (i > 0)
 					stream << ", ";
 				stream << param.type() << " ";
-				if (param.attribute() == icarus::routes::MethodParamType::POINTER)
+				if (param.attribute() == icarus::routes::method_param_type::POINTER)
 					stream << "*";
-				if (param.attribute() == icarus::routes::MethodParamType::REFERENCE)
+				if (param.attribute() == icarus::routes::method_param_type::REFERENCE)
 					stream << "&";
 				stream << param.name();
 				i++;
 			}
 			stream << ")\n\t{\n";
 			stream << "\t\tstd::string tmp;\n";
-			for (const RegexToken &rt : route.uri().tokens())
+			for (const regex_token &rt : route.uri().tokens())
 			{
 				if (rt.name().empty())
 					stream << "\t\ttmp += \"" << rt.regex() << "\";\n";
 				else
 				{
 					bool found = false;
-					for (const MethodParam &p : route.callMethod().params())
+					for (const method_param &p : route.callMethod().params())
 					{
 						if (rt.name() == p.name())
 						{
@@ -374,16 +374,16 @@ protected:
 	}
 
 public:
-	RoutesWriter()
+	routes_writer()
 		: _routeId(0)
 	{ }
 
-	virtual void write(std::ostream &stream, Document &document)
+	virtual void write(std::ostream &stream, document &document)
 	{
 		this->writeBeginDoc(stream, document);
-		for (const std::unique_ptr<Piece> &piece : document.pieces())
+		for (const std::unique_ptr<piece> &piece : document.pieces())
 		{
-			Route *route = dynamic_cast<Route*>(piece.get());
+			route *route = dynamic_cast<route*>(piece.get());
 			if (route)
 				this->write(stream, *route);
 			else

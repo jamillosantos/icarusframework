@@ -16,7 +16,7 @@ namespace icarus
 {
 namespace db
 {
-class Databases
+class databases
 {
 private:
 	std::map<std::string, std::unique_ptr<soci::connection_pool>> _pools;

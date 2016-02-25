@@ -12,14 +12,14 @@ namespace icarus
 {
 namespace routes
 {
-class FieldTypes
+class field_types
 {
 private:
 	std::map<std::string, std::string> _container;
 
 	static std::string emptyString;
 public:
-	FieldTypes()
+	field_types()
 	{
 		this->set("uint8_t", "[0-9]+");
 		this->set("uint16_t", "[0-9]+");
@@ -61,9 +61,9 @@ public:
 	}
 };
 
-std::string FieldTypes::emptyString("");
+std::string field_types::emptyString("");
 
-FieldTypes fieldTypes;
+field_types fieldTypes;
 }
 }
 

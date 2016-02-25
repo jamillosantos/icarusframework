@@ -12,149 +12,149 @@
 
 namespace icarus
 {
-class Result;
+class result;
 
 namespace results
 {
 public:
-	static Result status(http::Status status, minotaur::OChainStream content)
+	static result status(http::status status, minotaur::OChainStream content)
 	{
-		return Result(status, content);
+		return result(status, content);
 	}
 
-	static Result status(http::Status status, std::string content)
+	static result status(http::status status, std::string content)
 	{
-		return Result(status, content);
+		return result(status, content);
 	}
 
-	static Result ok(minotaur::OChainStream content)
+	static result ok(minotaur::OChainStream content)
 	{
-		return Result(http::statuses::OK, content);
+		return result(http::statuses::OK, content);
 	}
 
-	static Result ok(std::string content)
+	static result ok(std::string content)
 	{
-		return Result(http::statuses::OK, content);
+		return result(http::statuses::OK, content);
 	}
 
-	static Result notImplemented(minotaur::OChainStream content)
+	static result notImplemented(minotaur::OChainStream content)
 	{
-		return Result(http::statuses::NOT_IMPLEMENTED, content);
+		return result(http::statuses::NOT_IMPLEMENTED, content);
 	}
 
-	static Result notImplemented(std::string content)
+	static result notImplemented(std::string content)
 	{
-		return Result(http::statuses::NOT_IMPLEMENTED, content);
+		return result(http::statuses::NOT_IMPLEMENTED, content);
 	}
 
-	static Result badRequest(minotaur::OChainStream content)
+	static result badRequest(minotaur::OChainStream content)
 	{
-		return Result(http::statuses::BAD_REQUEST, content);
+		return result(http::statuses::BAD_REQUEST, content);
 	}
 
-	static Result badRequest(std::string content)
+	static result badRequest(std::string content)
 	{
-		return Result(http::statuses::BAD_REQUEST, content);
+		return result(http::statuses::BAD_REQUEST, content);
 	}
 
-	static Result unauthorized(minotaur::OChainStream content)
+	static result unauthorized(minotaur::OChainStream content)
 	{
-		return Result(http::statuses::UNAUTHORIZED, content);
+		return result(http::statuses::UNAUTHORIZED, content);
 	}
 
-	static Result unauthorized(std::string content)
+	static result unauthorized(std::string content)
 	{
-		return Result(http::statuses::UNAUTHORIZED, content);
+		return result(http::statuses::UNAUTHORIZED, content);
 	}
 
-	static Result paymentRequired(minotaur::OChainStream content)
+	static result paymentRequired(minotaur::OChainStream content)
 	{
-		return Result(http::statuses::PAYMENT_REQUIRED, content);
+		return result(http::statuses::PAYMENT_REQUIRED, content);
 	}
 
-	static Result paymentRequired(std::string content)
+	static result paymentRequired(std::string content)
 	{
-		return Result(http::statuses::PAYMENT_REQUIRED, content);
+		return result(http::statuses::PAYMENT_REQUIRED, content);
 	}
 
-	static Result forbidden(minotaur::OChainStream content)
+	static result forbidden(minotaur::OChainStream content)
 	{
-		return Result(http::statuses::FORBIDDEN, content);
+		return result(http::statuses::FORBIDDEN, content);
 	}
 
-	static Result forbidden(std::string content)
+	static result forbidden(std::string content)
 	{
-		return Result(http::statuses::FORBIDDEN, content);
+		return result(http::statuses::FORBIDDEN, content);
 	}
 
-	static Result notFound(minotaur::OChainStream content)
+	static result notFound(minotaur::OChainStream content)
 	{
-		return Result(http::statuses::NOT_FOUND, content);
+		return result(http::statuses::NOT_FOUND, content);
 	}
 
-	static Result notFound(std::string content)
+	static result notFound(std::string content)
 	{
-		return Result(http::statuses::NOT_FOUND, content);
+		return result(http::statuses::NOT_FOUND, content);
 	}
 
-	static Result internalServerError(minotaur::OChainStream content)
+	static result internalServerError(minotaur::OChainStream content)
 	{
-		return Result(http::statuses::INTERNAL_ERROR, content);
+		return result(http::statuses::INTERNAL_ERROR, content);
 	}
 
-	static Result internalServerError(std::string content)
+	static result internalServerError(std::string content)
 	{
-		return Result(http::statuses::INTERNAL_ERROR, content);
+		return result(http::statuses::INTERNAL_ERROR, content);
 	}
 
-	static Result movedPermanently(std::string url)
-	{
-		LOG_ERROR("TODO");
-		throw std::exception();
-	}
-
-	static Result redirect(std::string url)
+	static result movedPermanently(std::string url)
 	{
 		LOG_ERROR("TODO");
 		throw std::exception();
 	}
 
-	static Result temporaryRedirect(std::string url)
+	static result redirect(std::string url)
+	{
+		LOG_ERROR("TODO");
+		throw std::exception();
+	}
+
+	static result temporaryRedirect(std::string url)
 	{
 		LOG_ERROR("TODO");
 		throw std::exception();
 	}
 };
 
-class Result
+class result
 {
 private:
-	http::Status &_status;
+	http::status &_status;
 	minotaur::OChainStream output;
 	boost::optional<std::string> _contentType;
 	boost::optional<std::string> _charset;
 
 	std::vector<std::pair<std::string, std::string>> headers;
 public:
-	Result(const http::Status &status, minotaur::OChainStream &output)
+	result(const http::status &status, minotaur::OChainStream &output)
 		: _status(status), output(output)
 	{ }
 
-	Result(minotaur::OChainStream &output)
-		: Result(http::statuses::OK, output)
+	result(minotaur::OChainStream &output)
+		: result(http::statuses::OK, output)
 	{ }
 
-	Result(const http::Status &status, std::string result)
+	result(const http::status &status, std::string result)
 		: _status(status)
 	{
 		this->output << result;
 	}
 
-	Result(std::string result)
-		: Result(http::statuses::OK, result)
+	result(std::string result)
+		: result(http::statuses::OK, result)
 	{ }
 
-	Result& header(std::string name, std::string value)
+	result& header(std::string name, std::string value)
 	{
 		this->headers.emplace_back(std::make_pair(name, value));
 		return *this;
@@ -170,17 +170,17 @@ public:
 		return nullptr;
 	}
 
-	Result& status(const http::Status &status)
+	result& status(const http::status &status)
 	{
 		this->_status = status;
 	}
 
-	http::Status status() const
+	http::status status() const
 	{
 		return this->_status;
 	}
 
-	Result& charset(std::string &charset)
+	result& charset(std::string &charset)
 	{
 		this->_charset = charset;
 	}
@@ -190,7 +190,7 @@ public:
 		return this->_charset;
 	}
 
-	Result& as(std::string &contentType)
+	result& as(std::string &contentType)
 	{
 		this->_contentType = contentType;
 	}

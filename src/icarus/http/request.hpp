@@ -13,16 +13,16 @@ namespace icarus
 {
 namespace http
 {
-class Request
+class request
 {
 protected:
-	ValueList<Value> _headers;
-	ValueList<Value> _serverVariables;
+	value_list<values_value> _headers;
+	value_list<values_value> _serverVariables;
 
 	std::string _contentType;
 	long long int _contentLength;
 
-	Cookies _cookies;
+	icarus::http::cookies _cookies;
 
 	std::unique_ptr<std::istream> _content;
 
@@ -30,18 +30,18 @@ protected:
 	std::string _queryString;
 	std::string _method;
 public:
-	Request()
+	request()
 	{ }
 
-	virtual ~Request()
+	virtual ~request()
 	{ }
 
-	ValueList<Value> &headers()
+	value_list<values_value> &headers()
 	{
 		return this->_headers;
 	}
 
-	ValueList<Value> &serverVariables()
+	value_list<values_value> &serverVariables()
 	{
 		return this->_serverVariables;
 	}
@@ -61,7 +61,7 @@ public:
 		return this->_contentLength;
 	}
 
-	Cookies &cookies()
+	icarus::http::cookies &cookies()
 	{
 		return this->_cookies;
 	}

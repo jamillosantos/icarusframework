@@ -15,17 +15,17 @@ namespace icarus
 {
 namespace routes
 {
-class Compiler
+class compiler
 {
 public:
 	void compile(std::string from, std::string to)
 	{
 		boost::filesystem::path fromPath(from);
-		Parser parser(fromPath.parent_path().string());
-		Document document(fromPath.stem().string());
+		parser parser(fromPath.parent_path().string());
+		document document(fromPath.stem().string());
 		parser.parse(from, document);
 
-		RoutesWriter writer;
+		routes_writer writer;
 		std::stringstream memoryStream;
 		writer.write(memoryStream, document);
 

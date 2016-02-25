@@ -8,7 +8,7 @@
 
 #include <string>
 
-class IString
+class istring
 {
 public:
 	std::string toString() = 0;

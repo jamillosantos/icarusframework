@@ -21,35 +21,35 @@ namespace icarus
 {
 namespace http
 {
-class CookiesParseException
-	: public icarus::exceptions::Exception
+class cookies_parser_exception
+	: public icarus::exceptions::exception
 {
 public:
-	CookiesParseException(std::exception *cause)
-		: Exception("Cannot parse the cookies field.", cause)
+	cookies_parser_exception(std::exception *cause)
+		: exception("Cannot parse the cookies field.", cause)
 	{ }
 
-	CookiesParseException()
-		: CookiesParseException(nullptr)
+	cookies_parser_exception()
+		: cookies_parser_exception(nullptr)
 	{ }
 };
 
-class Cookie
-	: public Value
+class cookie
+	: public values_value
 {
 private:
 	boost::optional<std::chrono::system_clock::time_point> _expires;
 public:
-	Cookie()
-		: Value()
+	cookie()
+		: values_value()
 	{ }
 
-	Cookie(const std::string &name, const std::string &value)
-		: Value(name, value)
+	cookie(const std::string &name, const std::string &value)
+		: values_value(name, value)
 	{ }
 
-	Cookie(const std::string &name, const std::string &value, const boost::optional<std::chrono::system_clock::time_point> &expires)
-		: Value(name, value), _expires(expires)
+	cookie(const std::string &name, const std::string &value, const boost::optional<std::chrono::system_clock::time_point> &expires)
+		: values_value(name, value), _expires(expires)
 	{ }
 
 	const boost::optional<std::chrono::system_clock::time_point>& expires() const
@@ -63,8 +63,8 @@ public:
 	}
 };
 
-class Cookies
-	: public ValuesHash<Cookie>
+class cookies
+	: public value_hash<cookie>
 {
 private:
 	static boost::regex regex;
@@ -84,7 +84,7 @@ public:
 	}
 };
 
-boost::regex Cookies::regex("[ \\t]*([^=]+)=([^;]+)(; *|$)");
+boost::regex cookies::regex("[ \\t]*([^=]+)=([^;]+)(; *|$)");
 }
 }
 

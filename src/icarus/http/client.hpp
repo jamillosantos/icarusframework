@@ -13,23 +13,23 @@ namespace icarus
 {
 namespace http
 {
-class ClientContext
+class client_context
 {
 protected:
 	bool _valid;
 
-	Request &_request;
-	Response &_response;
+	request &_request;
+	response &_response;
 public:
-	ClientContext(ClientContext &clientContext)
+	client_context(client_context &clientContext)
 		: _valid(clientContext._valid), _request(clientContext._request), _response(clientContext._response)
 	{ }
 
-	ClientContext(Request &request, Response &response)
-		: _valid(true), _request(request), _response(response)
+	client_context(request &req, response &resp)
+		: _valid(true), _request(req), _response(resp)
 	{ }
 
-	virtual ~ClientContext()
+	virtual ~client_context()
 	{ }
 
 	virtual bool isValid()
@@ -37,12 +37,12 @@ public:
 		return this->_valid;
 	}
 
-	Request &request()
+	request &req()
 	{
 		return this->_request;
 	}
 
-	Response &response()
+	response &resp()
 	{
 		return this->_response;
 	}
@@ -51,7 +51,7 @@ public:
 	{
 		LOG_INFO("PERFORMED!");
 		LOG_INFO("<html>Test</html>");
-		this->response() << "<html>Test</html>";
+		this->resp() << "<html>Test</html>";
 		//icarus::routes::find(*this);
 	}
 };

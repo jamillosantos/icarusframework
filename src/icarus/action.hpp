@@ -10,23 +10,21 @@
 
 namespace icarus
 {
-namespace framework
-{
-class Action
+class action
 {
 private:
 	std::string _method;
 	std::string _url;
 public:
-	Action(const Action &action)
+	action(const action &action)
 		: _method(action._method), _url(action._url)
 	{ }
 
-	Action(std::string url)
+	action(std::string url)
 		: _method("GET"), _url(url)
 	{ }
 
-	Action(std::string method, std::string url)
+	action(std::string method, std::string url)
 		: _method(method), _url(url)
 	{ }
 
@@ -35,7 +33,7 @@ public:
 		return this->_method;
 	}
 
-	Action &method(std::string method)
+	action &method(std::string method)
 	{
 		this->_method = method;
 		return *this;
@@ -46,13 +44,12 @@ public:
 		return this->_url;
 	}
 
-	Action &url(std::string url)
+	action &url(std::string url)
 	{
 		this->_url = url;
 		return *this;
 	}
 };
-}
 }
 
 

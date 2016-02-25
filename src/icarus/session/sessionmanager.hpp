@@ -14,7 +14,7 @@ namespace icarus
 {
 namespace session
 {
-class SessionManager
+class session_manager
 {
 private:
 	unsigned int _maxAge;
@@ -23,12 +23,12 @@ private:
 protected:
 	virtual void check() = 0;
 
-	virtual Session* createSession(session_id_t id)
+	virtual session* createSession(session_id_t id)
 	{
-		return new Session(id);
+		return new session(id);
 	}
 public:
-	SessionManager()
+	session_manager()
 		: _maxAge(600), _running(false)
 	{ }
 
@@ -37,13 +37,13 @@ public:
 		return this->_maxAge;
 	}
 
-	SessionManager maxAge(unsigned int maxAge)
+	session_manager maxAge(unsigned int maxAge)
 	{
 		this->_maxAge = maxAge;
 		return *this;
 	}
 
-	virtual Session* get(session_id_t id) = 0;
+	virtual session* get(session_id_t id) = 0;
 
 	virtual void clear(session_id_t id) = 0;
 

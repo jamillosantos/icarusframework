@@ -8,7 +8,7 @@
 
 #include <boost/test/included/unit_test.hpp>
 
-#include "../../../icarus/routes/parser.hpp"
+#include "icarus/routes/parser.hpp"
 
 BOOST_AUTO_TEST_CASE(route_group)
 {
@@ -17,8 +17,8 @@ BOOST_AUTO_TEST_CASE(route_group)
 	namespace ifr = icarus::routes;
 
 	boost::filesystem::path routePath;
-	ifr::Parser parser((resourceDir / "routes").string());
-	ifr::Document parserData("routes_groups");
+	ifr::parser parser((resourceDir / "routes").string());
+	ifr::document parserData("routes_groups");
 	parser.parse((resourceDir / "routes" / "routes_groups").string(), parserData);
 
 	{
@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE(route_group)
 
 		BOOST_REQUIRE_EQUAL(group.pieces().size(), 2);
 		{
-			ifr::Route &line = *dynamic_cast<ifr::Route *>(group.pieces()[0].get());
+			ifr::route &line = *dynamic_cast<ifr::route *>(group.pieces()[0].get());
 			BOOST_CHECK_EQUAL(line.httpMethod(), "POST");
 
 			BOOST_REQUIRE_EQUAL(line.uri().tokens().size(), 6);
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(route_group)
 		}
 
 		{
-			ifr::Route &line = *dynamic_cast<ifr::Route *>(group.pieces()[1].get());
+			ifr::route &line = *dynamic_cast<ifr::route *>(group.pieces()[1].get());
 			BOOST_CHECK_EQUAL(line.httpMethod(), "PUT");
 
 			BOOST_REQUIRE_EQUAL(line.uri().tokens().size(), 6);
@@ -99,7 +99,7 @@ BOOST_AUTO_TEST_CASE(route_group)
 
 		BOOST_REQUIRE_EQUAL(group.pieces().size(), 1);
 		{
-			ifr::Route &line = *dynamic_cast<ifr::Route *>(group.pieces()[0].get());
+			ifr::route &line = *dynamic_cast<ifr::route *>(group.pieces()[0].get());
 			BOOST_CHECK_EQUAL(line.httpMethod(), "PUT");
 
 			BOOST_REQUIRE_EQUAL(line.uri().tokens().size(), 7);
@@ -139,13 +139,13 @@ BOOST_AUTO_TEST_CASE(route_group_match1)
 	namespace ifr = icarus::routes;
 
 	boost::filesystem::path routePath;
-	ifr::Parser parser((resourceDir / "routes").string());
-	ifr::Document parserData("routes_groups");
+	ifr::parser parser((resourceDir / "routes").string());
+	ifr::document parserData("routes_groups");
 	parser.parse((resourceDir / "routes" / "routes_groups").string(), parserData);
 
 
-	icarus::http::ValuesHash<icarus::http::Value> values;
-	ifr::Piece *piece = parserData.match("POST", "/testing/123/abc/", values);
+	icarus::http::value_hash<icarus::http::values_value> values;
+	ifr::piece *piece = parserData.match("POST", "/testing/123/abc/", values);
 	BOOST_REQUIRE_MESSAGE(piece != nullptr, "Could not find the piece.");
 }
 
@@ -156,13 +156,13 @@ BOOST_AUTO_TEST_CASE(route_group_match2)
 	namespace ifr = icarus::routes;
 
 	boost::filesystem::path routePath;
-	ifr::Parser parser((resourceDir / "routes").string());
-	ifr::Document parserData("routes_groups");
+	ifr::parser parser((resourceDir / "routes").string());
+	ifr::document parserData("routes_groups");
 	parser.parse((resourceDir / "routes" / "routes_groups").string(), parserData);
 
 
-	icarus::http::ValuesHash<icarus::http::Value> values;
-	ifr::Piece *piece = parserData.match("PUT", "/u/username/testing/123xabctest", values);
+	icarus::http::value_hash<icarus::http::values_value> values;
+	ifr::piece *piece = parserData.match("PUT", "/u/username/testing/123xabctest", values);
 	BOOST_REQUIRE_MESSAGE(piece != nullptr, "Could not find the piece.");
 	BOOST_CHECK_EQUAL(values.get("user"), "username");
 	BOOST_CHECK_EQUAL(values.get("count"), "123");

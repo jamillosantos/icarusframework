@@ -15,70 +15,70 @@ namespace icarus
 {
 namespace http
 {
-class Response
+class response
 {
 public:
 	static std::string endh;
 private:
-	Status &status;
+	icarus::http::status &status;
 
-	ValueList<Value> _headers;
+	value_list<values_value> _headers;
 
-	bool _headerSent;
+	bool _header_sent;
 protected:
 	std::stringstream stream;
 
-	std::ostream *outStream;
+	std::ostream *ostream;
 
 	virtual void flushHeaders()
 	{
-		(*this->outStream) << "HTTP/1.1 " << this->status.code << " " << this->status.value << endh;
+		(*this->ostream) << "HTTP/1.1 " << this->status.code << " " << this->status.value << endh;
 		LOG_TRACE("HTTP/1.1 " << this->status.code << " " << this->status.value << endh);
-		for (Value &header : this->headers())
+		for (values_value &header : this->headers())
 		{
-			(*this->outStream) << header.name() << ": " << header.value() << endh;
+			(*this->ostream) << header.name() << ": " << header.value() << endh;
 			LOG_TRACE(header.name() << ": " << header.value() << endh);
 		}
-		(*this->outStream) << endh;
+		(*this->ostream) << endh;
 
-		this->_headerSent = true;
+		this->_header_sent = true;
 	}
 public:
-	Response()
-		: status(statuses::OK), _headerSent(false),
-		  stream(std::stringstream::binary | std::stringstream::in | std::stringstream::out), outStream(nullptr)
+	response()
+		: status(statuses::OK), _header_sent(false),
+		  stream(std::stringstream::binary | std::stringstream::in | std::stringstream::out), ostream(nullptr)
 	{ }
 
-	virtual ~Response()
+	virtual ~response()
 	{ }
 
-	ValueList<Value> &headers()
+	value_list<values_value> &headers()
 	{
 		return this->_headers;
 	}
 
 	virtual void flush()
 	{
-		if (!this->_headerSent)
+		if (!this->_header_sent)
 			this->flushHeaders();
-		(*this->outStream) << this->stream.rdbuf();
+		(*this->ostream) << this->stream.rdbuf();
 	}
 
 	template<typename T>
-	Response &operator<<(const T &t)
+	response &operator<<(const T &t)
 	{
 		this->stream << t;
 		return *this;
 	}
 
-	Response &operator<<(std::ostream &(*manip)(std::ostream &))
+	response &operator<<(std::ostream &(*manip)(std::ostream &))
 	{
 		this->stream << manip;
 		return *this;
 	}
 };
 
-std::string icarus::http::Response::endh("\r\n");
+std::string icarus::http::response::endh("\r\n");
 }
 }
 

@@ -8,7 +8,7 @@
 
 #include "../request.hpp"
 #include "../../exceptions.hpp"
-#include "../cookies.hpp"
+#include "icarus/http/cookies.hpp"
 #include "../../log.hpp"
 
 #include <boost/network/uri.hpp>
@@ -20,8 +20,8 @@ namespace http
 {
 namespace fcgi
 {
-class Request
-	: public icarus::http::Request
+class request
+	: public icarus::http::request
 {
 public:
 	virtual void init(const FCGX_Request &request)
@@ -89,7 +89,7 @@ public:
 	}
 
 	template<class T>
-	Request &operator>>(T& t)
+	request &operator>>(T& t)
 	{
 		(*this->_content) >> t;
 		return *this;

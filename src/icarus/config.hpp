@@ -99,7 +99,7 @@ public:
 	}
 };
 
-class Config
+class config
 {
 private:
 	unsigned int _threads;

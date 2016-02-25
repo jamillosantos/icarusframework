@@ -12,16 +12,16 @@ namespace icarus
 {
 namespace http
 {
-class HeaderSentException
-	: public icarus::exceptions::Exception
+class header_sent_exception
+	: public icarus::exceptions::exception
 {
 public:
-	HeaderSentException()
+	header_sent_exception()
 		: this(nullptr)
 	{ }
 
-	HeaderSentException(std::exception *cause)
-		: Exception("Headers already sent.", cause)
+	header_sent_exception(std::exception *cause)
+		: exception("Headers already sent.", cause)
 	{ }
 };
 }

@@ -8,11 +8,11 @@
 
 #include <boost/test/included/unit_test.hpp>
 
-#include "../../../icarus/routes/data.hpp"
+#include "icarus/routes/data.hpp"
 
 BOOST_AUTO_TEST_CASE(CallMethodPath1)
 {
-	icarus::routes::CallMethod method;
+	icarus::routes::call_method method;
 	method.path("package::for::methodName");
 
 	BOOST_REQUIRE_EQUAL(method.path().size(), 2);
@@ -23,7 +23,7 @@ BOOST_AUTO_TEST_CASE(CallMethodPath1)
 
 BOOST_AUTO_TEST_CASE(CallMethodPath2)
 {
-	icarus::routes::CallMethod method;
+	icarus::routes::call_method method;
 	method.path("p::f::another::m");
 
 	BOOST_REQUIRE_EQUAL(method.path().size(), 3);
@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE(CallMethodPath2)
 
 BOOST_AUTO_TEST_CASE(RouteStaticInitialization)
 {
-	icarus::routes::Route route(0, {
+	icarus::routes::route route(0, {
 		{"test1", ""},
 		{"", "test2"},
 		{"test3_name", "test3_regex"}

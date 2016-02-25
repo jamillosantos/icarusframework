@@ -18,38 +18,38 @@ namespace exceptions
 namespace routes
 {
 class InvalidURI
-	: public icarus::exceptions::Exception
+	: public icarus::exceptions::exception
 {
 public:
 	InvalidURI(std::string uri)
-		: Exception((boost::locale::format(boost::locale::translate("The URI '{1}' is invalid.")) % uri).str(), nullptr)
+		: exception((boost::locale::format(boost::locale::translate("The URI '{1}' is invalid.")) % uri).str(), nullptr)
 	{ }
 };
 
 class InvalidChar
-	: public icarus::exceptions::Exception
+	: public icarus::exceptions::exception
 {
 public:
 	InvalidChar(unsigned int line, unsigned int column)
-		: Exception((boost::locale::format(boost::locale::translate("Invalid char found at {1}:{2}.")) % line % column).str(), nullptr)
+		: exception((boost::locale::format(boost::locale::translate("Invalid char found at {1}:{2}.")) % line % column).str(), nullptr)
 	{ }
 };
 
 class IncompleteDeclaration
-	: public icarus::exceptions::Exception
+	: public icarus::exceptions::exception
 {
 public:
 	IncompleteDeclaration(unsigned int line, unsigned int column)
-		: Exception((boost::locale::format(boost::locale::translate("Incomplete declaration at {1}:{2}.")) % line % column).str(), nullptr)
+		: exception((boost::locale::format(boost::locale::translate("Incomplete declaration at {1}:{2}.")) % line % column).str(), nullptr)
 	{ }
 };
 
 class InvalidParamName
-	: public icarus::exceptions::Exception
+	: public icarus::exceptions::exception
 {
 public:
 	InvalidParamName(unsigned int line, std::string paramName)
-		: Exception((boost::locale::format(boost::locale::translate("Param {2} was not found. (at {1})")) % line % paramName).str(), nullptr)
+		: exception((boost::locale::format(boost::locale::translate("Param {2} was not found. (at {1})")) % line % paramName).str(), nullptr)
 	{ }
 };
 } // routes

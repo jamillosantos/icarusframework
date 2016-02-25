@@ -14,30 +14,30 @@
 
 namespace icarus
 {
-class Application
+class application
 {
 private:
-	icarus::config::Config _config;
+	icarus::config::config _config;
 protected:
 	volatile bool _running;
 public:
-	Application()
+	application()
 		: _running(false)
 	{ }
 
-	config::Config &config()
+	config::config &config()
 	{
 		return this->_config;
 	}
 
-	virtual http::ClientContext* accept() = 0;
+	virtual http::client_context* accept() = 0;
 
 	virtual void terminate()
 	{
 		this->_running = false;
 	}
 
-	virtual bool isRunning()
+	virtual bool is_running()
 	{
 		return this->_running;
 	}
@@ -54,7 +54,7 @@ public:
 		this->_running = true;
 		while (this->_running)
 		{
-			http::ClientContext *client = this->accept();
+			http::client_context *client = this->accept();
 			if (client)
 			{
 				client->process();

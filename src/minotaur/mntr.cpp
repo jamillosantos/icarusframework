@@ -19,13 +19,13 @@ int main(int argc, const char *argv[])
 		("help,h", "this help message");
 
 	std::string
-		inputDirectory,
-		outputDirectory;
+		inputFile,
+		outputFile;
 
 	po::options_description compilerOptions("Compiler options");
 	compilerOptions.add_options()
-		("input-dir,i", po::value<std::string>(&inputDirectory)->required(), "input directory")
-		("output-dir,o", po::value<std::string>(&outputDirectory)->required(), "output directory")
+		("input,i", po::value<std::string>(&inputFile)->required(), "input file")
+		("output,o", po::value<std::string>(&outputFile)->required(), "output file")
 		("compression,c", "compress the output according to the extension");
 
 	po::options_description options("Allower options:");
@@ -43,10 +43,8 @@ int main(int argc, const char *argv[])
 			return 0;
 		}
 
-		minotaur::compiler::Compiler parser(inputDirectory, outputDirectory);
-
+		minotaur::compiler::Compiler parser(inputFile, outputFile);
 		minotaur::compiler::CppTemplateBuilder templateBuilder;
-		// templateBUilder.compress = vm.count("compression");
 		parser.compile(templateBuilder);
 
 		return 0;

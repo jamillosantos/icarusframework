@@ -15,22 +15,22 @@ namespace exceptions
 {
 	namespace bl = boost::locale;
 
-class Exception
+class exception
 	: public std::exception
 {
 private:
 	std::string _message;
 	std::exception *_cause;
 public:
-	Exception(const std::string &message, std::exception *cause)
+	exception(const std::string &message, std::exception *cause)
 		: _message(message), _cause(cause)
 	{ }
 
-	Exception(const std::string &message)
+	exception(const std::string &message)
 		: _message(message), _cause(nullptr)
 	{ }
 
-	virtual ~Exception()
+	virtual ~exception()
 	{ }
 
 
@@ -51,11 +51,11 @@ public:
 };
 
 class FileNotFound
-	: Exception
+	: exception
 {
 public:
 	FileNotFound(std::string fileName, std::exception *cause)
-		: Exception((bl::format(bl::translate("File '{1}' was not found.")) % fileName).str(), cause)
+		: exception((bl::format(bl::translate("File '{1}' was not found.")) % fileName).str(), cause)
 	{ }
 
 	FileNotFound(std::string fileName)
@@ -64,25 +64,25 @@ public:
 };
 
 class OpenFile
-	: public Exception
+	: public exception
 {
 
 public:
 	OpenFile(const std::string &message, std::exception *cause)
-		: Exception(message, cause)
+		: exception(message, cause)
 	{ }
 
 	OpenFile(const std::string &message)
-		: Exception(message)
+		: exception(message)
 	{ }
 };
 
 class PrematureEOF
-		: public Exception
+		: public exception
 {
 public:
 	PrematureEOF()
-			: Exception(bl::translate("Premature end of the file."))
+			: exception(bl::translate("Premature end of the file."))
 	{ }
 };
 }

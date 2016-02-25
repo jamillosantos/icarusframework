@@ -26,7 +26,7 @@ namespace icarus
 {
 namespace routes
 {
-class Parser
+class parser
 {
 private:
 	static boost::regex variablesName;
@@ -193,7 +193,7 @@ private:
 		throw icarus::exceptions::PrematureEOF();
 	}
 
-	void runLineMethodParameters(CallMethod &callMethod)
+	void runLineMethodParameters(call_method &callMethod)
 	{
 		char cc;
 		std::stringstream stream, paramstream;
@@ -206,7 +206,7 @@ private:
 					break;
 				else
 				{
-					callMethod.add(paramstream.str(), MethodParamType::NORMAL, stream.str());
+					callMethod.add(paramstream.str(), method_param_type::NORMAL, stream.str());
 					paramstream.str("");
 					stream.str("");
 					if (cc == ')')
@@ -234,7 +234,7 @@ private:
 		}
 	}
 
-	char readURI(ComposedURI &uri)
+	char readURI(composed_uri &uri)
 	{
 		std::stringstream stream;
 		char cc;
@@ -323,7 +323,7 @@ private:
 		throw exceptions::PrematureEOF();
 	}
 
-	void runGroup(Routes &data, unsigned int level)
+	void runGroup(routes &data, unsigned int level)
 	{
 		unsigned int cl = this->currentLine;
 		std::stringstream stream;
@@ -335,9 +335,9 @@ private:
 		this->runDoc(*group, level + 1);
 	}
 
-	void runLine(Routes &data, unsigned int level)
+	void runLine(routes &data, unsigned int level)
 	{
-		Route route(this->currentLine);
+		route route(this->currentLine);
 		std::stringstream stream;
 		char cc = this->lastChar();
 		stream << cc;
@@ -358,7 +358,7 @@ private:
 					Group *parentGroup = dynamic_cast<Group*>(&data);
 					if (parentGroup)
 					{
-						for (RegexToken &token : parentGroup->uri().tokens())
+						for (regex_token &token : parentGroup->uri().tokens())
 						{
 							route.uri().add(token.name(), token.regex());
 						}
@@ -367,7 +367,7 @@ private:
 					this->readUntilNonBlank(&cc);
 					stream << cc;
 
-					CallMethod callMethod;
+					call_method callMethod;
 					while (this->readChar(&cc))
 					{
 						if (cc == '(')
@@ -377,11 +377,11 @@ private:
 							this->runLineMethodParameters(callMethod);
 							route.callMethod(callMethod);
 							int i = 0;
-							for (RegexToken &token : route.uri().tokens())
+							for (regex_token &token : route.uri().tokens())
 							{
 								if (token.regex().empty())
 								{
-									for (const MethodParam &param : callMethod.params())
+									for (const method_param &param : callMethod.params())
 									{
 										if (param.name() == token.name())
 										{
@@ -406,7 +406,7 @@ private:
 								i++;
 							}
 
-							data.add(new Route(route));
+							data.add(new route(route));
 							return;
 						}
 						else if (cc == '\n')
@@ -430,7 +430,7 @@ private:
 		throw exceptions::PrematureEOF();
 	}
 
-	void runDoc(Routes &data, unsigned int level)
+	void runDoc(routes &data, unsigned int level)
 	{
 		char cc;
 		while (this->readChar(&cc))
@@ -475,12 +475,12 @@ private:
 	}
 
 public:
-	Parser(std::string inputFolder)
+	parser(std::string inputFolder)
 			: inputFolder(inputFolder), inputStreamBufferSize(0), currentInputStreamChar(0), currentLine(0),
 			  currentChar(0)
 	{ }
 
-	void parse(std::string inputFile, Document &data)
+	void parse(std::string inputFile, document &data)
 	{
 		boost::filesystem::path ifp(inputFile);
 		if (boost::filesystem::exists(ifp))
@@ -507,7 +507,7 @@ public:
 	}
 };
 
-boost::regex Parser::variablesName("[a-zA-Z_0-9]+");
+boost::regex parser::variablesName("[a-zA-Z_0-9]+");
 }
 }
 #endif //ICARUSFRAMEWORK_ROUTES_PARSER_HPP

@@ -8,11 +8,11 @@
 
 #include <boost/test/included/unit_test.hpp>
 
-#include "../../../icarus/http/headers.hpp"
+#include "icarus/http/headers.hpp"
 
 BOOST_AUTO_TEST_CASE(ValuesList1)
 {
-	icarus::http::ValueList<icarus::http::Value> values;
+	icarus::http::value_list<icarus::http::values_value> values;
 	values.add("name", "value");
 
 	BOOST_CHECK(!values.get("name").empty());

@@ -17,21 +17,21 @@ namespace http
 {
 namespace fcgi
 {
-class ClientContext
-	: public icarus::http::ClientContext
+class client_context
+	: public icarus::http::client_context
 {
 private:
 	FCGX_Request *_fcgxRequest;
 
-	fcgi::Request *_fcgiRequest;
-	fcgi::Response *_fcgiResponse;
+	fcgi::request *_fcgiRequest;
+	fcgi::response *_fcgiResponse;
 public:
-	ClientContext(FCGX_Request *fcgiRequest)
-		: icarus::http::ClientContext::ClientContext(*(this->_fcgiRequest = new fcgi::Request()), *(this->_fcgiResponse = new fcgi::Response())), _fcgxRequest(fcgiRequest)
+	client_context(FCGX_Request *fcgiRequest)
+		: icarus::http::client_context::client_context(*(this->_fcgiRequest = new fcgi::request()), *(this->_fcgiResponse = new fcgi::response())), _fcgxRequest(fcgiRequest)
 	{
 	}
 
-	virtual ~ClientContext() override
+	virtual ~client_context() override
 	{
 		LOG_TRACE("~ClientContext");
 		delete this->_fcgiRequest;

@@ -14,15 +14,15 @@
 
 namespace icarus
 {
-class MultiThreadedApplication
-: public Application
+class multi_threaded_application
+: public application
 {
 private:
 	std::mutex _acceptMutex;
-	Application &_application;
+	application &_application;
 	std::vector<std::unique_ptr<std::thread>> _threads;
 public:
-	MultiThreadedApplication(Application &application)
+	multi_threaded_application(application &application)
 		: _application(application)
 	{ }
 
@@ -36,7 +36,7 @@ public:
 		this->_application.cleanup();
 	}
 
-	virtual http::ClientContext *accept() override
+	virtual http::client_context *accept() override
 	{
 		std::lock_guard<std::mutex> lock(this->_acceptMutex);
 		return this->_application.accept();
@@ -47,7 +47,7 @@ public:
 		LOG_TRACE("Running trampolin");
 		while (this->_running)
 		{
-			http::ClientContext *client = this->accept();
+			http::client_context *client = this->accept();
 			if (client)
 			{
 				client->process();
@@ -63,7 +63,7 @@ public:
 		this->init();
 
 		for (unsigned int i = 0; i < this->_application.config().threads(); i++)
-			this->_threads.emplace_back(new std::thread(&MultiThreadedApplication::runTrampolin, this));
+			this->_threads.emplace_back(new std::thread(&multi_threaded_application::runTrampolin, this));
 
 		for (unsigned int i = 0; i < this->_application.config().threads(); i++)
 			this->_threads[i]->join();

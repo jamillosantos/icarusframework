@@ -13,20 +13,20 @@ namespace icarus
 {
 namespace session
 {
-class MemorySessionManager
-	: public SessionManager
+class memory_session_manager
+	: public session_manager
 {
 private:
-	std::map<unsigned long long, std::unique_ptr<Session>> _data;
+	std::map<unsigned long long, std::unique_ptr<session>> _data;
 public:
-	virtual Session* get(unsigned long long id) override
+	virtual session* get(unsigned long long id) override
 	{
-		const std::map<unsigned long long int, std::unique_ptr<icarus::session::Session>>::iterator &it = this->_data.find(id);
+		const std::map<unsigned long long int, std::unique_ptr<icarus::session::session>>::iterator &it = this->_data.find(id);
 		if (it != this->_data.end())
 			return it->second.get();
 		else
 		{
-			Session* result = this->createSession(id);
+			session* result = this->createSession(id);
 			this->_data.emplace(std::make_pair(id, result));
 			return result;
 		}

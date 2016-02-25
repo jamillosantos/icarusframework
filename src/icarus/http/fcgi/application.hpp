@@ -18,8 +18,8 @@ namespace http
 {
 namespace fcgi
 {
-class Application
-	: public icarus::Application
+class application
+	: public icarus::application
 {
 protected:
 	virtual void init() override
@@ -27,7 +27,7 @@ protected:
 		FCGX_Init();
 	}
 
-	virtual http::ClientContext *accept() override
+	virtual http::client_context *accept() override
 	{
 		LOG_TRACE("Accept(): " << std::this_thread::get_id());
 		FCGX_Request *fcgiRequest = new FCGX_Request();
@@ -36,7 +36,7 @@ protected:
 		if (acceptStatus == 0)
 		{
 			LOG_TRACE("Accepted: " << std::this_thread::get_id());
-			http::fcgi::ClientContext *result = new icarus::http::fcgi::ClientContext(fcgiRequest);
+			http::fcgi::client_context *result = new icarus::http::fcgi::client_context(fcgiRequest);
 			LOG_TRACE("Initializing: " << std::this_thread::get_id());
 			result->init();
 			return result;
