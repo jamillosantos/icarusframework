@@ -50,7 +50,49 @@ public:
 		std::vector<std::string> currentStack;
 		if (boost::filesystem::exists(id))
 		{
-			if (boost::filesystem::is_regular_file(id))
+			if (boost::filesystem::is_directory(id))
+			{
+				boost::filesystem::recursive_directory_iterator dirEnd;
+				for (boost::filesystem::recursive_directory_iterator d(id);
+					 d != dirEnd; ++d)
+				{
+					std::cout << "*" << d->path().string();
+					if (boost::filesystem::is_regular(*d))
+					{
+						std::cout << ". OK";
+						std::string extension = d->path().extension().string();
+						parentPath = d->path().parent_path().string();
+
+						std::stringstream ostr;
+						CompileFile c((*d).path(), ostr, templateBuilder);
+
+						std::string relativePath;
+						if (parentPath != idFullPath)
+							relativePath = parentPath.substr(idFullPath.length()+1);
+
+						boost::filesystem::path targetCppFile(od.string() + (relativePath) +
+															  boost::filesystem::path::preferred_separator + c.info.name + "_" + c.info.extension +
+															  ".hpp"
+						);
+						boost::filesystem::create_directories(targetCppFile.parent_path().string());
+
+						boost::split(c.info.package, relativePath, boost::is_any_of("\\/"));
+						c.compile();
+
+						std::ofstream ostream(targetCppFile.string());
+						if (ostream)
+							ostream << ostr.rdbuf();
+						else
+						{
+							// TODO: specialize exception
+							std::cerr << "Cannot create file stream on " << targetCppFile.string() << "." << std::endl;
+							throw std::exception();
+						}
+					}
+					std::cout << std::endl;
+				}
+			}
+			else if (boost::filesystem::is_regular_file(id))
 			{
 				std::string extension = id.extension().string();
 				parentPath = id.parent_path().string();

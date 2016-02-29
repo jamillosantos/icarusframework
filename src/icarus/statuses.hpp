@@ -3,25 +3,26 @@
  * @date August 18, 2015
  */
 
-#ifndef ICARUSFRAMEWORK_HTTP_STATUSES_H
-#define ICARUSFRAMEWORK_HTTP_STATUSES_H
+#ifndef ICARUSFRAMEWORK_STATUSES_H
+#define ICARUSFRAMEWORK_STATUSES_H
 
 #include <string>
-#include "response.hpp"
 
 namespace icarus
 {
-namespace http
-{
-
 class status
 {
 public:
-	status(int code, const std::string &value) : code(code), value(value)
+	status(int code, const std::string &value)
+		: code(code), value(value)
 	{ }
 
-	const int code;
-	const std::string value;
+	status(const status &s)
+		: code(s.code), value(s.value)
+	{ }
+
+	int code;
+	std::string value;
 };
 
 namespace statuses
@@ -55,6 +56,5 @@ status GATEWAY_TIMEOUT(504, "Gateway Timeout");
 status VERSION_NOT_SUPORTED(50, "Version Not Suported");
 }
 }
-}
 
-#endif //ICARUSFRAMEWORK_HTTP_STATUSES_H
+#endif //ICARUSFRAMEWORK_STATUSES_H

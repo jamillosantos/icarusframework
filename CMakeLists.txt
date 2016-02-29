@@ -6,8 +6,8 @@ add_definitions(-DVERSION_MINOR="${PROJECT_VERSION_MINOR}")
 add_definitions(-DVERSION_PATCH="${PROJECT_VERSION_PATCH}")
 add_definitions(-DVERSION_TWEAK="${PROJECT_VERSION_TWEAK}")
 
-SET (CMAKE_C_COMPILER               "/usr/bin/clang")
-SET (CMAKE_CXX_COMPILER             "/usr/bin/clang++")
+#SET (CMAKE_C_COMPILER               "/usr/bin/clang")
+#SET (CMAKE_CXX_COMPILER             "/usr/bin/clang++")
 
 if(NOT WIN32)
 	string(ASCII 27 Esc)
@@ -96,7 +96,7 @@ set(SOURCE_FILES
 	src/icarus/log.hpp
 
 	src/icarus/http/headers.hpp
-	src/icarus/http/statuses.hpp
+	src/icarus/statuses.hpp
 	src/icarus/http/cookies.hpp
 	src/icarus/http/exceptions.hpp
 	src/icarus/http/request.hpp
@@ -182,7 +182,6 @@ target_link_libraries(icarus-fastcgi
 	)
 
 add_library(minotaur
-	src/minotaur/ochainstream.hpp
 	src/minotaur/fileinfo.hpp
 	src/minotaur/compiler/compiler.hpp
 	src/minotaur/compiler/compilefile.hpp
