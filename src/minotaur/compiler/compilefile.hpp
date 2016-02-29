@@ -3,8 +3,8 @@
  * @date August 17, 2015
  */
 
-#ifndef ICARUSFRAMEWORK_MINOTAUROS_COMPILER_COMPILEFILE_HPP
-#define ICARUSFRAMEWORK_MINOTAUROS_COMPILER_COMPILEFILE_HPP
+#ifndef ICARUSFRAMEWORK_MINOTAUR_COMPILER_COMPILEFILE_HPP
+#define ICARUSFRAMEWORK_MINOTAUR_COMPILER_COMPILEFILE_HPP
 
 #include <vector>
 #include <string>
@@ -88,6 +88,14 @@ private:
 		{
 			if (cc == ')')
 			{
+				while (this->readChar(&cc))
+				{
+					if ((cc != '\n') || (cc != '\r'))
+					{
+						str << cc;
+						break;
+					}
+				}
 				break;
 			}
 			else
@@ -370,4 +378,4 @@ const boost::regex CompileFile::variableChars("[a-zA-Z0-9_]");
 }
 }
 
-#endif // ICARUSFRAMEWORK_MINOTAUROS_COMPILER_COMPILEFILE_HPP
+#endif // ICARUSFRAMEWORK_MINOTAUR_COMPILER_COMPILEFILE_HPP

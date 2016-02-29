@@ -3,8 +3,8 @@
  * @date August 19, 2015
  */
 
-#ifndef ICARUSFRAMEWORK_MINOTAUROS_COMPILER_CPPTEMPLATEBUILDER_H
-#define ICARUSFRAMEWORK_MINOTAUROS_COMPILER_CPPTEMPLATEBUILDER_H
+#ifndef ICARUSFRAMEWORK_MINOTAUR_COMPILER_CPPTEMPLATEBUILDER_H
+#define ICARUSFRAMEWORK_MINOTAUR_COMPILER_CPPTEMPLATEBUILDER_H
 
 #include "templatebuilder.hpp"
 
@@ -27,8 +27,8 @@ public:
 			<< "/**" << std::endl
 			<< " * Auto created." << std::endl
 			<< " **/" << std::endl << std::endl
-			<< "#include <simpleweb/server_http.hpp>" << std::endl
-			<< "#include <icarus/http/response.hpp>" << std::endl;
+			<< "#include <icarus/result.hpp>" << std::endl
+			<< "#include <icarus/statuses.hpp>" << std::endl;
 	}
 
 	virtual void beginClass(MetaInfo &fileInfo, std::ostream &ostream) override
@@ -40,22 +40,21 @@ public:
 			ostream << "namespace " << package << std::endl << "{" << std::endl;
 		}
 		ostream
-			<< "\tminotaur::OChainStream " << fileInfo.name << "(";
+			<< "\ticarus::result &" << fileInfo.name << "(icarus::result &out";
 
 		if (!fileInfo.parameters.empty())
-			ostream << fileInfo.parameters;
+			ostream << ", " << fileInfo.parameters;
 
 		ostream
 			<< ")" << std::endl
-			<< "\t{" << std::endl
-			<< "\t\tminotaur::OChainStream out;" << std::endl;
+			<< "\t{" << std::endl;
 	}
 
 	virtual void endClass(MetaInfo &fileInfo, std::ostream &ostream) override
 	{
 		TemplateBuilder::endClass(fileInfo, ostream);
 		ostream
-			<< "\t\treturn out;" << std::endl
+			<< "\t\treturn result;" << std::endl
 			<< "\t}" << std::endl;
 		for (std::string package : fileInfo.package)
 			ostream << "} // " << package << std::endl;
@@ -111,4 +110,4 @@ public:
 };
 }
 }
-#endif // ICARUSFRAMEWORK_MINOTAUROS_COMPILER_CPPTEMPLATEBUILDER_H
+#endif // ICARUSFRAMEWORK_MINOTAUR_COMPILER_CPPTEMPLATEBUILDER_H
