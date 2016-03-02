@@ -3,8 +3,8 @@
 
 #include <boost/test/included/unit_test.hpp>
 
-#include "icarus/routes/parser.hpp"
-#include "icarus/routes/compiler.hpp"
+#include "icarus/routes/parser.h"
+#include "icarus/routes/compiler.cpp"
 
 BOOST_AUTO_TEST_CASE(route2_parsing)
 {

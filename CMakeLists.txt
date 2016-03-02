@@ -42,18 +42,20 @@ if("${soci_core}" STREQUAL "soci_core-NOTFOUND")
 	message(FATAL_ERROR "Component not found ${Red}soci_core${ColourReset}.")
 endif()
 
-find_library(soci_mysql soci_mysql REQUIRED PATHS "${SOCI_LIBRARY_DIR}" PATH_SUFFIXES lib lib64)
-if("${soci_mysql}" STREQUAL "soci_mysql-NOTFOUND")
-	message(FATAL_ERROR "Component not found ${Red}soci_mysql${ColourReset}.")
-endif()
+# find_library(soci_mysql soci_mysql REQUIRED PATHS "${SOCI_LIBRARY_DIR}" PATH_SUFFIXES lib lib64)
+# if("${soci_mysql}" STREQUAL "soci_mysql-NOTFOUND")
+# 	message(FATAL_ERROR "Component not found ${Red}soci_mysql${ColourReset}.")
+# endif()
 
-find_library(soci_postgresql soci_postgresql REQUIRED PATHS "${SOCI_LIBRARY_DIR}" PATH_SUFFIXES lib lib64)
-if("${soci_postgresql}" STREQUAL "soci_postgresql-NOTFOUND")
-	message(FATAL_ERROR "Component not found ${Red}soci_postgresql${ColourReset}.")
-endif()
+# find_library(soci_postgresql soci_postgresql REQUIRED PATHS "${SOCI_LIBRARY_DIR}" PATH_SUFFIXES lib lib64)
+# if("${soci_postgresql}" STREQUAL "soci_postgresql-NOTFOUND")
+# 	message(FATAL_ERROR "Component not found ${Red}soci_postgresql${ColourReset}.")
+# endif()
+
 message("      SOCI (core): ${soci_core}")
-message("     SOCI (mysql): ${soci_mysql}")
-message("SOCI (postgresql): ${soci_postgresql}")
+
+# message("     SOCI (mysql): ${soci_mysql}")
+# message("SOCI (postgresql): ${soci_postgresql}")
 
 include_directories(
 	"${SOCI_LIBRARY_DIR}/include"
@@ -93,43 +95,101 @@ configure_file(
 )
 
 set(SOURCE_FILES
-	src/icarus/log.hpp
+	include/icarus/log.h
+	src/icarus/log.cpp
 
-	src/icarus/http/headers.hpp
-	src/icarus/statuses.hpp
-	src/icarus/http/cookies.hpp
-	src/icarus/http/exceptions.hpp
-	src/icarus/http/request.hpp
-	src/icarus/http/response.hpp
-	src/icarus/http/client.hpp
-	src/icarus/http/dataconversion.hpp
+	# ---
 
-	src/icarus/http/fcgi/request.hpp
-	src/icarus/http/fcgi/response.hpp
-	src/icarus/http/fcgi/application.hpp
-	src/icarus/http/fcgi/client.hpp
+	include/icarus/http/headers.h
+	include/icarus/statuses.h
+	include/icarus/http/cookies.h
+	include/icarus/http/exceptions.h
+	include/icarus/http/request.h
+	include/icarus/http/response.h
+	include/icarus/http/client.h
+	include/icarus/http/dataconversion.h
 
-	src/icarus/routes/data.hpp
-	src/icarus/routes/parser.hpp
-	src/icarus/routes/compiler.hpp
-	src/icarus/routes/routeswriter.hpp
-	src/icarus/routes/to_url.hpp
-	src/icarus/routes/exceptions.hpp
-	src/icarus/routes/fieldtypes.hpp
+	src/icarus/http/headers.cpp
+	src/icarus/statuses.cpp
+	src/icarus/http/cookies.cpp
+	src/icarus/http/exceptions.cpp
+	src/icarus/http/request.cpp
+	src/icarus/http/response.cpp
+	src/icarus/http/client.cpp
+	src/icarus/http/dataconversion.cpp
 
-	src/icarus/session/sessionmanager.hpp
-	src/icarus/session/session.hpp
-	src/icarus/session/memory.hpp
+	# ---
 
-	src/icarus/result.hpp
-	src/icarus/exceptions.hpp
-	src/icarus/action.hpp
-	src/icarus/application.hpp
-	src/icarus/config.hpp
-	src/icarus/multithreadedapplication.hpp
-	src/icarus/interfaces.hpp
-	src/icarus/db/databases.hpp
+	include/icarus/http/fcgi/request.h
+	include/icarus/http/fcgi/response.h
+	include/icarus/http/fcgi/application.h
+	include/icarus/http/fcgi/client.h
+
+	src/icarus/http/fcgi/request.cpp
+	src/icarus/http/fcgi/response.cpp
+	src/icarus/http/fcgi/application.cpp
+	src/icarus/http/fcgi/client.cpp
+
+	# ---
+
+	include/icarus/routes/data.h
+	include/icarus/routes/parser.h
+	include/icarus/routes/compiler.h
+	include/icarus/routes/routeswriter.h
+	include/icarus/routes/to_url.h
+	include/icarus/routes/exceptions.h
+	include/icarus/routes/fieldtypes.h
+
+	src/icarus/routes/data.cpp
+	src/icarus/routes/parser.cpp
+	src/icarus/routes/compiler.cpp
+	src/icarus/routes/routeswriter.cpp
+	src/icarus/routes/to_url.cpp
+	src/icarus/routes/exceptions.cpp
+	src/icarus/routes/fieldtypes.cpp
+
+	# ---
+
+	include/icarus/session/manager.h
+	include/icarus/session/session.h
+	include/icarus/session/memory.h
+
+	src/icarus/session/manager.cpp
+	src/icarus/session/session.cpp
+	src/icarus/session/memory.cpp
+
+	# ---
+
+	include/icarus/interfaces.h
+
+	include/icarus/action.h
+	include/icarus/result.h
+	include/icarus/exceptions.h
+	include/icarus/action.h
+	include/icarus/application.h
+	include/icarus/config.h
+	include/icarus/multithreadedapplication.h
+
+	src/icarus/action.cpp
+	src/icarus/result.cpp
+	src/icarus/exceptions.cpp
+	src/icarus/action.cpp
+	src/icarus/application.cpp
+	src/icarus/config.cpp
+	src/icarus/multithreadedapplication.cpp
+
+	# ---
+
+	include/icarus/db/databases.h
+	include/icarus/db/field.h
+	include/icarus/db/migrations.h
+
+	src/icarus/db/databases.cpp
+	src/icarus/db/field.cpp
+	src/icarus/db/migrations.cpp
 )
+
+include_directories("${CMAKE_SOURCE_DIR}/include")
 
 set(ICARUS_LIBRARIES
 	boost_log_setup
@@ -157,7 +217,7 @@ set(ICARUS_LIBRARIES
 
 include_directories(${CMAKE_SOURCE_DIR}/src)
 
-add_library(icarusframework
+add_library(icarusframework SHARED
 	${SOURCE_FILES}
 )
 
@@ -172,16 +232,16 @@ add_executable(icarus-fastcgi
 )
 
 target_link_libraries(icarus-fastcgi
-	${ICARUS_LIBRARIES}
-
 	fcgi
 	fcgi++
 
 	icarusframework
 	cppnetlib-uri
-	)
 
-add_library(minotaur
+
+)
+
+add_library(minotaur SHARED
 	src/minotaur/fileinfo.hpp
 	src/minotaur/compiler/compiler.hpp
 	src/minotaur/compiler/compilefile.hpp

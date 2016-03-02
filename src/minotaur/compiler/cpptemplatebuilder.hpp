@@ -54,7 +54,7 @@ public:
 	{
 		TemplateBuilder::endClass(fileInfo, ostream);
 		ostream
-			<< "\t\treturn result;" << std::endl
+			<< "\t\treturn out;" << std::endl
 			<< "\t}" << std::endl;
 		for (std::string package : fileInfo.package)
 			ostream << "} // " << package << std::endl;

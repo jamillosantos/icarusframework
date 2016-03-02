@@ -8,7 +8,7 @@
 
 #include <boost/test/included/unit_test.hpp>
 
-#include "icarus/routes/parser.hpp"
+#include "icarus/routes/parser.h"
 
 BOOST_AUTO_TEST_CASE(route_group)
 {
@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE(route_group)
 	parser.parse((resourceDir / "routes" / "routes_groups").string(), parserData);
 
 	{
-		ifr::Group &group = *dynamic_cast<ifr::Group *>(parserData.pieces()[0].get());
+		ifr::group &group = *dynamic_cast<ifr::group *>(parserData.pieces()[0].get());
 		BOOST_REQUIRE_EQUAL(group.uri().tokens().size(), 1);
 		BOOST_CHECK_EQUAL(group.uri().tokens()[0].regex(), "/testing");
 		BOOST_CHECK_EQUAL(group.uri().tokens()[0].name(), "");
@@ -90,7 +90,7 @@ BOOST_AUTO_TEST_CASE(route_group)
 	}
 
 	{
-		ifr::Group &group = *dynamic_cast<ifr::Group *>(parserData.pieces()[1].get());
+		ifr::group &group = *dynamic_cast<ifr::group *>(parserData.pieces()[1].get());
 		BOOST_REQUIRE_EQUAL(group.uri().tokens().size(), 2);
 		BOOST_CHECK_EQUAL(group.uri().tokens()[0].regex(), "/u/");
 		BOOST_CHECK_EQUAL(group.uri().tokens()[0].name(), "");

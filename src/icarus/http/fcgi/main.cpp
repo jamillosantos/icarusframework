@@ -11,13 +11,14 @@
 #include <boost/log/sinks/text_ostream_backend.hpp>
 
 #include <boost/program_options.hpp>
-#include <icarus/multithreadedapplication.hpp>
+#include <icarus/multithreadedapplication.h>
 
-#include "request.hpp"
-#include "response.hpp"
-#include "../../log.hpp"
-#include "../../routes/data.hpp"
-#include "application.hpp"
+#include <icarus/log.h>
+
+#include <icarus/http/fcgi/application.h>
+#include <icarus/http/fcgi/request.h>
+#include <icarus/http/fcgi/response.h>
+#include <icarus/routes/data.h>
 
 int main(int argc, char **argv)
 {

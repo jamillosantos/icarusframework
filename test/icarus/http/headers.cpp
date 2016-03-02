@@ -8,7 +8,7 @@
 
 #include <boost/test/included/unit_test.hpp>
 
-#include "icarus/http/headers.hpp"
+#include "icarus/http/headers.cpp"
 
 BOOST_AUTO_TEST_CASE(ValuesList1)
 {

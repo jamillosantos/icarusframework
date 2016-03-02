@@ -8,7 +8,7 @@
 
 #include <boost/test/included/unit_test.hpp>
 #include <boost/filesystem/path.hpp>
-#include "icarus/routes/compiler.hpp"
+#include "icarus/routes/compiler.cpp"
 
 BOOST_AUTO_TEST_CASE(routes1)
 {
