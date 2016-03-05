@@ -3,8 +3,8 @@
  * @date February 24, 2016
  **/
 
-#ifndef ICARUSFRAMEWORK_DB_FIELD_HPP
-#define ICARUSFRAMEWORK_DB_FIELD_HPP
+#ifndef ICARUSFRAMEWORK_DB_FIELD_H
+#define ICARUSFRAMEWORK_DB_FIELD_H
 
 #include <boost/optional.hpp>
 
@@ -40,4 +40,4 @@ public:
 }
 }
 
-#endif //ICARUSFRAMEWORK_DB_FIELD_HPP
+#endif //ICARUSFRAMEWORK_DB_FIELD_H

@@ -3,8 +3,8 @@
  * @date November 11, 2015
  **/
 
-#ifndef ICARUSFRAMEWORK_TO_URL_HPP
-#define ICARUSFRAMEWORK_TO_URL_HPP
+#ifndef ICARUSFRAMEWORK_TO_URL_H
+#define ICARUSFRAMEWORK_TO_URL_H
 
 #include <string>
 
@@ -14,4 +14,4 @@ template <typename T>
 std::string to_url(T data);
 }
 
-#endif //ICARUSFRAMEWORK_TO_URL_HPP
+#endif //ICARUSFRAMEWORK_TO_URL_H

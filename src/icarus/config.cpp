@@ -58,12 +58,12 @@ icarus::config::database &icarus::config::databases::operator[](const std::strin
 	return this->_data.at(name);
 }
 
-std::map<std::string, icarus::config::database>::iterator icarus::config::databases::begin()
+icarus::config::databases::iterator icarus::config::databases::begin()
 {
 	return this->_data.begin();
 }
 
-std::map<std::string, icarus::config::database>::iterator icarus::config::databases::end()
+icarus::config::databases::iterator icarus::config::databases::end()
 {
 	return this->_data.end();
 }

@@ -3,8 +3,8 @@
  * @date August 18, 2015
  */
 
-#ifndef ICARUSFRAMEWORK_RESULT_HPP
-#define ICARUSFRAMEWORK_RESULT_HPP
+#ifndef ICARUSFRAMEWORK_RESULT_H
+#define ICARUSFRAMEWORK_RESULT_H
 
 #include <boost/optional/optional.hpp>
 
@@ -78,4 +78,4 @@ static result temporaryRedirect(std::string url);
 }
 }
 
-#endif // ICARUSFRAMEWORK_RESULT_HPP
+#endif // ICARUSFRAMEWORK_RESULT_H

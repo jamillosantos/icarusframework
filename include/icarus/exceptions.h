@@ -3,8 +3,8 @@
  * @date November 06, 2015
  **/
 
-#ifndef ICARUSFRAMEWORK_EXCEPTIONS_HPP
-#define ICARUSFRAMEWORK_EXCEPTIONS_HPP
+#ifndef ICARUSFRAMEWORK_EXCEPTIONS_H
+#define ICARUSFRAMEWORK_EXCEPTIONS_H
 
 #include <string>
 #include <boost/locale.hpp>
@@ -60,4 +60,4 @@ public:
 };
 }
 
-#endif //ICARUSFRAMEWORK_EXCEPTIONS_HPP
+#endif //ICARUSFRAMEWORK_EXCEPTIONS_H

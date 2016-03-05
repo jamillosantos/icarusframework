@@ -3,8 +3,8 @@
  * @date January 14, 2016
  **/
 
-#ifndef ICARUSFRAMEWORK_HTTP_COOKIES_HPP
-#define ICARUSFRAMEWORK_HTTP_COOKIES_HPP
+#ifndef ICARUSFRAMEWORK_HTTP_COOKIES_H
+#define ICARUSFRAMEWORK_HTTP_COOKIES_H
 
 #include <boost/regex.hpp>
 #include <boost/concept_check.hpp>
@@ -60,4 +60,4 @@ public:
 }
 }
 
-#endif //ICARUSFRAMEWORK_HTTP_COOKIES_HPP
+#endif //ICARUSFRAMEWORK_HTTP_COOKIES_H

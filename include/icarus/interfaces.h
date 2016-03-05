@@ -3,8 +3,8 @@
  * @date February 05, 2016
  **/
 
-#ifndef ICARUSFRAMEWORK_INTERFACES_HPP
-#define ICARUSFRAMEWORK_INTERFACES_HPP
+#ifndef ICARUSFRAMEWORK_INTERFACES_H
+#define ICARUSFRAMEWORK_INTERFACES_H
 
 #include <string>
 
@@ -14,4 +14,4 @@ public:
 	std::string toString() = 0;
 };
 
-#endif //ICARUSFRAMEWORK_INTERFACES_HPP
+#endif //ICARUSFRAMEWORK_INTERFACES_H

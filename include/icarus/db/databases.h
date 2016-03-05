@@ -10,6 +10,7 @@
 #include <map>
 
 #include <soci/soci.h>
+
 #include <icarus/config.h>
 #include <icarus/nullable.h>
 

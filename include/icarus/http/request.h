@@ -3,8 +3,8 @@
  * @date January 12, 2016
  **/
 
-#ifndef ICARUSFRAMEWORK_REQUEST_HPP
-#define ICARUSFRAMEWORK_REQUEST_HPP
+#ifndef ICARUSFRAMEWORK_REQUEST_H
+#define ICARUSFRAMEWORK_REQUEST_H
 
 #include <icarus/http/headers.h>
 #include <icarus/http/cookies.h>
@@ -55,4 +55,4 @@ public:
 }
 }
 
-#endif //ICARUSFRAMEWORK_REQUEST_HPP
+#endif //ICARUSFRAMEWORK_REQUEST_H

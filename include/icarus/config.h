@@ -3,8 +3,8 @@
  * @date January 24, 2016
  **/
 
-#ifndef ICARUSFRAMEWORK_CONFIG_HPP
-#define ICARUSFRAMEWORK_CONFIG_HPP
+#ifndef ICARUSFRAMEWORK_CONFIG_H
+#define ICARUSFRAMEWORK_CONFIG_H
 
 #include <string>
 #include <map>
@@ -47,14 +47,16 @@ public:
 
 class databases
 {
+public:
+	typedef typename std::map<std::string, icarus::config::database>::iterator iterator;
 private:
 	std::map<std::string, icarus::config::database> _data;
 public:
 	icarus::config::database &operator[](const std::string &name);
 
-	std::map<std::string, icarus::config::database>::iterator begin();
+	iterator begin();
 
-	std::map<std::string, icarus::config::database>::iterator end();
+	iterator end();
 
 	void add(const std::string &name, const std::string &string, const std::string password, const unsigned int poolSize);
 };
@@ -74,4 +76,4 @@ public:
 }
 }
 
-#endif //ICARUSFRAMEWORK_CONFIG_HPP
+#endif //ICARUSFRAMEWORK_CONFIG_H

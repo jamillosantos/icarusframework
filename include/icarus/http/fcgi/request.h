@@ -3,8 +3,8 @@
 * @date January 13, 2016
 **/
 
-#ifndef ICARUSFRAMEWORK_FCGI_REQUEST_HPP
-#define ICARUSFRAMEWORK_FCGI_REQUEST_HPP
+#ifndef ICARUSFRAMEWORK_FCGI_REQUEST_H
+#define ICARUSFRAMEWORK_FCGI_REQUEST_H
 
 #include <icarus/http/request.h>
 #include <icarus/exceptions.h>
@@ -31,4 +31,4 @@ public:
 }
 }
 
-#endif //ICARUSFRAMEWORK_FCGI_REQUEST_HPP
+#endif //ICARUSFRAMEWORK_FCGI_REQUEST_H

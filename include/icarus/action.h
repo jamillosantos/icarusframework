@@ -3,8 +3,8 @@
  * @date November 11, 2015
  **/
 
-#ifndef ICARUSFRAMEWORK_ACTION_HPP
-#define ICARUSFRAMEWORK_ACTION_HPP
+#ifndef ICARUSFRAMEWORK_ACTION_H
+#define ICARUSFRAMEWORK_ACTION_H
 
 #include <string>
 
@@ -33,4 +33,4 @@ public:
 }
 
 
-#endif //ICARUSFRAMEWORK_ACTION_HPP
+#endif //ICARUSFRAMEWORK_ACTION_H

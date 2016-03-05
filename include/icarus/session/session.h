@@ -3,8 +3,8 @@
  * @date February 20, 2016
  **/
 
-#ifndef ICARUSFRAMEWORK_SESSION_HPP
-#define ICARUSFRAMEWORK_SESSION_HPP
+#ifndef ICARUSFRAMEWORK_SESSION_H
+#define ICARUSFRAMEWORK_SESSION_H
 
 #include <boost/lexical_cast.hpp>
 #include <string>
@@ -70,4 +70,4 @@ public:
 }
 }
 
-#endif //ICARUSFRAMEWORK_SESSION_HPP
+#endif //ICARUSFRAMEWORK_SESSION_H

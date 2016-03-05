@@ -3,8 +3,8 @@
  * @date January 24, 2016
  **/
 
-#ifndef ICARUSFRAMEWORK_APPLICATION_HPP
-#define ICARUSFRAMEWORK_APPLICATION_HPP
+#ifndef ICARUSFRAMEWORK_APPLICATION_H
+#define ICARUSFRAMEWORK_APPLICATION_H
 
 #include <icarus/http/fcgi/client.h>
 #include <icarus/config.h>
@@ -39,4 +39,4 @@ public:
 };
 }
 
-#endif //ICARUSFRAMEWORK_APPLICATION_HPP
+#endif //ICARUSFRAMEWORK_APPLICATION_H

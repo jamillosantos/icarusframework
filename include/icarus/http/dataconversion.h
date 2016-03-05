@@ -3,8 +3,8 @@
  * @date February 05, 2016
  **/
 
-#ifndef ICARUSFRAMEWORK_DATACONVERSION_HPP
-#define ICARUSFRAMEWORK_DATACONVERSION_HPP
+#ifndef ICARUSFRAMEWORK_DATACONVERSION_H
+#define ICARUSFRAMEWORK_DATACONVERSION_H
 
 #include <string>
 
@@ -36,4 +36,4 @@ void from_string(unsigned long long int &dest, const std::string &string);
 }
 }
 
-#endif //ICARUSFRAMEWORK_DATACONVERSION_HPP
+#endif //ICARUSFRAMEWORK_DATACONVERSION_H

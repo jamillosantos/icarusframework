@@ -6,8 +6,10 @@ add_definitions(-DVERSION_MINOR="${PROJECT_VERSION_MINOR}")
 add_definitions(-DVERSION_PATCH="${PROJECT_VERSION_PATCH}")
 add_definitions(-DVERSION_TWEAK="${PROJECT_VERSION_TWEAK}")
 
-#SET (CMAKE_C_COMPILER               "/usr/bin/clang")
-#SET (CMAKE_CXX_COMPILER             "/usr/bin/clang++")
+add_definitions(-DSOCI_USE_BOOST=1)
+
+SET (CMAKE_C_COMPILER               "/usr/bin/clang")
+SET (CMAKE_CXX_COMPILER             "/usr/bin/clang++")
 
 if(NOT WIN32)
 	string(ASCII 27 Esc)
@@ -169,6 +171,7 @@ set(SOURCE_FILES
 	include/icarus/application.h
 	include/icarus/config.h
 	include/icarus/multithreadedapplication.h
+	include/icarus/nullable.h
 
 	src/icarus/action.cpp
 	src/icarus/result.cpp
@@ -177,16 +180,28 @@ set(SOURCE_FILES
 	src/icarus/application.cpp
 	src/icarus/config.cpp
 	src/icarus/multithreadedapplication.cpp
+	src/icarus/nullable.cpp
 
 	# ---
 
 	include/icarus/db/databases.h
 	include/icarus/db/field.h
-	include/icarus/db/migrations.h
 
 	src/icarus/db/databases.cpp
 	src/icarus/db/field.cpp
-	src/icarus/db/migrations.cpp
+
+	# ---
+
+	include/icarus/migrations/manager.h
+	include/icarus/migrations/migration.h
+	include/icarus/migrations/soci.h
+	include/icarus/migrations/runner.h
+
+
+	src/icarus/migrations/manager.cpp
+	src/icarus/migrations/migration.cpp
+	src/icarus/migrations/soci.cpp
+	include/icarus/migrations/runner.cpp
 )
 
 include_directories("${CMAKE_SOURCE_DIR}/include")
