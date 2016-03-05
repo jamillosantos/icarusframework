@@ -3,14 +3,15 @@
  * @date February 24, 2016
  **/
 
-#ifndef ICARUSFRAMEWORK_DB_DATABASES_HPP
-#define ICARUSFRAMEWORK_DB_DATABASES_HPP
+#ifndef ICARUSFRAMEWORK_DB_DATABASES_H
+#define ICARUSFRAMEWORK_DB_DATABASES_H
 
 #include <memory>
 #include <map>
 
-#include <soci/connection-pool.h>
+#include <soci/soci.h>
 #include <icarus/config.h>
+#include <icarus/nullable.h>
 
 namespace icarus
 {
@@ -21,11 +22,15 @@ class databases
 private:
 	std::map<std::string, std::unique_ptr<soci::connection_pool>> _pools;
 public:
+	databases();
+
+	databases(icarus::config::config &config);
+
 	void add(const std::string &name, icarus::config::database &database);
 
-	const boost::optional<soci::connection_pool> &operator[](const std::string &name);
+	icarus::nullable<soci::connection_pool> operator[](const std::string &name);
 };
 }
 }
 
-#endif //ICARUSFRAMEWORK_DB_DATABASES_HPP
+#endif //ICARUSFRAMEWORK_DB_DATABASES_H
