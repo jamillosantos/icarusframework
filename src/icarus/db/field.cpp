@@ -60,6 +60,11 @@ public:
 		return this->_value;
 	}
 
+	T &operator->()
+	{
+		return *this->_value;
+	}
+
 	icarus::db::field<T> &clear()
 	{
 		if (this->_value)
