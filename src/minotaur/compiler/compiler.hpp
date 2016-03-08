@@ -70,9 +70,9 @@ public:
 						if (parentPath != idFullPath)
 							relativePath = parentPath.substr(idFullPath.length()+1);
 
-						boost::filesystem::path targetCppFile(od.string() + (relativePath) +
-															  boost::filesystem::path::preferred_separator + c.info.name + "_" + c.info.extension +
-															  ".hpp"
+						boost::filesystem::path targetCppFile(od.string() + boost::filesystem::path::preferred_separator
+							+ (relativePath) + boost::filesystem::path::preferred_separator + c.info.name
+							+ c.info.extension + ".hpp"
 						);
 						boost::filesystem::create_directories(targetCppFile.parent_path().string());
 
