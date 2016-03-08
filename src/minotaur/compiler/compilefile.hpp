@@ -239,22 +239,38 @@ private:
 			}
 			else if (cc[0] == '(')
 			{
-				this->templateBuilder.writeChar(this->info, this->outputStream, cc[0]);;
+				this->templateBuilder.writeChar(this->info, this->outputStream, cc[0]);
 				this->runQuickEchoBrackets();
+			}
+			else if (
+				(
+					(cc[0] >= '0')
+					&& (cc[0] <= '9')
+				) || (
+					(cc[0] >= 'A')
+					&& (cc[0] <= 'Z')
+				) || (
+					(cc[0] >= 'a')
+					&& (cc[0] <= 'z')
+				)
+			)
+			{
+				this->templateBuilder.writeChar(this->info, this->outputStream, cc[0]);;
 			}
 			else if (cc[0] == ';')
 			{
+				this->templateBuilder.endWriteBlock(this->info, this->outputStream);
 				break;
 			}
 			else
 			{
-				this->templateBuilder.writeChar(this->info, this->outputStream, cc[0]);;
+				this->templateBuilder.endWriteBlock(this->info, this->outputStream);
+				this->writeChar(cc[0]);
+				break;
 			}
 			count++;
 		}
 		while (this->readChar(&cc[0]));
-
-		this->templateBuilder.endWriteBlock(this->info, this->outputStream);
 	}
 
 	void writeChar(char cc)
