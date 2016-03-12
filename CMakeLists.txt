@@ -81,16 +81,6 @@ message("OpenSSL SSL libraries: ${OPENSSL_SSL_LIBRARIES}")
 message("OpenSSL crypto libraries: ${OPENSSL_CRYPTO_LIBRARIES}")
 include_directories(${OPENSSL_INCLUDE_DIR})
 
-
-# cpp-netlib
-find_package(cppnetlib 0.11.0 REQUIRED PATHS "$ENV{HOME}/libs/cpp-netlib-0.11.2/usr/local/lib64")
-if("${cppnetlib}" STREQUAL "cppnetlib-NOTFOUND")
-	message(FATAL_ERROR "Component not found ${Red}cppnetlib${ColourReset}.")
-endif()
-message("CPPNETLIB_INCLUDE_DIRS: ${CPPNETLIB_INCLUDE_DIRS}")
-message("CPPNETLIB_LIBRARIES: ${CPPNETLIB_LIBRARIES}")
-include_directories(${CPPNETLIB_INCLUDE_DIRS})
-
 configure_file(
 	src/config.h.in
 	"${PROJECT_BINARY_DIR}/config.h"
@@ -202,7 +192,7 @@ set(SOURCE_FILES
 	src/icarus/migrations/migration.cpp
 	src/icarus/migrations/soci.cpp
 	include/icarus/migrations/runner.cpp
-)
+	src/icarus/http/querystring.cpp include/icarus/http/querystring.h src/icarus/general.cpp include/icarus/general.h)
 
 include_directories("${CMAKE_SOURCE_DIR}/include")
 
@@ -221,6 +211,9 @@ set(ICARUS_LIBRARIES
 
 	${soci_core}
 	${soci_mysql}
+
+	fcgi
+	fcgi++
 
 	rt
 
@@ -247,13 +240,7 @@ add_executable(icarus-fastcgi
 )
 
 target_link_libraries(icarus-fastcgi
-	fcgi
-	fcgi++
-
 	icarusframework
-	cppnetlib-uri
-
-
 )
 
 add_library(minotaur SHARED
@@ -306,7 +293,10 @@ foreach (testSrc ${TEST_SRCS})
 
 	add_executable(${testName} ${testSrc})
 
-	target_link_libraries(${testName} ${Boost_LIBRARIES} icarusframework)
+	target_link_libraries(${testName}
+		${Boost_LIBRARIES}
+		icarusframework
+	)
 
 	set_target_properties(${testName} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${TEST_OUTPUT})
 
