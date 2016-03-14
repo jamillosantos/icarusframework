@@ -7,7 +7,7 @@
 #define MINOTAUR_COMPILER_METAINFO_H
 
 #include <string>
-#include <fstream>
+#include <vector>
 
 namespace minotaur
 {

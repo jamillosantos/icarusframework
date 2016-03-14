@@ -6,15 +6,20 @@
 #ifndef MINOTAUR_COMPILER_EXCEPTIONS_HPP
 #define MINOTAUR_COMPILER_EXCEPTIONS_HPP
 
-#include <exception>
+#include <icarus/exceptions.h>
 
 namespace minotaur
 {
 namespace compiler
 {
-class CompilerException
-	: public std::exception
-{ };
+class compiler_exception
+	: public icarus::exception
+{
+public:
+	compiler_exception(const std::string &message);
+
+	compiler_exception(const std::string &message, std::exception *cause);
+};
 }
 }
 

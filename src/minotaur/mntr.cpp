@@ -3,8 +3,8 @@
  * @date August 19, 2015
  */
 
-#include "compiler/compiler.hpp"
-#include "compiler/cpptemplatebuilder.hpp"
+#include "minotaur/compiler/compiler.cpp"
+#include "minotaur/compiler/cpptemplatebuilder.cpp"
 
 #include <boost/program_options.hpp>
 
