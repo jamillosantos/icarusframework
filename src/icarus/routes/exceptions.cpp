@@ -17,6 +17,6 @@ icarus::routes::IncompleteDeclaration::IncompleteDeclaration(unsigned int line, 
 	: icarus::exception((boost::locale::format(boost::locale::translate("Incomplete declaration at {1}:{2}.")) % line % column).str(), nullptr)
 { }
 
-icarus::routes::InvalidParamName::InvalidParamName(unsigned int line, std::string paramName)
+icarus::routes::param_not_found::param_not_found(unsigned int line, std::string paramName)
 	: icarus::exception((boost::locale::format(boost::locale::translate("Param {2} was not found. (at {1})")) % line % paramName).str(), nullptr)
 { }

@@ -36,11 +36,11 @@ public:
 	IncompleteDeclaration(unsigned int line, unsigned int column);
 };
 
-class InvalidParamName
+class param_not_found
 	: public icarus::exception
 {
 public:
-	InvalidParamName(unsigned int line, std::string paramName);
+	param_not_found(unsigned int line, std::string paramName);
 };
 } // routes
 } // icarus

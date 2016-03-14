@@ -168,9 +168,7 @@ void icarus::routes::routes_writer::write(std::ostream &stream, icarus::routes::
 			}
 			if (!found)
 			{
-				LOG_ERROR("Param " << param.name() << " was not found at line " << route.line() << ".");
-				// TODO: Throw an exception.
-				std::exit(99);
+				throw icarus::routes::param_not_found(route.line(), param.name());
 			}
 		}
 		stream << ");" << std::endl;
@@ -281,7 +279,7 @@ void icarus::routes::routes_writer::writeReverseRoutes(std::ostream &stream, ica
 					}
 				}
 				if (!found)
-					throw icarus::routes::InvalidParamName(route.line(), rt.name());
+					throw icarus::routes::param_not_found(route.line(), rt.name());
 			}
 		}
 		stream << "\t\treturn tmp;\n";
@@ -323,7 +321,7 @@ void icarus::routes::routes_writer::writeReverseRoutes(std::ostream &stream, ica
 					}
 				}
 				if (!found)
-					throw icarus::routes::InvalidParamName(route.line(), rt.name());
+					throw icarus::routes::param_not_found(route.line(), rt.name());
 			}
 		}
 		stream << "\t\treturn icarus::icarus::Action(\"" << route.httpMethod() << "\", tmp);\n";

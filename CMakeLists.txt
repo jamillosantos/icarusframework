@@ -66,7 +66,7 @@ include_directories(
 set(BOOST_ROOT "$ENV{HOME}/libs/libboost_1_60_0")
 set(BOOST_INCLUDEDIR "${BOOST_ROOT}/include")
 set(BOOST_LIBRARYDIR "${BOOST_ROOT}/lib")
-find_package(Boost REQUIRED log_setup log system coroutine context filesystem program_options regex date_time)
+find_package(Boost REQUIRED log_setup log system coroutine context filesystem program_options regex date_time unit_test_framework)
 message("Boost library:")
 message("\t+ include: ${Boost_INCLUDE_DIRS}")
 message("\t+ library: ${Boost_LIBRARY_DIRS}")
@@ -128,7 +128,6 @@ set(SOURCE_FILES
 	include/icarus/routes/parser.h
 	include/icarus/routes/compiler.h
 	include/icarus/routes/routeswriter.h
-	include/icarus/routes/to_url.h
 	include/icarus/routes/exceptions.h
 	include/icarus/routes/fieldtypes.h
 
@@ -136,7 +135,6 @@ set(SOURCE_FILES
 	src/icarus/routes/parser.cpp
 	src/icarus/routes/compiler.cpp
 	src/icarus/routes/routeswriter.cpp
-	src/icarus/routes/to_url.cpp
 	src/icarus/routes/exceptions.cpp
 	src/icarus/routes/fieldtypes.cpp
 
@@ -192,7 +190,18 @@ set(SOURCE_FILES
 	src/icarus/migrations/migration.cpp
 	src/icarus/migrations/soci.cpp
 	include/icarus/migrations/runner.cpp
-	src/icarus/http/querystring.cpp include/icarus/http/querystring.h src/icarus/general.cpp include/icarus/general.h)
+
+	include/icarus/http/querystring.h
+	src/icarus/http/querystring.cpp
+
+	include/icarus/general.h
+	src/icarus/general.cpp
+
+	include/icarus/routes/typeconversion.h
+	src/icarus/routes/typeconversion.cpp
+
+	include/icarus/routes/typeconversion-commons.h
+)
 
 include_directories("${CMAKE_SOURCE_DIR}/include")
 
@@ -282,19 +291,20 @@ file(GLOB_RECURSE TEST_SRCS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} test/icarus/*.c
 set(TEST_OUTPUT ${CMAKE_BINARY_DIR}/tests)
 add_definitions(-DTEST_RESOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/test/resources")
 
-message("\nTests\n=====")
+message("-- Tests")
 foreach (testSrc ${TEST_SRCS})
 	get_filename_component(testName ${testSrc} NAME_WE)
 	string(REPLACE "test/" "" testPackage "${testSrc}")
 	string(REPLACE "${testName}.cpp" "" testPackage "${testPackage}")
 	string(REPLACE "/" "_" testPackage "${testPackage}")
 	set(testName "test_${testPackage}${testName}")
-	message(" + ${testSrc} as ${testName}")
+	message("--   ${testSrc} as ${testName}")
 
 	add_executable(${testName} ${testSrc})
 
 	target_link_libraries(${testName}
 		${Boost_LIBRARIES}
+
 		icarusframework
 	)
 
