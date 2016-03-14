@@ -40,9 +40,9 @@ protected:
 
 	virtual void fetch() override;
 
-	virtual void insert(icarus::migrations::migration &migration);
+	virtual void insert(icarus::migrations::migration &migration) override;
 
-	virtual void remove(icarus::migrations::migration &migration);
+	virtual void remove(icarus::migrations::migration &migration) override;
 
 public:
 	icarus::migrations::manager_soci &session(soci::session &session);

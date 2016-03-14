@@ -257,19 +257,29 @@ target_link_libraries(icarus-fastcgi
 )
 
 add_library(minotaur SHARED
-	src/minotaur/fileinfo.hpp
-	src/minotaur/compiler/compiler.hpp
-	src/minotaur/compiler/compilefile.hpp
-	src/minotaur/compiler/cpptemplatebuilder.hpp
-	src/minotaur/compiler/exceptions.hpp
-	src/minotaur/compiler/metainfo.hpp
-	src/minotaur/compiler/templatebuilder.hpp
+	include/minotaur/fileinfo.h
+
+	include/minotaur/compiler/compiler.h
+	include/minotaur/compiler/compilefile.h
+	include/minotaur/compiler/cpptemplatebuilder.h
+	include/minotaur/compiler/exceptions.h
+	include/minotaur/compiler/metainfo.h
+	include/minotaur/compiler/templatebuilder.h
+
+	src/minotaur/compiler/compiler.cpp
+	src/minotaur/compiler/compilefile.cpp
+	src/minotaur/compiler/cpptemplatebuilder.cpp
+	src/minotaur/compiler/exceptions.cpp
+	src/minotaur/compiler/metainfo.cpp
+	src/minotaur/compiler/templatebuilder.cpp
 )
 
 target_link_libraries(minotaur
 	boost_system
 	boost_filesystem
 	boost_program_options
+
+	icarusframework
 )
 
 set_target_properties(minotaur PROPERTIES LINKER_LANGUAGE CXX)

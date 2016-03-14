@@ -52,3 +52,8 @@ icarus::open_file::open_file(const std::string &message)
 icarus::premature_eof::premature_eof()
 	: icarus::exception(bl::translate("Premature end of the file."))
 { }
+
+icarus::premature_eof::premature_eof(unsigned int line)
+	: icarus::exception((bl::format(bl::translate("Premature end of the file at line {1}.")) % line).str())
+{ }
+

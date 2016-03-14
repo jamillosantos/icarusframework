@@ -57,6 +57,8 @@ class premature_eof
 {
 public:
 	premature_eof();
+
+	premature_eof(unsigned int line);
 };
 }
 
