@@ -12,26 +12,29 @@
 
 #include <icarus/log.h>
 #include <icarus/http/headers.h>
+#include <icarus/content.h>
 #include <icarus/statuses.h>
 
 namespace icarus
 {
 class result
+	: public content
 {
 private:
 	icarus::status &_status;
-	std::stringstream _content_stream;
+
 	boost::optional<std::string> _contentType;
 	boost::optional<std::string> _charset;
 
 	icarus::http::value_list<icarus::http::values_value> _headers;
 public:
-
 	result(icarus::status &status);
 
 	result(icarus::status &status, const std::string &content);
 
 	result(const std::string &content);
+
+	result(icarus::result &&r);
 
 	icarus::http::value_list<icarus::http::values_value> &headers();
 
@@ -46,8 +49,6 @@ public:
 	result &as(std::string &contentType);
 
 	boost::optional<std::string> contentType() const;
-
-	std::stringstream &content();
 };
 
 namespace results

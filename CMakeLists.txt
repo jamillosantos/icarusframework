@@ -44,20 +44,21 @@ if("${soci_core}" STREQUAL "soci_core-NOTFOUND")
 	message(FATAL_ERROR "Component not found ${Red}soci_core${ColourReset}.")
 endif()
 
-# find_library(soci_mysql soci_mysql REQUIRED PATHS "${SOCI_LIBRARY_DIR}" PATH_SUFFIXES lib lib64)
-# if("${soci_mysql}" STREQUAL "soci_mysql-NOTFOUND")
-# 	message(FATAL_ERROR "Component not found ${Red}soci_mysql${ColourReset}.")
-# endif()
+find_library(soci_mysql soci_mysql REQUIRED PATHS "${SOCI_LIBRARY_DIR}" PATH_SUFFIXES lib lib64)
+if("${soci_mysql}" STREQUAL "soci_mysql-NOTFOUND")
+	message(FATAL_ERROR "Component not found ${Red}soci_mysql${ColourReset}.")
+endif()
 
-# find_library(soci_postgresql soci_postgresql REQUIRED PATHS "${SOCI_LIBRARY_DIR}" PATH_SUFFIXES lib lib64)
-# if("${soci_postgresql}" STREQUAL "soci_postgresql-NOTFOUND")
-# 	message(FATAL_ERROR "Component not found ${Red}soci_postgresql${ColourReset}.")
-# endif()
+find_library(soci_postgresql soci_postgresql REQUIRED PATHS "${SOCI_LIBRARY_DIR}" PATH_SUFFIXES lib lib64)
+if("${soci_postgresql}" STREQUAL "soci_postgresql-NOTFOUND")
+	message(FATAL_ERROR "Component not found ${Red}soci_postgresql${ColourReset}.")
+endif()
 
-message("      SOCI (core): ${soci_core}")
-
-# message("     SOCI (mysql): ${soci_mysql}")
-# message("SOCI (postgresql): ${soci_postgresql}")
+message("-- SOCI")
+message("--   core: ${soci_core}")
+message("--   mysql: ${soci_mysql}")
+message("--   postgresql: ${soci_postgresql}")
+message("")
 
 include_directories(
 	"${SOCI_LIBRARY_DIR}/include"
@@ -67,18 +68,20 @@ set(BOOST_ROOT "$ENV{HOME}/libs/libboost_1_60_0")
 set(BOOST_INCLUDEDIR "${BOOST_ROOT}/include")
 set(BOOST_LIBRARYDIR "${BOOST_ROOT}/lib")
 find_package(Boost REQUIRED log_setup log system coroutine context filesystem program_options regex date_time unit_test_framework)
-message("Boost library:")
-message("\t+ include: ${Boost_INCLUDE_DIRS}")
-message("\t+ library: ${Boost_LIBRARY_DIRS}")
+message("--   include: ${Boost_INCLUDE_DIRS}")
+message("--   library: ${Boost_LIBRARY_DIRS}")
+message("")
 add_definitions(-DBOOST_LOG_DYN_LINK=1)
 
 include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
 
 find_package(OpenSSL REQUIRED)
-message("OpenSSL include dir: ${OPENSSL_INCLUDE_DIR}")
-message("OpenSSL SSL libraries: ${OPENSSL_SSL_LIBRARIES}")
-message("OpenSSL crypto libraries: ${OPENSSL_CRYPTO_LIBRARIES}")
+message("-- OpenSSL")
+message("--   include dir: ${OPENSSL_INCLUDE_DIR}")
+message("--   SSL libraries: ${OPENSSL_SSL_LIBRARIES}")
+message("--   crypto libraries: ${OPENSSL_CRYPTO_LIBRARIES}")
+message("")
 include_directories(${OPENSSL_INCLUDE_DIR})
 
 configure_file(
@@ -159,7 +162,6 @@ set(SOURCE_FILES
 	include/icarus/application.h
 	include/icarus/config.h
 	include/icarus/multithreadedapplication.h
-	include/icarus/nullable.h
 
 	src/icarus/action.cpp
 	src/icarus/result.cpp
@@ -168,7 +170,6 @@ set(SOURCE_FILES
 	src/icarus/application.cpp
 	src/icarus/config.cpp
 	src/icarus/multithreadedapplication.cpp
-	src/icarus/nullable.cpp
 
 	# ---
 
@@ -201,6 +202,9 @@ set(SOURCE_FILES
 	src/icarus/routes/typeconversion.cpp
 
 	include/icarus/routes/typeconversion-commons.h
+
+	src/icarus/content.cpp
+	include/icarus/content.h
 )
 
 include_directories("${CMAKE_SOURCE_DIR}/include")

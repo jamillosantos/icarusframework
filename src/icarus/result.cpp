@@ -6,17 +6,19 @@
 #include <icarus/result.h>
 
 icarus::result::result(icarus::status &status)
-	: _status(status), _content_stream(std::stringstream::binary | std::stringstream::in | std::stringstream::out)
+	: icarus::content::content(), _status(status)
 { }
 
 icarus::result::result(icarus::status &status, const std::string &content)
-	: icarus::result::result(status)
-{
-	this->_content_stream << content;
-}
+	: icarus::content::content(content), _status(status)
+{ }
 
 icarus::result::result(const std::string &content)
 	: icarus::result::result(icarus::statuses::OK, content)
+{ }
+
+icarus::result::result(icarus::result &&r)
+	: icarus::content::content(r), _status(r._status)
 { }
 
 icarus::http::value_list<icarus::http::values_value> &icarus::result::headers()
@@ -53,11 +55,6 @@ icarus::result &icarus::result::as(std::string &contentType)
 boost::optional<std::string> icarus::result::contentType() const
 {
 	return this->_contentType;
-}
-
-std::stringstream &icarus::result::content()
-{
-	return this->_content_stream;
 }
 
 static icarus::result status(icarus::status &status, const std::string &content)
