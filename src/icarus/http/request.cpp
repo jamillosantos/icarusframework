@@ -51,6 +51,11 @@ const std::string &icarus::http::request::queryString()
 	return this->_queryString;
 }
 
+icarus::http::query_string_values &icarus::http::request::params()
+{
+	return this->_params;
+}
+
 const std::string &icarus::http::request::method()
 {
 	return this->_method;

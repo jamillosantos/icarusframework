@@ -8,6 +8,7 @@
 
 #include <icarus/http/headers.h>
 #include <icarus/http/cookies.h>
+#include <icarus/http/querystring.h>
 
 namespace icarus
 {
@@ -28,6 +29,8 @@ protected:
 
 	std::string _uri;
 	std::string _queryString;
+	icarus::http::query_string_values _params;
+
 	std::string _method;
 public:
 	request();
@@ -49,6 +52,8 @@ public:
 	const std::string &uri();
 
 	const std::string &queryString();
+
+	icarus::http::query_string_values &params();
 
 	const std::string &method();
 };

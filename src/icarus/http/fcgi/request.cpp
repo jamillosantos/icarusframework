@@ -49,6 +49,7 @@ void icarus::http::fcgi::request::init(const FCGX_Request &request)
 				else if (headerName == "QUERY_STRING")
 				{
 					this->_queryString = headerValue;
+					icarus::http::query_string::parse(headerValue, this->_params);
 				}
 				else if (headerName == "REQUEST_METHOD")
 				{
