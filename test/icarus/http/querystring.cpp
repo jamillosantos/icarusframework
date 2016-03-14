@@ -6,7 +6,7 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE http_querystring
 
-#include <boost/test/included/unit_test.hpp>
+#include <boost/test/unit_test.hpp>
 
 #include <icarus/http/querystring.h>
 

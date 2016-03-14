@@ -11,6 +11,7 @@
 #include <boost/log/sinks/text_ostream_backend.hpp>
 
 #include <boost/program_options.hpp>
+
 #include <icarus/multithreadedapplication.h>
 
 #include <icarus/log.h>

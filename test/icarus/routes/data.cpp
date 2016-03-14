@@ -6,9 +6,9 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE IcarusRoutesData
 
-#include <boost/test/included/unit_test.hpp>
+#include <boost/test/unit_test.hpp>
 
-#include "icarus/routes/data.cpp"
+#include <icarus/routes/data.h>
 
 BOOST_AUTO_TEST_CASE(CallMethodPath1)
 {

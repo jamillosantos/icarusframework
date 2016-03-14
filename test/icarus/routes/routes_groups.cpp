@@ -6,9 +6,10 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE Routes1
 
-#include <boost/test/included/unit_test.hpp>
+#include <boost/test/unit_test.hpp>
 
-#include "icarus/routes/parser.h"
+#include <icarus/routes/parser.h>
+#include <icarus/routes/fieldtypes.h>
 
 BOOST_AUTO_TEST_CASE(route_group)
 {
@@ -38,7 +39,7 @@ BOOST_AUTO_TEST_CASE(route_group)
 			BOOST_CHECK(line.uri().tokens()[1].name().empty());
 			BOOST_CHECK_EQUAL(line.uri().tokens()[1].regex(), "/");
 			BOOST_CHECK_EQUAL(line.uri().tokens()[2].name(), "count");
-			BOOST_CHECK_EQUAL(line.uri().tokens()[2].regex(), ifr::fieldTypes.get("unsigned int"));
+			BOOST_CHECK_EQUAL(line.uri().tokens()[2].regex(), ifr::field_types::types.get("unsigned int"));
 			BOOST_CHECK(line.uri().tokens()[3].name().empty());
 			BOOST_CHECK_EQUAL(line.uri().tokens()[3].regex(), "/");
 			BOOST_CHECK_EQUAL(line.uri().tokens()[4].name(), "id");
@@ -68,7 +69,7 @@ BOOST_AUTO_TEST_CASE(route_group)
 			BOOST_CHECK(line.uri().tokens()[1].name().empty());
 			BOOST_CHECK_EQUAL(line.uri().tokens()[1].regex(), "/testing/");
 			BOOST_CHECK_EQUAL(line.uri().tokens()[2].name(), "count");
-			BOOST_CHECK_EQUAL(line.uri().tokens()[2].regex(), ifr::fieldTypes.get("uint8_t"));
+			BOOST_CHECK_EQUAL(line.uri().tokens()[2].regex(), ifr::field_types::types.get("uint8_t"));
 			BOOST_CHECK(line.uri().tokens()[3].name().empty());
 			BOOST_CHECK_EQUAL(line.uri().tokens()[3].regex(), "/");
 			BOOST_CHECK_EQUAL(line.uri().tokens()[4].name(), "id");
@@ -110,7 +111,7 @@ BOOST_AUTO_TEST_CASE(route_group)
 			BOOST_CHECK(line.uri().tokens()[2].name().empty());
 			BOOST_CHECK_EQUAL(line.uri().tokens()[2].regex(), "/testing/");
 			BOOST_CHECK_EQUAL(line.uri().tokens()[3].name(), "count");
-			BOOST_CHECK_EQUAL(line.uri().tokens()[3].regex(), ifr::fieldTypes.get("unsigned int"));
+			BOOST_CHECK_EQUAL(line.uri().tokens()[3].regex(), ifr::field_types::types.get("unsigned int"));
 			BOOST_CHECK(line.uri().tokens()[4].name().empty());
 			BOOST_CHECK_EQUAL(line.uri().tokens()[4].regex(), "x");
 			BOOST_CHECK_EQUAL(line.uri().tokens()[5].name(), "id");

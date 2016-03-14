@@ -6,9 +6,12 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE IcarusRoutesCompiling
 
-#include <boost/test/included/unit_test.hpp>
+#include <boost/test/unit_test.hpp>
+
 #include <boost/filesystem/path.hpp>
-#include "icarus/routes/compiler.cpp"
+
+#include <icarus/routes/compiler.h>
+#include <icarus/routes/exceptions.h>
 
 BOOST_AUTO_TEST_CASE(routes1)
 {
@@ -19,7 +22,7 @@ BOOST_AUTO_TEST_CASE(routes1)
 	boost::filesystem::path routePath;
 	ifr::compiler compiler;
 	ifr::document document("routes1");
-	compiler.compile((resourceDir / "routes" / "routes1").string(), (resourceDir / "routes" / "generated" / "route1.cpp").string());
+	BOOST_REQUIRE_THROW(compiler.compile((resourceDir / "routes" / "routes1").string(), (resourceDir / "routes" / "generated" / "route1.cpp").string()), icarus::routes::param_not_found);
 }
 
 BOOST_AUTO_TEST_CASE(routes2)
@@ -31,5 +34,5 @@ BOOST_AUTO_TEST_CASE(routes2)
 	boost::filesystem::path routePath;
 	ifr::compiler compiler;
 	ifr::document document("routes2");
-	compiler.compile((resourceDir / "routes" / "routes2").string(), (resourceDir / "routes" / "generated" / "route2.cpp").string());
+	BOOST_REQUIRE_NO_THROW(compiler.compile((resourceDir / "routes" / "routes2").string(), (resourceDir / "routes" / "generated" / "route2.cpp").string()));
 }

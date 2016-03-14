@@ -1,10 +1,11 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE Routes1
 
-#include <boost/test/included/unit_test.hpp>
+#include <boost/test/unit_test.hpp>
 
-#include "icarus/routes/parser.h"
-#include "icarus/routes/compiler.cpp"
+#include <icarus/routes/parser.h>
+#include <icarus/routes/compiler.h>
+#include <icarus/routes/fieldtypes.h>
 
 BOOST_AUTO_TEST_CASE(route1_parsing)
 {
@@ -59,7 +60,7 @@ BOOST_AUTO_TEST_CASE(route1_parsing)
 		BOOST_CHECK(line.uri().tokens()[0].name().empty());
 		BOOST_CHECK_EQUAL(line.uri().tokens()[0].regex(), "/");
 		BOOST_CHECK_EQUAL(line.uri().tokens()[1].name(), "count");
-		BOOST_CHECK_EQUAL(line.uri().tokens()[1].regex(), ifr::fieldTypes.get("uint8_t"));
+		BOOST_CHECK_EQUAL(line.uri().tokens()[1].regex(), ifr::field_types::types.get("uint8_t"));
 
 		BOOST_REQUIRE_EQUAL(line.callMethod().path().size(), 2);
 		BOOST_CHECK_EQUAL(line.callMethod().path()[0], "controllers");
@@ -78,7 +79,7 @@ BOOST_AUTO_TEST_CASE(route1_parsing)
 		BOOST_CHECK(line.uri().tokens()[0].name().empty());
 		BOOST_CHECK_EQUAL(line.uri().tokens()[0].regex(), "/");
 		BOOST_CHECK_EQUAL(line.uri().tokens()[1].name(), "count");
-		BOOST_CHECK_EQUAL(line.uri().tokens()[1].regex(), ifr::fieldTypes.get("unsigned int"));
+		BOOST_CHECK_EQUAL(line.uri().tokens()[1].regex(), ifr::field_types::types.get("unsigned int"));
 		BOOST_CHECK(line.uri().tokens()[2].name().empty());
 		BOOST_CHECK_EQUAL(line.uri().tokens()[2].regex(), "/");
 		BOOST_CHECK_EQUAL(line.uri().tokens()[3].name(), "id");
@@ -103,7 +104,7 @@ BOOST_AUTO_TEST_CASE(route1_parsing)
 		BOOST_CHECK(line.uri().tokens()[0].name().empty());
 		BOOST_CHECK_EQUAL(line.uri().tokens()[0].regex(), "/testing/");
 		BOOST_CHECK_EQUAL(line.uri().tokens()[1].name(), "count");
-		BOOST_CHECK_EQUAL(line.uri().tokens()[1].regex(), ifr::fieldTypes.get("uint8_t"));
+		BOOST_CHECK_EQUAL(line.uri().tokens()[1].regex(), ifr::field_types::types.get("uint8_t"));
 		BOOST_CHECK(line.uri().tokens()[2].name().empty());
 		BOOST_CHECK_EQUAL(line.uri().tokens()[2].regex(), "/");
 		BOOST_CHECK_EQUAL(line.uri().tokens()[3].name(), "id");
@@ -130,7 +131,7 @@ BOOST_AUTO_TEST_CASE(route1_parsing)
 		BOOST_CHECK(line.uri().tokens()[0].name().empty());
 		BOOST_CHECK_EQUAL(line.uri().tokens()[0].regex(), "/testing/");
 		BOOST_CHECK_EQUAL(line.uri().tokens()[1].name(), "count");
-		BOOST_CHECK_EQUAL(line.uri().tokens()[1].regex(), ifr::fieldTypes.get("unsigned int"));
+		BOOST_CHECK_EQUAL(line.uri().tokens()[1].regex(), ifr::field_types::types.get("unsigned int"));
 		BOOST_CHECK(line.uri().tokens()[2].name().empty());
 		BOOST_CHECK_EQUAL(line.uri().tokens()[2].regex(), "x");
 		BOOST_CHECK_EQUAL(line.uri().tokens()[3].name(), "id");
