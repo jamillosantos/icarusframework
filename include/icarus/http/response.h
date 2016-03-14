@@ -55,7 +55,13 @@ public:
 	{
 		if (!this->_header_sent)
 			this->flush_headers(result);
-		(*this->ostream) << result.content().rdbuf();
+		(*this->ostream) << result.stream().rdbuf();
+		return *this;
+	}
+
+	icarus::http::response &operator<<(icarus::content &content)
+	{
+		(*this->ostream) << content.stream().rdbuf();
 		return *this;
 	}
 
