@@ -88,7 +88,7 @@ void icarus::migrations::runner_soci::run(int argc, char **argv)
 
 	icarus::db::databases databases(this->config());
 
-	LOG_INFO(this->config().databases()["default"].string());
+	LOG_INFO(this->config().databases()["default"]->str());
 
 	icarus::migrations::manager_soci *m = dynamic_cast<icarus::migrations::manager_soci*>(&this->manager());
 	if (m)

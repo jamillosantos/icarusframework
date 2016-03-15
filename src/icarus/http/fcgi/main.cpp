@@ -85,7 +85,7 @@ int main(int argc, char **argv)
 		LOG_INFO(" + databases: ");
 		for (auto &db : app.config().databases())
 		{
-			LOG_INFO("\t + " << db.first << " at '" << db.second.string() << "' with " << db.second.poolSize() << " connections");
+			LOG_INFO("\t + " << db.first << " at '" << db.second.str() << "' with " << db.second.pool_size() << " connections");
 		}
 
 		icarus::multi_threaded_application mapp(app);

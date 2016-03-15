@@ -20,45 +20,58 @@ namespace config
 class database
 {
 private:
-	std::string _string;
-	std::string _password;
-	unsigned int _poolSize;
-public:
-	database(const std::string &string, const std::string &password, unsigned int poolSize);
+	std::map<std::string, std::string> _data;
 
-	database(const std::string &string, const std::string &password);
+	std::string _driver;
+	unsigned int _pool_size;
+public:
+	database();
+
+	database(const std::string &driver, unsigned int pool_size);
 
 	database(const icarus::config::database &database);
 
-	database();
+	const std::string &driver();
 
-	const std::string &string();
+	icarus::config::database &driver(const std::string &driver);
 
-	icarus::config::database &string(const std::string string);
+	unsigned int pool_size();
 
-	const std::string &password();
+	icarus::config::database &pool_size(unsigned int pool_size);
 
-	icarus::config::database &password(const std::string password);
+	void add(const std::string &param, const std::string &value);
 
-	unsigned int poolSize();
-
-	database &poolSize(unsigned int poolSize);
+	const std::string str();
 };
 
 class databases
 {
 public:
 	typedef typename std::map<std::string, icarus::config::database>::iterator iterator;
+	typedef typename std::map<std::string, icarus::config::database>::reverse_iterator reverse_iterator;
+
+	typedef typename std::map<std::string, icarus::config::database>::const_iterator const_iterator;
+	typedef typename std::map<std::string, icarus::config::database>::const_reverse_iterator const_reverse_iterator;
 private:
 	std::map<std::string, icarus::config::database> _data;
 public:
-	icarus::config::database &operator[](const std::string &name);
+	boost::optional<icarus::config::database> operator[](const std::string &name);
 
 	iterator begin();
-
 	iterator end();
 
-	void add(const std::string &name, const std::string &string, const std::string password, const unsigned int poolSize);
+	reverse_iterator rbegin();
+	reverse_iterator rend();
+
+	const_iterator cbegin();
+	const_iterator cend();
+
+	const_reverse_iterator crbegin();
+	const_reverse_iterator crend();
+
+	size_t size();
+
+	icarus::config::database &add(const std::string &name, const std::string &driver, const unsigned int poolSize);
 };
 
 class config

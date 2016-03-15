@@ -1,0 +1,26 @@
+
+server
+{
+	threads 25
+}
+
+databases
+{
+	default
+	{
+		driver mysql
+		db test
+		user root
+		password '12345'
+		pool_size 10
+	}
+
+	test
+	{
+		driver mysql
+		user root
+		db test
+		password '12345'
+		pool_size 13
+	}
+}

@@ -37,9 +37,18 @@ class file_not_found
 	: icarus::exception
 {
 public:
-	file_not_found(std::string fileName, std::exception *cause);
+	file_not_found(std::string fname, std::exception *cause);
 
-	file_not_found(std::string fileName);
+	file_not_found(std::string fname);
+};
+
+class not_a_file
+	: icarus::exception
+{
+public:
+	not_a_file(std::string fname, std::exception *cause);
+
+	not_a_file(std::string fname);
 };
 
 class open_file

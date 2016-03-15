@@ -16,11 +16,11 @@ icarus::db::databases::databases(icarus::config::config &config)
 
 void icarus::db::databases::add(const std::string &name, icarus::config::database &database)
 {
-	soci::connection_pool *pool = new soci::connection_pool(database.poolSize());
-	for (size_t i = 0; i < database.poolSize(); ++i)
+	soci::connection_pool *pool = new soci::connection_pool(database.pool_size());
+	for (size_t i = 0; i < database.pool_size(); ++i)
 	{
 		soci::session &sql = pool->at(i);
-		sql.open(database.string());
+		sql.open(database.str());
 	}
 	this->_pools.emplace(std::make_pair(name, std::unique_ptr<soci::connection_pool>(pool)));
 }

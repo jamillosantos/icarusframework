@@ -33,12 +33,20 @@ std::exception *icarus::exception::cause()
 	return this->_cause;
 }
 
-icarus::file_not_found::file_not_found(std::string fileName, std::exception *cause)
-	: icarus::exception((bl::format(bl::translate("File '{1}' was not found.")) % fileName).str(), cause)
+icarus::file_not_found::file_not_found(std::string fname, std::exception *cause)
+	: icarus::exception((bl::format(bl::translate("File '{1}' was not found.")) % fname).str(), cause)
 { }
 
-icarus::file_not_found::file_not_found(std::string fileName)
-	: icarus::file_not_found::file_not_found(fileName, nullptr)
+icarus::file_not_found::file_not_found(std::string fname)
+	: icarus::file_not_found::file_not_found(fname, nullptr)
+{ }
+
+icarus::not_a_file::not_a_file(std::string fname, std::exception *cause)
+	: icarus::exception((bl::format(bl::translate("'{1}' is not a file.")) % fname).str(), cause)
+{ }
+
+icarus::not_a_file::not_a_file(std::string fname)
+	: icarus::not_a_file::not_a_file(fname, nullptr)
 { }
 
 icarus::open_file::open_file(const std::string &message, std::exception *cause)

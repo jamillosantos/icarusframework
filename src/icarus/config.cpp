@@ -4,58 +4,68 @@
  **/
 
 #include <icarus/config.h>
-
-icarus::config::database::database(const std::string &string, const std::string &password, unsigned int poolSize)
-	: _string(string), _password(password), _poolSize(poolSize)
-{ }
-
-icarus::config::database::database(const std::string &string, const std::string &password)
-	: _password(password), _poolSize(10)
-{ }
-
-icarus::config::database::database(const database &database)
-	: _string(database._string), _password(database._password), _poolSize(database._poolSize)
-{ }
+#include <boost/filesystem/operations.hpp>
+#include <icarus/exceptions.h>
 
 icarus::config::database::database()
 { }
 
-const std::string &icarus::config::database::string()
+icarus::config::database::database(const std::string &driver, unsigned int pool_size)
+	: _driver(driver), _pool_size(pool_size)
+{ }
+
+icarus::config::database::database(const database &database)
+	: _data(database._data), _driver(database._driver), _pool_size(database._pool_size)
+{ }
+
+const std::string &icarus::config::database::driver()
 {
-	return this->_string;
+	return this->_driver;
 }
 
-icarus::config::database &icarus::config::database::string(const std::string string)
+icarus::config::database &icarus::config::database::driver(const std::string &driver)
 {
-	this->_string = string;
+	this->_driver = driver;
 	return *this;
 }
 
-const std::string &icarus::config::database::password()
+unsigned int icarus::config::database::pool_size()
 {
-	return this->_password;
+	return this->_pool_size;
 }
 
-icarus::config::database &icarus::config::database::password(const std::string password)
+icarus::config::database &icarus::config::database::pool_size(unsigned int pool_size)
 {
-	this->_password = password;
+	this->_pool_size = pool_size;
 	return *this;
 }
 
-unsigned int icarus::config::database::poolSize()
+void icarus::config::database::add(const std::string &param, const std::string &value)
 {
-	return this->_poolSize;
+	this->_data.emplace(param, value);
 }
 
-icarus::config::database &icarus::config::database::poolSize(unsigned int poolSize)
+const std::string icarus::config::database::str()
 {
-	this->_poolSize = poolSize;
-	return *this;
+	std::string result(this->_driver);
+	result += "://";
+	unsigned int i = 0;
+	for (const std::pair<std::string, std::string> &pair : this->_data)
+	{
+		if (i++ > 0)
+			result += " ";
+		result += pair.first + "=" + pair.second;
+	}
+	return result;
 }
 
-icarus::config::database &icarus::config::databases::operator[](const std::string &name)
+boost::optional<icarus::config::database> icarus::config::databases::operator[](const std::string &name)
 {
-	return this->_data.at(name);
+	const icarus::config::databases::iterator &it = this->_data.find(name);
+	if (it == this->_data.end())
+		return boost::optional<icarus::config::database>();
+	else
+		return boost::optional<icarus::config::database>(it->second);
 }
 
 icarus::config::databases::iterator icarus::config::databases::begin()
@@ -68,9 +78,46 @@ icarus::config::databases::iterator icarus::config::databases::end()
 	return this->_data.end();
 }
 
-void icarus::config::databases::add(const std::string &name, const std::string &string, const std::string password, const unsigned int poolSize)
+icarus::config::databases::reverse_iterator icarus::config::databases::rbegin()
 {
-	this->_data.emplace(std::make_pair(name, icarus::config::database(string, password, poolSize)));
+	return this->_data.rbegin();
+}
+
+icarus::config::databases::reverse_iterator icarus::config::databases::rend()
+{
+	return this->_data.rend();
+}
+
+icarus::config::databases::const_iterator icarus::config::databases::cbegin()
+{
+	return this->_data.cbegin();
+}
+
+icarus::config::databases::const_iterator icarus::config::databases::cend()
+{
+	return this->_data.cend();
+}
+
+icarus::config::databases::const_reverse_iterator icarus::config::databases::crbegin()
+{
+	return this->_data.crbegin();
+}
+
+icarus::config::databases::const_reverse_iterator icarus::config::databases::crend()
+{
+	return this->_data.crend();
+}
+
+size_t icarus::config::databases::size()
+{
+	return this->_data.size();
+}
+
+icarus::config::database &icarus::config::databases::add(const std::string &name, const std::string &driver, const unsigned int poolSize)
+{
+	std::pair<icarus::config::databases::iterator, bool> it
+		= this->_data.emplace(std::make_pair(name, icarus::config::database(driver, poolSize)));
+	return (it.first)->second;
 }
 
 unsigned int icarus::config::config::threads()
@@ -85,6 +132,13 @@ icarus::config::databases &icarus::config::config::databases()
 
 void icarus::config::config::loadFromFile(const std::string &fname)
 {
+	boost::filesystem::path path(fname);
+
+	if (!boost::filesystem::exists(fname))
+		throw icarus::file_not_found(fname);
+	if (!boost::filesystem::is_regular(fname))
+		throw icarus::not_a_file(fname);
+
 	boost::property_tree::ptree pt;
 	boost::property_tree::read_info(fname, pt);
 
@@ -99,12 +153,18 @@ void icarus::config::config::loadFromFile(const std::string &fname)
 	{
 		for (boost::property_tree::ptree::value_type &db : dbs.get())
 		{
-			this->databases().add(
+			icarus::config::database &dbref = this->databases().add(
 				db.first,
-				db.second.get<std::string>("string", ""),
-				db.second.get<std::string>("password", ""),
+				db.second.get<std::string>("driver", ""),
 				db.second.get<unsigned int>("pool_size", 10)
 			);
+			for (boost::property_tree::ptree::value_type &dbproperty : db.second)
+			{
+				if ((dbproperty.first != "driver") && (dbproperty.first != "pool_size"))
+				{
+					dbref.add(dbproperty.first, dbproperty.second.data());
+				}
+			}
 		}
 	}
 }
