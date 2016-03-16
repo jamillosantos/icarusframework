@@ -260,7 +260,7 @@ char icarus::routes::parser::readURI(icarus::routes::composed_uri &uri)
 					stream << cc;
 				else
 				{
-					throw icarus::routes::InvalidChar(this->currentLine, this->currentChar);
+					throw icarus::routes::invalid_Char(this->currentLine, this->currentChar);
 				}
 			}
 			if (!success)
@@ -371,7 +371,7 @@ void icarus::routes::parser::runLine(icarus::routes::routes &data, unsigned int 
 					}
 					else if (cc == '\n')
 					{
-						throw icarus::routes::IncompleteDeclaration(this->currentLine, this->currentChar);
+						throw icarus::routes::incomplete_declaration(this->currentLine, this->currentChar);
 					}
 					else
 					{
@@ -382,7 +382,7 @@ void icarus::routes::parser::runLine(icarus::routes::routes &data, unsigned int 
 		}
 		else if (cc == '\n')
 		{
-			throw icarus::routes::IncompleteDeclaration(this->currentLine, this->currentChar);
+			throw icarus::routes::incomplete_declaration(this->currentLine, this->currentChar);
 		}
 		else
 			stream << cc;
@@ -424,7 +424,7 @@ void icarus::routes::parser::runDoc(icarus::routes::routes &data, unsigned int l
 			}
 			else
 			{
-				throw new icarus::routes::InvalidChar(this->currentLine, this->currentChar);
+				throw new icarus::routes::invalid_Char(this->currentLine, this->currentChar);
 			}
 		}
 		else if ((cc != '\n') && (cc != '\r') && (cc != ' ') && (cc != '\t'))

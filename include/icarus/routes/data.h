@@ -19,12 +19,12 @@
 #include <boost/regex.hpp>
 
 #include <icarus/http/headers.h>
+#include <icarus/http/client.h>
 
 namespace icarus
 {
 namespace routes
 {
-
 /**
  * Regex tokens in a route rule.
  */
@@ -264,6 +264,8 @@ public:
 
 	std::vector<std::string> &packages();
 };
+
+bool find(icarus::http::client_context &context);
 }
 }
 

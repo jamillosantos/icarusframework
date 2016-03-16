@@ -15,25 +15,25 @@ namespace icarus
 {
 namespace routes
 {
-class InvalidURI
+class invlid_uri
 	: public icarus::exception
 {
 public:
-	InvalidURI(const std::string &uri);
+	invlid_uri(const std::string &uri);
 };
 
-class InvalidChar
+class invalid_Char
 	: public icarus::exception
 {
 public:
-	InvalidChar(unsigned int line, unsigned int column);
+	invalid_Char(unsigned int line, unsigned int column);
 };
 
-class IncompleteDeclaration
+class incomplete_declaration
 	: public icarus::exception
 {
 public:
-	IncompleteDeclaration(unsigned int line, unsigned int column);
+	incomplete_declaration(unsigned int line, unsigned int column);
 };
 
 class param_not_found

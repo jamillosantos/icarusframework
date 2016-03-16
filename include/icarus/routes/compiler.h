@@ -21,6 +21,7 @@ class compiler
 {
 public:
 	void compile(std::string from, std::string to);
+	void compile(std::string from, std::ostream &to);
 };
 }
 }

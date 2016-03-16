@@ -3,12 +3,17 @@
  * @date August 19, 2015
  */
 
-#include "minotaur/compiler/compiler.cpp"
-#include "minotaur/compiler/cpptemplatebuilder.cpp"
+#include <minotaur/compiler/compiler.h>
+#include <minotaur/compiler/cpptemplatebuilder.h>
 
 #include <boost/program_options.hpp>
+#include <icarus/http/client.h>
+#include <icarus/routes/data.h>
 
 namespace po = boost::program_options;
+
+bool icarus::routes::find(icarus::http::client_context&)
+{ }
 
 int main(int argc, const char *argv[])
 {

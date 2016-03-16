@@ -205,7 +205,7 @@ set(SOURCE_FILES
 
 	src/icarus/content.cpp
 	include/icarus/content.h
-)
+	src/icarus/routes/main.cpp)
 
 include_directories("${CMAKE_SOURCE_DIR}/include")
 
@@ -256,7 +256,9 @@ target_link_libraries(icarus-fastcgi
 	icarusframework
 )
 
-add_library(minotaur SHARED
+add_executable(mntr
+	src/minotaur/mntr.cpp
+
 	include/minotaur/fileinfo.h
 
 	include/minotaur/compiler/compiler.h
@@ -274,27 +276,26 @@ add_library(minotaur SHARED
 	src/minotaur/compiler/templatebuilder.cpp
 )
 
-target_link_libraries(minotaur
-	boost_system
-	boost_filesystem
-	boost_program_options
-
-	icarusframework
-)
-
-set_target_properties(minotaur PROPERTIES LINKER_LANGUAGE CXX)
-
-add_executable(mntr
-	src/minotaur/mntr.cpp
-)
-
 target_link_libraries(mntr
 	boost_system
 	boost_filesystem
 	boost_program_options
 	boost_regex
 
-	minotaur
+	icarusframework
+)
+
+add_executable(icarus-routes
+	src/icarus/routes/main.cpp
+)
+
+target_link_libraries(icarus-routes
+	boost_system
+	boost_filesystem
+	boost_program_options
+	boost_regex
+
+	icarusframework
 )
 
 # Test configuration thanks to http://neyasystems.com/an-engineers-guide-to-unit-testing-cmake-and-boost-unit-tests/

@@ -4,6 +4,7 @@
  **/
 
 #include <icarus/http/client.h>
+#include <icarus/routes/data.h>
 
 icarus::http::client_context::client_context(client_context &clientContext)
 	: _request(clientContext._request), _response(clientContext._response)
@@ -29,7 +30,6 @@ icarus::http::response &icarus::http::client_context::response()
 void icarus::http::client_context::process()
 {
 	LOG_INFO("PERFORMED!");
-	LOG_INFO("<html>Test</html>");
-	this->response() << "<html>Test</html>";
-	//icarus::routes::find(*this);
+	// this->response() << "<html>Test</html>";
+	icarus::routes::find(*this);
 }

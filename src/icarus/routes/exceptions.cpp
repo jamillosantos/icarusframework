@@ -5,15 +5,15 @@
 
 #include <icarus/routes/exceptions.h>
 
-icarus::routes::InvalidURI::InvalidURI(const std::string &uri)
+icarus::routes::invlid_uri::invlid_uri(const std::string &uri)
 	: icarus::exception((boost::locale::format(boost::locale::translate("The URI '{1}' is invalid.")) % uri).str(), nullptr)
 { }
 
-icarus::routes::InvalidChar::InvalidChar(unsigned int line, unsigned int column)
+icarus::routes::invalid_Char::invalid_Char(unsigned int line, unsigned int column)
 	: icarus::exception((boost::locale::format(boost::locale::translate("Invalid char found at {1}:{2}.")) % line % column).str(), nullptr)
 { }
 
-icarus::routes::IncompleteDeclaration::IncompleteDeclaration(unsigned int line, unsigned int column)
+icarus::routes::incomplete_declaration::incomplete_declaration(unsigned int line, unsigned int column)
 	: icarus::exception((boost::locale::format(boost::locale::translate("Incomplete declaration at {1}:{2}.")) % line % column).str(), nullptr)
 { }
 
