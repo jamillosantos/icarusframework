@@ -57,65 +57,72 @@ boost::optional<std::string> icarus::result::contentType() const
 	return this->_contentType;
 }
 
-static icarus::result status(icarus::status &status, const std::string &content)
+icarus::result icarus::results::status(icarus::status &status, const std::string &content)
 {
 	return icarus::result(status, content);
 }
 
-static icarus::result ok(const std::string &content)
+icarus::result icarus::results::ok(const std::string &content)
 {
 	return icarus::result(icarus::statuses::OK, content);
 }
 
-static icarus::result notImplemented(const std::string &content)
+icarus::result icarus::results::notImplemented(const std::string &content)
 {
 	return icarus::result(icarus::statuses::NOT_IMPLEMENTED, content);
 }
 
-static icarus::result badRequest(const std::string &content)
+icarus::result icarus::results::badRequest(const std::string &content)
 {
 	return icarus::result(icarus::statuses::BAD_REQUEST, content);
 }
 
-static icarus::result unauthorized(const std::string &content)
+icarus::result icarus::results::unauthorized(const std::string &content)
 {
 	return icarus::result(icarus::statuses::UNAUTHORIZED, content);
 }
 
-static icarus::result paymentRequired(const std::string &content)
+icarus::result icarus::results::paymentRequired(const std::string &content)
 {
 	return icarus::result(icarus::statuses::PAYMENT_REQUIRED, content);
 }
 
-static icarus::result forbidden(const std::string &content)
+icarus::result icarus::results::forbidden(const std::string &content)
 {
 	return icarus::result(icarus::statuses::FORBIDDEN, content);
 }
 
-static icarus::result notFound(const std::string &content)
+icarus::result icarus::results::notFound(const std::string &content)
 {
 	return icarus::result(icarus::statuses::NOT_FOUND, content);
 }
 
-static icarus::result internalServerError(const std::string &content)
+icarus::result icarus::results::internalServerError(const std::string &content)
 {
 	return icarus::result(icarus::statuses::INTERNAL_ERROR, content);
 }
 
-static icarus::result movedPermanently(std::string url)
+icarus::result icarus::results::movedPermanently(std::string url)
 {
 	LOG_ERROR("TODO");
 	throw std::exception();
 }
 
-static icarus::result redirect(std::string url)
+icarus::result icarus::results::redirect(std::string url)
 {
 	LOG_ERROR("TODO");
 	throw std::exception();
 }
 
-static icarus::result temporaryRedirect(std::string url)
+icarus::result icarus::results::temporaryRedirect(std::string url)
 {
 	LOG_ERROR("TODO");
 	throw std::exception();
 }
+
+std::ostream &operator<<(std::ostream &out, icarus::result &result)
+{
+	out << result.stream().rdbuf();
+	return out;
+}
+

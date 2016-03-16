@@ -8,13 +8,14 @@
 
 #include <sstream>
 #include <string>
+#include <memory>
 
 namespace icarus
 {
 class content
 {
 private:
-	std::stringstream _content_stream;
+	std::unique_ptr<std::stringstream> _content_stream;
 
 public:
 	content();
@@ -34,19 +35,19 @@ public:
 	template<typename T>
 	icarus::content &operator<<(const T &t)
 	{
-		this->_content_stream << t;
+		(*this->_content_stream) << t;
 		return *this;
 	}
 
 	icarus::content &operator<<(icarus::content &html)
 	{
-		this->_content_stream << html._content_stream.rdbuf();
+		(*this->_content_stream) << html._content_stream->rdbuf();
 		return *this;
 	}
 
 	icarus::content &operator<<(std::ostream &(*manip)(std::ostream &))
 	{
-		this->_content_stream << manip;
+		(*this->_content_stream) << manip;
 		return *this;
 	}
 };

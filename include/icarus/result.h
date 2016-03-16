@@ -79,4 +79,6 @@ static result temporaryRedirect(std::string url);
 }
 }
 
+std::ostream &operator<<(std::ostream &out, icarus::result &result);
+
 #endif // ICARUSFRAMEWORK_RESULT_H

@@ -18,7 +18,7 @@ namespace routes
 class routes_writer
 {
 protected:
-	unsigned int _routeId;
+	unsigned int _route_id;
 
 	unsigned int _routes_written;
 

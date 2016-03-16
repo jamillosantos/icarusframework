@@ -65,3 +65,11 @@ icarus::premature_eof::premature_eof(unsigned int line)
 	: icarus::exception((bl::format(bl::translate("Premature end of the file at line {1}.")) % line).str())
 { }
 
+
+icarus::invalid_pointer::invalid_pointer(const std::string &message, std::exception *cause)
+	: icarus::exception(message, cause)
+{ }
+
+icarus::invalid_pointer::invalid_pointer(const std::string &message)
+	: icarus::exception(message)
+{ }

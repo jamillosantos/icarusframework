@@ -69,6 +69,15 @@ public:
 
 	premature_eof(unsigned int line);
 };
+
+class invalid_pointer
+	: public icarus::exception
+{
+public:
+	invalid_pointer(const std::string &message, std::exception *cause);
+
+	invalid_pointer(const std::string &message);
+};
 }
 
 #endif //ICARUSFRAMEWORK_EXCEPTIONS_H
