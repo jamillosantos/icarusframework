@@ -205,7 +205,7 @@ set(SOURCE_FILES
 
 	src/icarus/content.cpp
 	include/icarus/content.h
-	src/icarus/routes/main.cpp)
+)
 
 include_directories("${CMAKE_SOURCE_DIR}/include")
 
