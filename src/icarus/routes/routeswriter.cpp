@@ -89,7 +89,7 @@ void icarus::routes::routes_writer::writeBeginDoc(std::ostream &stream, icarus::
 {
 	// If needed, sets the route id, a unique ID route per compilation.
 	if (route.id() == 0)
-		route.id(this->_routeId++);
+		route.id(this->_route_id++);
 
 	// Route comment
 	stream << "/**" << std::endl << " * Route: " << route.uri().str() << std::endl << " * at line" << route.line()
@@ -334,7 +334,7 @@ void icarus::routes::routes_writer::writeReverseRoutes(std::ostream &stream, ica
 }
 
 icarus::routes::routes_writer::routes_writer()
-	: _routeId(0)
+	: _route_id(0), _routes_written(0)
 { }
 
 void icarus::routes::routes_writer::write(std::ostream &stream, icarus::routes::document &document)
