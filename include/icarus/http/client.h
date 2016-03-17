@@ -28,8 +28,6 @@ public:
 	icarus::http::request &request();
 
 	icarus::http::response &response();
-
-	void process();
 };
 }
 }

@@ -26,9 +26,3 @@ icarus::http::response &icarus::http::client_context::response()
 {
 	return this->_response;
 }
-
-void icarus::http::client_context::process()
-{
-	LOG_INFO("PERFORMED!");
-	// icarus::routes::find(*this);
-}

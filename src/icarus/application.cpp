@@ -39,9 +39,12 @@ void icarus::application::run()
 		http::client_context *client = this->accept();
 		if (client)
 		{
-			client->process();
+			this->process(client);
 			delete client;
 		}
 	}
 	this->cleanup();
 }
+
+void icarus::application::process(http::client_context *client)
+{ }

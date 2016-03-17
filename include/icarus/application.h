@@ -36,6 +36,8 @@ public:
 	virtual void cleanup();
 
 	virtual void run();
+
+	virtual void process(http::client_context *client);
 };
 }
 
