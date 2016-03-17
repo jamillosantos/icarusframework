@@ -32,7 +32,7 @@ protected:
 
 	virtual void flush_headers();
 
-	virtual void flush_headers(icarus::result &result);
+	virtual void flush_headers(const icarus::result &result);
 public:
 	response();
 
@@ -51,7 +51,7 @@ public:
 		return *this;
 	}
 
-	icarus::http::response &operator<<(icarus::result &result)
+	icarus::http::response &operator<<(const icarus::result &result)
 	{
 		if (!this->_header_sent)
 			this->flush_headers(result);

@@ -36,7 +36,7 @@ public:
 
 	result(icarus::result &&r);
 
-	icarus::http::value_list<icarus::http::values_value> &headers();
+	const icarus::http::value_list<icarus::http::values_value> &headers() const;
 
 	result &status(icarus::status &status);
 

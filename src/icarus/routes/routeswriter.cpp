@@ -4,7 +4,6 @@
  */
 
 #include <icarus/routes/routeswriter.h>
-
 #include <icarus/routes/exceptions.h>
 
 void icarus::routes::routes_writer::writeBeginDoc(std::ostream &stream, document &document)
@@ -24,8 +23,9 @@ void icarus::routes::routes_writer::writeBeginDoc(std::ostream &stream, document
 	stream << defconstName << std::endl << "#define " << defconstName << std::endl << std::endl;
 
 	// Default includes
-	stream << "#include <icarus/routes/data.hpp>" << std::endl;
-	stream << "#include <icarus/routes/to_url.hpp>" << std::endl << std::endl;
+	stream << "#include <icarus/routes/data.h>" << std::endl;
+	stream << "#include <icarus/action.h>" << std::endl;
+	stream << "#include <icarus/http/client.h>" << std::endl << std::endl;
 
 	// Namespaces
 	stream << "namespace icarus" << std::endl << "{" << std::endl;
@@ -60,7 +60,7 @@ void icarus::routes::routes_writer::writeBeginDoc(std::ostream &stream, document
 	stream << "bool find(icarus::http::client_context &context)" << std::endl << "{" << std::endl;
 	stream << "\tconst std::string method = context.request().method();" << std::endl;
 	stream << "\tconst std::string uri = context.request().uri();" << std::endl;
-	stream << "\tconst icarus::http::string uri = context.request().uri();" << std::endl;
+	stream << "\ticarus::http::value_hash<icarus::http::values_value> values;" << std::endl;
 };
 
 void icarus::routes::routes_writer::writeBeginDoc(std::ostream &stream, icarus::routes::group& group)
@@ -95,7 +95,7 @@ void icarus::routes::routes_writer::writeBeginDoc(std::ostream &stream, icarus::
 	stream << "/**" << std::endl << " * Route: " << route.uri().str() << std::endl << " * at line" << route.line()
 		<< " on the original file." << std::endl << " */" << std::endl;
 	// Route declaration itself
-	stream << "icarus::routes::Route route" << route.id() << "(" << route.line() << ", {" << std::endl;
+	stream << "icarus::routes::route route" << route.id() << "(" << route.line() << ", \"" << route.httpMethod() << "\", {" << std::endl;
 	unsigned int i = 0, j = 0;
 	// Creating the static list initialization of the route with the match rule.
 	for (regex_token &token : route.uri().tokens())
@@ -136,7 +136,8 @@ void icarus::routes::routes_writer::write(std::ostream &stream, icarus::routes::
 	if (route.callMethod().isStatic())
 	{
 		// Places the packages of the method.
-		stream << "context.response() << ";
+		stream << "LOG_INFO(\"Route '" << route.uri().str() << "' matched.\")" << std::endl;
+		stream << "\t\tcontext.response() << ";
 		for (const std::string &package : route.callMethod().path())
 		{
 			stream << package << "::";
@@ -237,11 +238,11 @@ void icarus::routes::routes_writer::writeReverseRoutes(std::ostream &stream, ica
 
 void icarus::routes::routes_writer::writeReverseRoutes(std::ostream &stream, icarus::routes::route &route)
 {
+	stream << "namespace routes" << std::endl << "{" << std::endl;
 	for (std::string ns : route.callMethod().path())
 	{
-		stream << "namespace " << ns << "\n{\n";
+		stream << "namespace " << ns << std::endl << "{" << std::endl;
 	}
-	stream << "namespace routes\n{\n";
 
 	// String return version
 	{
@@ -287,7 +288,7 @@ void icarus::routes::routes_writer::writeReverseRoutes(std::ostream &stream, ica
 
 	// Action return version
 	{
-		stream << "\ticarus::icarus::Action _" << route.callMethod().name() << "(";
+		stream << "\ticarus::action _" << route.callMethod().name() << "(";
 		unsigned int i = 0;
 		for (const icarus::routes::method_param &param : route.callMethod().params())
 		{
@@ -323,7 +324,7 @@ void icarus::routes::routes_writer::writeReverseRoutes(std::ostream &stream, ica
 					throw icarus::routes::param_not_found(route.line(), rt.name());
 			}
 		}
-		stream << "\t\treturn icarus::icarus::Action(\"" << route.httpMethod() << "\", tmp);\n";
+		stream << "\t\treturn icarus::action(\"" << route.httpMethod() << "\", tmp);\n";
 		stream << "\t}\n";
 	}
 	stream << "} // routes\n";

@@ -21,7 +21,7 @@ icarus::result::result(icarus::result &&r)
 	: icarus::content::content(r), _status(r._status)
 { }
 
-icarus::http::value_list<icarus::http::values_value> &icarus::result::headers()
+const icarus::http::value_list<icarus::http::values_value> &icarus::result::headers() const
 {
 	return this->_headers;
 }

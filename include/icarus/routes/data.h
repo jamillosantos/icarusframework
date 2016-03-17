@@ -203,7 +203,7 @@ public:
 
 	route(size_t line);
 
-	route(size_t line, std::initializer_list<std::pair<std::string, std::string>> list);
+	route(size_t line, const std::string &httpMethod, std::initializer_list<std::pair<std::string, std::string>> list);
 
 	const unsigned int id() const;
 

@@ -30,7 +30,7 @@ public:
 
 	size_t size();
 
-	std::stringstream & stream();
+	std::stringstream &stream() const;
 
 	template<typename T>
 	icarus::content &operator<<(const T &t)

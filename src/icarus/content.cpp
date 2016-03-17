@@ -36,7 +36,7 @@ size_t icarus::content::size()
 	return this->_content_stream->tellp();
 }
 
-std::stringstream &icarus::content::stream()
+std::stringstream &icarus::content::stream() const
 {
 	if (!this->_content_stream)
 		throw icarus::invalid_pointer((bl::translate("Invalid internal stream.")).str());

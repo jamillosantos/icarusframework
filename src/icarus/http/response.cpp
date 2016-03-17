@@ -17,12 +17,12 @@ void icarus::http::response::flush_headers()
 	this->_header_sent = true;
 }
 
-void icarus::http::response::flush_headers(icarus::result &result)
+void icarus::http::response::flush_headers(const icarus::result &result)
 {
 	(*this->ostream) << "HTTP/1.1 " << this->status.code << " " << this->status.value << endh;
-	for (values_value &header : result.headers())
+	for (auto it = result.headers().cbegin(); it != result.headers().cend(); ++it)
 	{
-		(*this->ostream) << header.name() << ": " << header.value() << endh;
+		(*this->ostream) << it->name() << ": " << it->value() << endh;
 	}
 	(*this->ostream) << endh;
 

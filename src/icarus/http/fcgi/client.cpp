@@ -12,7 +12,6 @@ icarus::http::fcgi::client_context::client_context(FCGX_Request *fcgiRequest)
 
 icarus::http::fcgi::client_context::~client_context()
 {
-	LOG_TRACE("~ClientContext");
 	delete this->_fcgiRequest;
 	delete this->_fcgiResponse;
 	FCGX_Finish_r(_fcgxRequest);
@@ -21,6 +20,5 @@ icarus::http::fcgi::client_context::~client_context()
 void icarus::http::fcgi::client_context::init()
 {
 	this->_fcgiRequest->init(*this->_fcgxRequest);
-	LOG_TRACE("Request URI: " << this->_fcgiRequest->uri());
 	this->_fcgiResponse->init(*this->_fcgxRequest);
 }

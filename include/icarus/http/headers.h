@@ -24,11 +24,11 @@ public:
 
 	values_value(const std::string &name, const std::string &value);
 
-	const std::string &name();
+	const std::string &name() const;
 
 	void name(const std::string &name);
 
-	const std::string &value();
+	const std::string &value() const;
 
 	void value(const std::string &value);
 };
@@ -56,6 +56,9 @@ class value_list
 {
 public:
 	typedef typename std::vector<T>::iterator iterator;
+	typedef typename std::vector<T>::reverse_iterator reverse_iterator;
+	typedef typename std::vector<T>::const_iterator const_iterator;
+	typedef typename std::vector<T>::const_reverse_iterator const_reverse_iterator;
 private:
 	std::vector<T> values;
 
@@ -119,6 +122,36 @@ public:
 	iterator end()
 	{
 		return this->values.end();
+	}
+
+	reverse_iterator rbegin()
+	{
+		return this->values.rbegin();
+	}
+
+	reverse_iterator rend()
+	{
+		return this->values.rend();
+	}
+
+	const_iterator cbegin() const
+	{
+		return this->values.cbegin();
+	}
+
+	const_iterator cend() const
+	{
+		return this->values.cend();
+	}
+
+	const_reverse_iterator crbegin() const
+	{
+		return this->values.crbegin();
+	}
+
+	const_reverse_iterator crend() const
+	{
+		return this->values.crend();
 	}
 
 	virtual unsigned long size() override

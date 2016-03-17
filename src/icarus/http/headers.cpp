@@ -14,7 +14,7 @@ icarus::http::values_value::values_value(const std::string &name, const std::str
 	: _name(name), _value(value)
 { }
 
-const std::string &icarus::http::values_value::name()
+const std::string &icarus::http::values_value::name() const
 {
 	return this->_name;
 }
@@ -24,7 +24,7 @@ void icarus::http::values_value::name(const std::string &name)
 	this->_name = name;
 }
 
-const std::string &icarus::http::values_value::value()
+const std::string &icarus::http::values_value::value() const
 {
 	return this->_value;
 }
