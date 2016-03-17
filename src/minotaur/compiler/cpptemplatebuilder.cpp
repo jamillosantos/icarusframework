@@ -11,27 +11,28 @@ void minotaur::compiler::CppTemplateBuilder::document_begin(MetaInfo &fileInfo, 
 	<< "/**" << std::endl
 	<< " * Auto created." << std::endl
 	<< " **/" << std::endl << std::endl
-	<< "#include <icarus/result.hpp>" << std::endl
-	<< "#include <icarus/statuses.hpp>" << std::endl;
+	<< "#include <icarus/result.h>" << std::endl
+	<< "#include <icarus/statuses.h>" << std::endl;
 }
 
 void minotaur::compiler::CppTemplateBuilder::class_begin(MetaInfo &fileInfo, std::ostream &ostream)
 {
 	TemplateBuilder::class_begin(fileInfo, ostream);
-	ostream << "namespace templates" << std::endl << "{" << std::endl;
+	ostream << "namespace views" << std::endl << "{" << std::endl;
 	for (std::string package : fileInfo.package)
 	{
 		ostream << "namespace " << package << std::endl << "{" << std::endl;
 	}
-	ostream
-	<< "\ticarus::result &" << fileInfo.name << "(icarus::result &out";
 
+	ostream << "\ttemplate <class T>" << std::endl;
+	ostream << "\tT &" << fileInfo.name << "(";
+	ostream << "T &out";
 	if (!fileInfo.parameters.empty())
 		ostream << ", " << fileInfo.parameters;
 
 	ostream
-	<< ")" << std::endl
-	<< "\t{" << std::endl;
+		<< ")" << std::endl
+		<< "\t{" << std::endl;
 }
 
 void minotaur::compiler::CppTemplateBuilder::class_end(MetaInfo &fileInfo, std::ostream &ostream)

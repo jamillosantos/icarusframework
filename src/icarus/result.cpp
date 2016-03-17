@@ -5,6 +5,10 @@
 
 #include <icarus/result.h>
 
+icarus::result::result()
+	: icarus::content::content(), _status(icarus::statuses::OK)
+{ }
+
 icarus::result::result(icarus::status &status)
 	: icarus::content::content(), _status(status)
 { }
@@ -57,9 +61,20 @@ boost::optional<std::string> icarus::result::contentType() const
 	return this->_contentType;
 }
 
+icarus::result &icarus::result::header(const std::string &name, const std::string &value)
+{
+	this->_headers.add(name, value);
+	return *this;
+}
+
 icarus::result icarus::results::status(icarus::status &status, const std::string &content)
 {
 	return icarus::result(status, content);
+}
+
+icarus::result &icarus::results::status(icarus::result &result, icarus::status &status)
+{
+	return result.status(status);
 }
 
 icarus::result icarus::results::ok(const std::string &content)
@@ -67,9 +82,19 @@ icarus::result icarus::results::ok(const std::string &content)
 	return icarus::result(icarus::statuses::OK, content);
 }
 
+icarus::result &&icarus::results::ok(icarus::result &result)
+{
+	return std::move(result.status(icarus::statuses::OK));
+}
+
 icarus::result icarus::results::notImplemented(const std::string &content)
 {
 	return icarus::result(icarus::statuses::NOT_IMPLEMENTED, content);
+}
+
+icarus::result &icarus::results::notImplemented(icarus::result &result)
+{
+	return icarus::results::status(result, icarus::statuses::NOT_IMPLEMENTED);
 }
 
 icarus::result icarus::results::badRequest(const std::string &content)
@@ -77,9 +102,19 @@ icarus::result icarus::results::badRequest(const std::string &content)
 	return icarus::result(icarus::statuses::BAD_REQUEST, content);
 }
 
+icarus::result &icarus::results::badRequest(icarus::result &result)
+{
+	return icarus::results::status(result, icarus::statuses::BAD_REQUEST);
+}
+
 icarus::result icarus::results::unauthorized(const std::string &content)
 {
 	return icarus::result(icarus::statuses::UNAUTHORIZED, content);
+}
+
+icarus::result &icarus::results::unauthorized(icarus::result &result)
+{
+	return icarus::results::status(result, icarus::statuses::UNAUTHORIZED);
 }
 
 icarus::result icarus::results::paymentRequired(const std::string &content)
@@ -87,9 +122,19 @@ icarus::result icarus::results::paymentRequired(const std::string &content)
 	return icarus::result(icarus::statuses::PAYMENT_REQUIRED, content);
 }
 
+icarus::result &icarus::results::paymentRequired(icarus::result &result)
+{
+	return icarus::results::status(result, icarus::statuses::PAYMENT_REQUIRED);
+}
+
 icarus::result icarus::results::forbidden(const std::string &content)
 {
 	return icarus::result(icarus::statuses::FORBIDDEN, content);
+}
+
+icarus::result &icarus::results::forbidden(icarus::result &result)
+{
+	return icarus::results::status(result, icarus::statuses::FORBIDDEN);
 }
 
 icarus::result icarus::results::notFound(const std::string &content)
@@ -97,27 +142,40 @@ icarus::result icarus::results::notFound(const std::string &content)
 	return icarus::result(icarus::statuses::NOT_FOUND, content);
 }
 
+icarus::result &icarus::results::notFound(icarus::result &result)
+{
+	return icarus::results::status(result, icarus::statuses::NOT_FOUND);
+}
+
 icarus::result icarus::results::internalServerError(const std::string &content)
 {
 	return icarus::result(icarus::statuses::INTERNAL_ERROR, content);
 }
 
+icarus::result &icarus::results::internalServerError(icarus::result &result)
+{
+	return icarus::results::status(result, icarus::statuses::INTERNAL_ERROR);
+}
+
 icarus::result icarus::results::movedPermanently(std::string url)
 {
-	LOG_ERROR("TODO");
-	throw std::exception();
+	icarus::result result(icarus::statuses::MOVE_PERMANENTLY);
+	result.header("Location", url);
+	return result;
 }
 
 icarus::result icarus::results::redirect(std::string url)
 {
-	LOG_ERROR("TODO");
-	throw std::exception();
+	icarus::result result(icarus::statuses::TEMPORARY_REDIRECT);
+	result.header("Location", url);
+	return result;
 }
 
 icarus::result icarus::results::temporaryRedirect(std::string url)
 {
-	LOG_ERROR("TODO");
-	throw std::exception();
+	icarus::result result(icarus::statuses::TEMPORARY_REDIRECT);
+	result.header("Location", url);
+	return result;
 }
 
 std::ostream &operator<<(std::ostream &out, icarus::result &result)

@@ -28,6 +28,8 @@ private:
 
 	icarus::http::value_list<icarus::http::values_value> _headers;
 public:
+	result();
+
 	result(icarus::status &status);
 
 	result(icarus::status &status, const std::string &content);
@@ -49,33 +51,54 @@ public:
 	result &as(std::string &contentType);
 
 	boost::optional<std::string> contentType() const;
+
+	icarus::result &header(const std::string &name, const std::string &value);
 };
 
 namespace results
 {
 static result status(icarus::status &status, const std::string &content);
 
+static result &status(icarus::result &result, icarus::status &status);
+
 static result ok(const std::string &content);
+
+static icarus::result &&ok(icarus::result &result);
 
 static result notImplemented(const std::string &content);
 
+static result &notImplemented(icarus::result &result);
+
 static result badRequest(const std::string &content);
+
+static result &badRequest(icarus::result &result);
 
 static result unauthorized(const std::string &content);
 
+static result &unauthorized(icarus::result &result);
+
 static result paymentRequired(const std::string &content);
+
+static result &paymentRequired(icarus::result &result);
 
 static result forbidden(const std::string &content);
 
+static result &forbidden(icarus::result &result);
+
 static result notFound(const std::string &content);
 
+static result &notFound(icarus::result &result);
+
 static result internalServerError(const std::string &content);
+
+static result &internalServerError(icarus::result &result);
 
 static result movedPermanently(std::string url);
 
 static result redirect(std::string url);
 
 static result temporaryRedirect(std::string url);
+
 }
 }
 

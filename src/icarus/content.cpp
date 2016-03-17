@@ -5,26 +5,33 @@
 
 #include <icarus/content.h>
 #include <icarus/exceptions.h>
+#include <icarus/log.h>
 
 icarus::content::content()
 	: _content_stream(new std::stringstream(std::stringstream::in | std::stringstream::out | std::stringstream::binary))
-{ }
+{
+	LOG_DEBUG("result created");
+}
 
 icarus::content::content(const std::string &content)
 	: icarus::content::content()
 {
+	LOG_DEBUG("result created");
 	(*this->_content_stream) << content;
 }
 
 icarus::content::content(icarus::content &html)
 	: icarus::content::content()
 {
+	LOG_DEBUG("result copied");
 	(*this->_content_stream) << html._content_stream->rdbuf();
 }
 
 icarus::content::content(icarus::content &&html)
 	: _content_stream(html._content_stream.release())
-{ }
+{
+	LOG_DEBUG("result moved");
+}
 
 icarus::content::~content()
 { }

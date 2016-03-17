@@ -104,7 +104,7 @@ public:
 		return this->values[index].value();
 	}
 
-	virtual void add(std::string name, std::string value)
+	virtual void add(const std::string &name, const std::string &value)
 	{
 		this->values.emplace_back(name, value);
 	}
