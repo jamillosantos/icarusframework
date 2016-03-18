@@ -251,6 +251,20 @@ icarus::routes::method_param &icarus::routes::method_param::operator=(const icar
 	return *this;
 }
 
+std::string icarus::routes::method_param::cpp()
+{
+	std::string result(this->_type);
+	result += " ";
+	if (this->_attribute == icarus::routes::method_param_type::POINTER)
+		result += "*";
+	else if (this->_attribute == icarus::routes::method_param_type::REFERENCE)
+		result += "&";
+	else if (this->_attribute == icarus::routes::method_param_type::RVALUE)
+		result += "&&";
+	result += this->_name;
+	return result;
+}
+
 icarus::routes::call_method::call_method()
 	: _static(true)
 { }

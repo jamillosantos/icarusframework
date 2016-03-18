@@ -97,7 +97,7 @@ public:
  */
 enum class method_param_type
 {
-	NORMAL, REFERENCE, POINTER
+	NORMAL, REFERENCE, POINTER, RVALUE
 };
 
 class method_param
@@ -106,7 +106,6 @@ private:
 	std::string _type;
 	method_param_type _attribute;
 	std::string _name;
-
 public:
 
 	method_param();
@@ -126,6 +125,8 @@ public:
 	method_param &name(const std::string &name);
 
 	method_param &operator=(const method_param &param);
+
+	std::string cpp();
 };
 
 /**

@@ -3,17 +3,14 @@
  * @date August 19, 2015
  */
 
-#include <minotaur/compiler/compiler.h>
-#include <minotaur/compiler/cpptemplatebuilder.h>
+#include <minotaur/compiler.h>
+#include <minotaur/cpptemplatebuilder.h>
 
 #include <boost/program_options.hpp>
 #include <icarus/http/client.h>
 #include <icarus/routes/data.h>
 
 namespace po = boost::program_options;
-
-bool icarus::routes::find(icarus::http::client_context&)
-{ }
 
 int main(int argc, const char *argv[])
 {
@@ -48,9 +45,9 @@ int main(int argc, const char *argv[])
 			return 0;
 		}
 
-		minotaur::compiler::Compiler parser(inputFile, outputFile);
-		minotaur::compiler::CppTemplateBuilder templateBuilder;
-		parser.compile(templateBuilder);
+		minotaur::compiler compiler(inputFile, outputFile);
+		minotaur::cpp_template_builder templateBuilder;
+		compiler.compile(templateBuilder);
 
 		return 0;
 	}

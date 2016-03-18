@@ -12,38 +12,30 @@
 
 #include <boost/filesystem.hpp>
 
-#include <fstream>
 #include <sstream>
 #include <iostream>
 #include <boost/regex.hpp>
 
-#include "exceptions.h"
-#include "metainfo.h"
-#include "templatebuilder.h"
+#include <minotaur/exceptions.h>
+#include <minotaur/metainfo.h>
+#include <minotaur/templatebuilder.h>
 
 #define INPUT_STREAM_BUFFER_SIZE 4096
 
 namespace minotaur
 {
-namespace compiler
-{
-class compile_file
+class parse_file
 {
 public:
-	static const boost::regex variableChars;
-
-	MetaInfo info;
+	file_info& info;
 private:
 
 	boost::filesystem::path file;
 
-	TemplateBuilder &templateBuilder;
-
 	size_t currentLine;
 	size_t currentChar;
 
-	std::unique_ptr<std::ifstream> istream;
-	std::ostream &outputStream;
+	std::istream &istream;
 
 	char inputStreamBuffer[INPUT_STREAM_BUFFER_SIZE];
 	size_t inputStreamBufferSize;
@@ -51,29 +43,35 @@ private:
 
 	bool initialized;
 
-	char lastChar();
+	char read_next;
 
-	bool readChar(char *cc);
+	char last_char();
 
-	void runParameters();
+	bool read(char *cc);
 
-	void runQuotes();
+	void read_until_non_blank(char *cc);
 
-	void runBrackets();
+	std::string read_until(std::string chars);
 
-	void runQuickEchoBrackets();
+	void run_parameters();
 
-	void runQuickEcho();
+	void run_block_code();
 
-	void writeChar(char cc);
+	void run_quotes(std::stringstream &block);
+
+	void run_single_quotes(std::stringstream &block);
+
+	void run_brackets(std::stringstream &block);
+
+	void run_quick_echo_brackets(std::stringstream &block);
+
+	void run_quick_echo();
 
 public:
-	compile_file(boost::filesystem::path file, std::ostream &ostream, TemplateBuilder &templateBuilder);
+	parse_file(minotaur::file_info &file, std::istream &in_stream);
 
-	void compile();
+	void parse();
 };
-
-}
 }
 
 #endif // ICARUSFRAMEWORK_MINOTAUR_COMPILER_COMPILEFILE_HPP

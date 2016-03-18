@@ -10,17 +10,14 @@
 
 namespace minotaur
 {
-namespace compiler
-{
 class compiler_exception
 	: public icarus::exception
 {
 public:
-	compiler_exception(const std::string &message);
+	compiler_exception(const unsigned int line, const std::string &message);
 
-	compiler_exception(const std::string &message, std::exception *cause);
+	compiler_exception(const unsigned int line, const std::string &message, std::exception *cause);
 };
-}
 }
 
 

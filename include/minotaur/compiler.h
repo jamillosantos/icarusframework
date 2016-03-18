@@ -16,29 +16,23 @@
 #include <boost/regex.hpp>
 #include <boost/algorithm/string.hpp>
 
-#include "exceptions.h"
-#include "metainfo.h"
-#include "templatebuilder.h"
-#include "compilefile.h"
-
-#define INPUT_STREAM_BUFFER_SIZE 4096
+#include <minotaur/exceptions.h>
+#include <minotaur/metainfo.h>
+#include <minotaur/templatebuilder.h>
+#include <minotaur/parser.h>
 
 namespace minotaur
 {
-namespace compiler
-{
-class Compiler
+class compiler
 {
 private:
-	std::vector<std::string> includeDirectories;
-	std::string inputFile;
-	std::string outputFile;
+	std::string input_file;
+	std::string output_file;
 public:
-	Compiler(std::string inputFile, std::string outputFile);
+	compiler(std::string inputFile, std::string outputFile);
 
-	void compile(TemplateBuilder &templateBuilder);
+	void compile(minotaur::template_builder &builder);
 };
-}
 }
 
 #endif // ICARUSFRAMEWORK_MINOTAUR_COMPILER_PARSER_H

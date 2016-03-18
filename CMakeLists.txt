@@ -231,6 +231,7 @@ set(ICARUS_LIBRARIES
 	rt
 
 	pthread
+	minotaur
 
 	${OPENSSL_SSL_LIBRARIES}
 	${OPENSSL_CRYPTO_LIBRARIES}
@@ -240,6 +241,25 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 
 add_library(icarusframework SHARED
 	${SOURCE_FILES}
+)
+
+add_library(minotaur SHARED
+
+	include/minotaur/fileinfo.h
+
+	include/minotaur/compiler.h
+	include/minotaur/parser.h
+	include/minotaur/cpptemplatebuilder.h
+	include/minotaur/exceptions.h
+	include/minotaur/metainfo.h
+	include/minotaur/templatebuilder.h
+
+	src/minotaur/compiler.cpp
+	src/minotaur/parser.cpp
+	src/minotaur/cpptemplatebuilder.cpp
+	src/minotaur/exceptions.cpp
+	src/minotaur/metainfo.cpp
+	src/minotaur/templatebuilder.cpp
 )
 
 target_link_libraries(icarusframework
@@ -258,22 +278,6 @@ target_link_libraries(icarus-fastcgi
 
 add_executable(mntr
 	src/minotaur/mntr.cpp
-
-	include/minotaur/fileinfo.h
-
-	include/minotaur/compiler/compiler.h
-	include/minotaur/compiler/compilefile.h
-	include/minotaur/compiler/cpptemplatebuilder.h
-	include/minotaur/compiler/exceptions.h
-	include/minotaur/compiler/metainfo.h
-	include/minotaur/compiler/templatebuilder.h
-
-	src/minotaur/compiler/compiler.cpp
-	src/minotaur/compiler/compilefile.cpp
-	src/minotaur/compiler/cpptemplatebuilder.cpp
-	src/minotaur/compiler/exceptions.cpp
-	src/minotaur/compiler/metainfo.cpp
-	src/minotaur/compiler/templatebuilder.cpp
 )
 
 target_link_libraries(mntr
@@ -302,11 +306,11 @@ target_link_libraries(icarus-routes
 
 enable_testing()
 
-file(GLOB_RECURSE TEST_SRCS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} test/icarus/*.cpp)
-set(TEST_OUTPUT ${CMAKE_BINARY_DIR}/tests)
 add_definitions(-DTEST_RESOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/test/resources")
-
+set(TEST_OUTPUT ${CMAKE_BINARY_DIR}/tests)
 message("-- Tests")
+
+file(GLOB_RECURSE TEST_SRCS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} test/icarus/*.cpp)
 foreach (testSrc ${TEST_SRCS})
 	get_filename_component(testName ${testSrc} NAME_WE)
 	string(REPLACE "test/" "" testPackage "${testSrc}")
@@ -321,6 +325,32 @@ foreach (testSrc ${TEST_SRCS})
 		${Boost_LIBRARIES}
 
 		icarusframework
+	)
+
+	set_target_properties(${testName} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${TEST_OUTPUT})
+
+	add_test(NAME ${testName}
+		WORKING_DIRECTORY ${TEST_OUTPUT}
+		COMMAND ${TEST_OUTPUT}/${testName}
+		)
+endforeach (testSrc)
+
+file(GLOB_RECURSE TEST_SRCS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} test/minotaur/*.cpp)
+foreach (testSrc ${TEST_SRCS})
+	get_filename_component(testName ${testSrc} NAME_WE)
+	string(REPLACE "test/" "" testPackage "${testSrc}")
+	string(REPLACE "${testName}.cpp" "" testPackage "${testPackage}")
+	string(REPLACE "/" "_" testPackage "${testPackage}")
+	set(testName "test_${testPackage}${testName}")
+	message("--   ${testSrc} as ${testName}")
+
+	add_executable(${testName} ${testSrc})
+
+	target_link_libraries(${testName}
+		${Boost_LIBRARIES}
+
+		icarusframework
+		minotaur
 	)
 
 	set_target_properties(${testName} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${TEST_OUTPUT})
