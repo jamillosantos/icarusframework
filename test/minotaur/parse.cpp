@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_CASE(parse_1)
 
 	BOOST_REQUIRE(in_stream);
 
-	minotaur::parse_file parser(in_stream);
+	minotaur::parser_file parser(in_stream);
 	BOOST_CHECK_NO_THROW(parser.parse(finfo));
 
 	BOOST_REQUIRE_GT(finfo.pieces.size(), 0);

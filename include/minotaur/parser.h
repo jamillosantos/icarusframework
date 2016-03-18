@@ -24,7 +24,7 @@
 
 namespace minotaur
 {
-class parse_file
+class parser_file
 {
 private:
 	std::istream &istream;
@@ -67,7 +67,7 @@ private:
 	void run_quick_echo(minotaur::group_block &block);
 
 public:
-	parse_file(std::istream &in_stream);
+	parser_file(std::istream &in_stream);
 
 	void parse(minotaur::file_info &file);
 };

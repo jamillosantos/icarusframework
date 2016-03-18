@@ -58,7 +58,7 @@ void minotaur::compiler::compile(template_builder &builder)
 					if (!in_stream)
 						throw icarus::open_file("Cannot open input file.");
 
-					minotaur::parse_file c(in_stream);
+					minotaur::parser_file c(in_stream);
 
 					boost::filesystem::path targetCppFile(od.string() + boost::filesystem::path::preferred_separator
 						+ (relativePath) + boost::filesystem::path::preferred_separator + finfo.name
@@ -108,7 +108,7 @@ void minotaur::compiler::compile(template_builder &builder)
 			finfo.path = id.parent_path().string();
 			finfo.fullPath = id.string();
 
-			minotaur::parse_file c(in_stream);
+			minotaur::parser_file c(in_stream);
 			c.parse(finfo);
 
 			std::ofstream ostream(od.string());
