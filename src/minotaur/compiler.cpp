@@ -58,16 +58,16 @@ void minotaur::compiler::compile(template_builder &builder)
 					if (!in_stream)
 						throw icarus::open_file("Cannot open input file.");
 
-					minotaur::parse_file c(finfo, in_stream);
+					minotaur::parse_file c(in_stream);
 
 					boost::filesystem::path targetCppFile(od.string() + boost::filesystem::path::preferred_separator
-						+ (relativePath) + boost::filesystem::path::preferred_separator + c.info.name
-						+ c.info.extension + ".hpp"
+						+ (relativePath) + boost::filesystem::path::preferred_separator + finfo.name
+						+ finfo.extension + ".hpp"
 					);
 					boost::filesystem::create_directories(targetCppFile.parent_path().string());
 
-					boost::split(c.info.package, relativePath, boost::is_any_of("\\/"));
-					c.parse();
+					boost::split(finfo.package, relativePath, boost::is_any_of("\\/"));
+					c.parse(finfo);
 
 					std::ofstream ostream(targetCppFile.string());
 					if (ostream)
@@ -108,8 +108,8 @@ void minotaur::compiler::compile(template_builder &builder)
 			finfo.path = id.parent_path().string();
 			finfo.fullPath = id.string();
 
-			minotaur::parse_file c(finfo, in_stream);
-			c.parse();
+			minotaur::parse_file c(in_stream);
+			c.parse(finfo);
 
 			std::ofstream ostream(od.string());
 			if (ostream)

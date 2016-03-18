@@ -16,12 +16,19 @@ minotaur::quick_code_block::quick_code_block(const std::string &content)
 	: minotaur::content_block::content_block(content)
 { }
 
-void minotaur::file_info::add(minotaur::piece *piece)
+minotaur::group_block::group_block()
+{ }
+
+minotaur::call_code_block::call_code_block(const std::string &name, const std::string &parameters)
+	: minotaur::group_block::group_block(), name(name), parameters(parameters)
+{ }
+
+void minotaur::group_block::add_piece(minotaur::piece *piece)
 {
 	this->pieces.emplace_back(piece);
 }
 
-void minotaur::file_info::add(icarus::routes::method_param *param)
+void minotaur::file_info::add_param(icarus::routes::method_param *param)
 {
 	this->parameters.emplace_back(param);
 }

@@ -42,11 +42,32 @@ public:
 	quick_code_block(const std::string &content);
 };
 
+class group_block
+	: public piece
+{
+public:
+	group_block();
+
+	std::vector<std::unique_ptr<piece>> pieces;
+
+	void add_piece(minotaur::piece *piece);
+};
+
+class call_code_block
+	: public group_block
+{
+public:
+	call_code_block(const std::string &name, const std::string &parameters);
+
+	std::string name;
+	std::string parameters;
+};
+
 class file_info
+	: public group_block
 {
 public:
 	std::vector<std::unique_ptr<icarus::routes::method_param>> parameters;
-	std::vector<std::unique_ptr<piece>> pieces;
 
 	std::string path;
 	std::string fullPath;
@@ -61,9 +82,7 @@ public:
 	size_t lines;
 	std::string parameters_str;
 
-	void add(minotaur::piece *piece);
-
-	void add(icarus::routes::method_param *param);
+	void add_param(icarus::routes::method_param *param);
 };
 }
 

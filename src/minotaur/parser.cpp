@@ -37,12 +37,14 @@ bool minotaur::parse_file::read(char *cc)
 	return true;
 }
 
-void minotaur::parse_file::read_until_non_blank(char *cc)
+std::string minotaur::parse_file::read_until_non_blank(char *cc)
 {
+	std::stringstream block;
 	while (this->read(cc))
 	{
 		if (!((*cc == '\n') || (*cc == '\r') || (*cc == ' ') || (*cc == '\t')))
-			return;
+			return block.str();
+		block << cc;
 	}
 	throw icarus::premature_eof();
 }
@@ -64,7 +66,7 @@ std::string minotaur::parse_file::read_until(std::string chars)
 	throw icarus::premature_eof();
 }
 
-void minotaur::parse_file::run_parameters()
+void minotaur::parse_file::run_parameters(minotaur::file_info &info)
 {
 	char cc;
 	std::stringstream stream, paramstream;
@@ -77,7 +79,7 @@ void minotaur::parse_file::run_parameters()
 				break;
 			else
 			{
-				this->info.add(new icarus::routes::method_param(paramstream.str(), icarus::routes::method_param_type::NORMAL, stream.str()));
+				info.add_param(new icarus::routes::method_param(paramstream.str(), icarus::routes::method_param_type::NORMAL, stream.str()));
 				paramstream.str("");
 				stream.str("");
 				if (cc == ')')
@@ -101,6 +103,68 @@ void minotaur::parse_file::run_parameters()
 				throw icarus::premature_eof();
 		}
 	}
+}
+
+void minotaur::parse_file::run_content(minotaur::group_block &block, bool skip_at)
+{
+	char cc;
+	std::stringstream sblock;
+	while (this->read(&cc))
+	{
+		if ((cc == '@') || skip_at)
+		{
+			skip_at = false;
+			if (sblock.tellp())
+			{
+				block.add_piece(new minotaur::content_block(sblock.str()));
+				sblock.str("");
+			}
+			if (this->read(&cc))
+			{
+				if (cc == '{')
+					this->run_block_code(block);
+				else if (cc == '(')
+					throw minotaur::compiler_exception(this->currentLine, "Parameter definitions out of context.");
+				else if (cc == '@')
+					sblock << cc;
+				else
+				{
+					this->run_quick_echo(block);
+					if (this->last_char() != ';')
+					{
+						this->read_next = this->last_char();
+
+						std::string tmp = this->read_until_non_blank(&cc);
+						if (cc == '{')
+						{
+							if (dynamic_cast<minotaur::call_code_block *>((block.pieces.rbegin())->get()))
+							{
+								minotaur::group_block *subblock = new minotaur::group_block();
+								this->run_content(*subblock);
+								dynamic_cast<minotaur::call_code_block *>((block.pieces.rbegin())->get())->add_piece(subblock);
+							}
+							else
+								throw minotaur::compiler_exception(this->currentLine, "Invalid block call.");
+						}
+						else
+						{
+							sblock << tmp;
+							this->read_next = cc;
+						}
+					}
+				}
+				this->initialized = true;
+			}
+			else
+				throw icarus::premature_eof(this->currentLine);
+		}
+		else if (cc == '}')
+			break;
+		else
+			sblock << cc;
+	}
+	if (sblock.tellp())
+		block.add_piece(new minotaur::content_block(sblock.str()));
 }
 
 void minotaur::parse_file::run_quotes(std::stringstream &block)
@@ -168,7 +232,7 @@ void minotaur::parse_file::run_brackets(std::stringstream &block)
 		throw minotaur::compiler_exception(this->currentLine, "Close bracket not found.");
 }
 
-void minotaur::parse_file::run_quick_echo_brackets(std::stringstream &block)
+void minotaur::parse_file::run_quick_echo_brackets(std::stringstream &sblock)
 {
 	char cc;
 	unsigned int bcount = 1;
@@ -176,15 +240,17 @@ void minotaur::parse_file::run_quick_echo_brackets(std::stringstream &block)
 	{
 		if (cc == ')')
 		{
-			block << cc;
 			if (--bcount == 0)
+			{
+				this->read(&cc);
 				break;
+			}
 		}
 		else
 		{
-			block << cc;
+			sblock << cc;
 			if (cc == '"')
-				this->run_quotes(block);
+				this->run_quotes(sblock);
 			else if (cc == '(')
 				bcount++;
 		}
@@ -194,9 +260,9 @@ void minotaur::parse_file::run_quick_echo_brackets(std::stringstream &block)
 		throw minotaur::compiler_exception(this->currentLine, "Close bracket not found.");
 }
 
-void minotaur::parse_file::run_quick_echo()
+void minotaur::parse_file::run_quick_echo(minotaur::group_block &block)
 {
-	std::stringstream block;
+	std::stringstream sblock;
 	char cc = this->last_char();
 	unsigned int count = 0;
 	bool call = false;
@@ -207,7 +273,7 @@ void minotaur::parse_file::run_quick_echo()
 			if (this->read(&cc))
 			{
 				if (cc == ':')
-					block << "::";
+					sblock << "::";
 				else
 					throw minotaur::compiler_exception(this->currentLine, "runQuickEcho(): Invalid char.");
 			}
@@ -217,93 +283,67 @@ void minotaur::parse_file::run_quick_echo()
 		else if (cc == '(')
 		{
 			call = true;
-			block << cc;
-			this->run_quick_echo_brackets(block);
+			std::stringstream params;
+			this->run_quick_echo_brackets(params);
+			block.add_piece(new minotaur::call_code_block(sblock.str(), params.str()));
+			return;
 		}
 		else if (
 			((cc>= '0') && (cc <= '9'))
 			|| ((cc >= 'A') && (cc<= 'Z'))
 			|| ((cc >= 'a') && (cc<= 'z'))
 		)
-			block << cc;
+			sblock << cc;
 		else
 			break;
 		count++;
 	}
 	while (this->read(&cc));
-	if (call)
-		this->info.add(new minotaur::code_block(block.str()));
-	else
-		this->info.add(new minotaur::quick_code_block(block.str()));
+	if (!call)
+		block.add_piece(new minotaur::quick_code_block(sblock.str()));
 }
 
-minotaur::parse_file::parse_file(minotaur::file_info &file, std::istream &in_stream)
-	: info(file), currentLine(0), currentChar(0), istream(in_stream),
-	  currentInputStreamChar(INPUT_STREAM_BUFFER_SIZE), initialized(false), read_next(0)
+minotaur::parse_file::parse_file(std::istream &in_stream)
+	: istream(in_stream), currentLine(0), currentChar(0), currentInputStreamChar(INPUT_STREAM_BUFFER_SIZE), initialized(false), read_next(0)
 { }
 
-void minotaur::parse_file::parse()
+void minotaur::parse_file::parse(minotaur::file_info &info)
 {
 	char cc;
 	this->initialized = false;
 
-	std::stringstream sblock(std::stringstream::in | std::stringstream::out | std::stringstream::binary);
-
-	if (this->read(&cc))
+	this->read_until_non_blank(&cc);
+	do
 	{
-		do
+		if (cc == '@')
 		{
-			if (cc == '@')
+			if (this->read(&cc))
 			{
-				if (sblock.tellp())
+				if (cc == '(')
 				{
-					this->info.add(new minotaur::content_block(sblock.str()));
-					sblock.str("");
-				}
-				if (this->read(&cc))
-				{
-					if (cc == '{')
-						this->run_block_code();
-					else if (cc == '(')
-					{
-						if (this->initialized)
-							throw minotaur::compiler_exception(this->currentLine,
-															   "Parameter definitions out of context.");
-						else
-							this->run_parameters();
-					}
-					else if (cc == '@')
-						sblock << cc;
+					if (this->initialized)
+						throw minotaur::compiler_exception(this->currentLine, "Parameter definitions out of context.");
 					else
-					{
-						this->run_quick_echo();
-						if (this->last_char() != ';')
-						{
-							this->read_next = this->last_char();
-							continue;
-						}
-					}
-					this->initialized = true;
+						this->run_parameters(info);
 				}
 				else
-					throw icarus::premature_eof(this->currentLine);
+				{
+					this->run_content(info, true);
+				}
+				this->initialized = true;
 			}
 			else
-				sblock << cc;
-
-			if (!this->initialized)
-				this->initialized = true;
+				throw icarus::premature_eof(this->currentLine);
 		}
-		while (this->read(&cc));
-
-		if (sblock.tellp())
-			this->info.add(new minotaur::content_block(sblock.str()));
+		else
+			this->run_content(info);
 	}
+	while (this->read(&cc));
 }
 
-void minotaur::parse_file::run_block_code()
+void minotaur::parse_file::run_block_code(minotaur::group_block &block)
 {
-	std::stringstream block;
-	this->run_brackets(block);
-	this->info.add(new minotaur::code_block(block.str()));
+	std::stringstream stringblock;
+	this->run_brackets(stringblock);
+	block.add_piece(new minotaur::code_block(stringblock.str()));
 }

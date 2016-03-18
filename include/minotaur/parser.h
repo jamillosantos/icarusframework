@@ -26,16 +26,13 @@ namespace minotaur
 {
 class parse_file
 {
-public:
-	file_info& info;
 private:
+	std::istream &istream;
 
 	boost::filesystem::path file;
 
 	size_t currentLine;
 	size_t currentChar;
-
-	std::istream &istream;
 
 	char inputStreamBuffer[INPUT_STREAM_BUFFER_SIZE];
 	size_t inputStreamBufferSize;
@@ -49,13 +46,15 @@ private:
 
 	bool read(char *cc);
 
-	void read_until_non_blank(char *cc);
+	std::string read_until_non_blank(char *cc);
 
 	std::string read_until(std::string chars);
 
-	void run_parameters();
+	void run_parameters(minotaur::file_info &file);
 
-	void run_block_code();
+	void run_content(minotaur::group_block &block, bool skip_at = false);
+
+	void run_block_code(minotaur::group_block &block);
 
 	void run_quotes(std::stringstream &block);
 
@@ -63,14 +62,14 @@ private:
 
 	void run_brackets(std::stringstream &block);
 
-	void run_quick_echo_brackets(std::stringstream &block);
+	void run_quick_echo_brackets(std::stringstream &sblock);
 
-	void run_quick_echo();
+	void run_quick_echo(minotaur::group_block &block);
 
 public:
-	parse_file(minotaur::file_info &file, std::istream &in_stream);
+	parse_file(std::istream &in_stream);
 
-	void parse();
+	void parse(minotaur::file_info &file);
 };
 }
 
