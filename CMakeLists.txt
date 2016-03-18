@@ -84,10 +84,10 @@ message("--   crypto libraries: ${OPENSSL_CRYPTO_LIBRARIES}")
 message("")
 include_directories(${OPENSSL_INCLUDE_DIR})
 
-configure_file(
-	src/config.h.in
-	"${PROJECT_BINARY_DIR}/config.h"
-)
+#configure_file(
+#	src/config.h.in
+#	"${PROJECT_BINARY_DIR}/config.h"
+#)
 
 set(SOURCE_FILES
 	include/icarus/log.h
