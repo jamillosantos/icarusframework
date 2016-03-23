@@ -11,6 +11,7 @@
 #include <icarus/http/request.h>
 #include <icarus/http/response.h>
 #include <icarus/http/client.h>
+#include "dispatcher.h"
 
 namespace icarus
 {
@@ -20,8 +21,10 @@ private:
 	icarus::config::config _config;
 protected:
 	volatile bool _running;
+
+	icarus::dispatcher &_dispatcher;
 public:
-	application();
+	application(icarus::dispatcher &dispatcher);
 
 	config::config &config();
 
@@ -37,7 +40,7 @@ public:
 
 	virtual void run();
 
-	virtual void process(http::client_context *client);
+	virtual icarus::dispatcher &dispatcher();
 };
 }
 

@@ -5,8 +5,8 @@
 
 #include <icarus/application.h>
 
-icarus::application::application()
-	: _running(false)
+icarus::application::application(icarus::dispatcher &dispatcher)
+	: _running(false), _dispatcher(dispatcher)
 { }
 
 icarus::config::config &icarus::application::config()
@@ -39,12 +39,15 @@ void icarus::application::run()
 		http::client_context *client = this->accept();
 		if (client)
 		{
-			this->process(client);
+			this->_dispatcher.process(client);
 			delete client;
 		}
 	}
 	this->cleanup();
 }
 
-void icarus::application::process(http::client_context *client)
-{ }
+icarus::dispatcher &icarus::application::dispatcher()
+{
+	return this->_dispatcher;
+}
+

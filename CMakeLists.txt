@@ -203,8 +203,11 @@ set(SOURCE_FILES
 
 	include/icarus/routes/typeconversion-commons.h
 
-	src/icarus/content.cpp
 	include/icarus/content.h
+	src/icarus/content.cpp
+
+	include/icarus/dispatcher.h
+	src/icarus/dispatcher.cpp
 )
 
 include_directories("${CMAKE_SOURCE_DIR}/include")
@@ -267,14 +270,6 @@ target_link_libraries(icarusframework
 )
 
 set_target_properties(icarusframework PROPERTIES LINKER_LANGUAGE CXX)
-
-add_executable(icarus-fastcgi
-	src/icarus/http/fcgi/main.cpp
-)
-
-target_link_libraries(icarus-fastcgi
-	icarusframework
-)
 
 add_executable(mntr
 	src/minotaur/mntr.cpp

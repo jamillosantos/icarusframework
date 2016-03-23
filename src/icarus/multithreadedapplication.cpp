@@ -6,7 +6,7 @@
 #include <icarus/multithreadedapplication.h>
 
 icarus::multi_threaded_application::multi_threaded_application(icarus::application &application)
-	: _application(application)
+	: icarus::application::application(application.dispatcher()), _application(application)
 { }
 
 void icarus::multi_threaded_application::init()
@@ -33,7 +33,7 @@ void icarus::multi_threaded_application::runTrampolin()
 		http::client_context *client = this->accept();
 		if (client)
 		{
-			this->process(client);
+			this->_dispatcher.process(client);
 			delete client;
 		}
 	}

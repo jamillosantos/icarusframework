@@ -22,7 +22,7 @@ private:
 	application &_application;
 	std::vector<std::unique_ptr<std::thread>> _threads;
 public:
-	multi_threaded_application(application &application);
+	multi_threaded_application(icarus::application &application);
 
 	virtual void init() override;
 
