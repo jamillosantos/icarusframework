@@ -28,3 +28,7 @@ icarus::http::client_context *icarus::http::fcgi::application::accept()
 	FCGX_Free(fcgiRequest, true);
 	return nullptr;
 }
+
+icarus::http::fcgi::application::application(icarus::dispatcher &dispatcher)
+	: icarus::application(dispatcher)
+{ }

@@ -13,6 +13,7 @@
 #include <icarus/http/fcgi/client.h>
 #include <icarus/http/fcgi/response.h>
 #include <icarus/http/fcgi/request.h>
+#include <icarus/dispatcher.h>
 
 #include <thread>
 
@@ -29,8 +30,10 @@ protected:
 	virtual void init() override;
 
 	virtual http::client_context *accept() override;
-};
 
+public:
+	application(icarus::dispatcher &dispatcher);
+};
 }
 }
 }

@@ -25,7 +25,7 @@ public:
 	virtual void init(const FCGX_Request &request);
 
 	template<class T>
-	request &operator>>(T& t);
+	icarus::http::fcgi::request &operator>>(T& t);
 };
 }
 }
