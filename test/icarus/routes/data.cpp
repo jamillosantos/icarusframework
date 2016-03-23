@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE(CallMethodPath2)
 
 BOOST_AUTO_TEST_CASE(RouteStaticInitialization)
 {
-	icarus::routes::route route(0, {
+	icarus::routes::route route(0, "GET", {
 		{"test1", ""},
 		{"", "test2"},
 		{"test3_name", "test3_regex"}
