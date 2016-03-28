@@ -5,8 +5,6 @@
 
 #include <icarus/http/fcgi/request.h>
 
-#include <icarus/log.h>
-
 #include <fcgio.h>
 
 void icarus::http::fcgi::request::init(const FCGX_Request &request)

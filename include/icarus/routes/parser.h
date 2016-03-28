@@ -39,37 +39,37 @@ private:
 	size_t currentLine;
 	size_t currentChar;
 
-	char lastChar();
+	char last_char();
 
-	bool readChar(char *cc);
+	bool read_char(char *cc);
 
-	void readUntilNonBlank(char *cc);
+	void read_until_non_blank(char *cc);
 
-	std::string readUntil(std::string chars);
+	std::string read_until(std::string chars);
 
 	/**
 	 * Reads bytes untilfind the end of the comment.
 	 */
-	void runCommentLine();
+	void run_comment_line();
 
 	/**
 	 * Reads bytes until find the end of the comment.
 	 */
-	void runCommentMultiLine();
+	void run_comment_multiline();
 
-	std::string runSkipQuotes();
+	std::string run_skip_quotes();
 
-	std::string runSkipRegexBrackets();
+	std::string run_skip_regex_brackets();
 
-	void runLineMethodParameters(call_method &callMethod);
+	void run_line_method_parameters(call_method &callMethod);
 
-	char readURI(composed_uri &uri);
+	char read_uri(composed_uri &uri);
 
-	void runGroup(routes &data, unsigned int level);
+	void run_group(routes &data, unsigned int level);
 
-	void runLine(routes &data, unsigned int level);
+	void run_line(routes &data, unsigned int level);
 
-	void runDoc(routes &data, unsigned int level);
+	void run_doc(routes &data, unsigned int level);
 public:
 	parser(std::string inputFolder);
 

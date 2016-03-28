@@ -6,12 +6,9 @@
 #ifndef ICARUSFRAMEWORK_APPLICATION_H
 #define ICARUSFRAMEWORK_APPLICATION_H
 
-#include <icarus/http/fcgi/client.h>
 #include <icarus/config.h>
-#include <icarus/http/request.h>
-#include <icarus/http/response.h>
 #include <icarus/http/client.h>
-#include "dispatcher.h"
+#include <icarus/dispatcher.h>
 
 namespace icarus
 {

@@ -8,12 +8,12 @@
 #include <icarus/routes/exceptions.h>
 #include <icarus/routes/fieldtypes.h>
 
-char icarus::routes::parser::lastChar()
+char icarus::routes::parser::last_char()
 {
 	return this->inputStreamBuffer[this->currentInputStreamChar - 1];
 }
 
-bool icarus::routes::parser::readChar(char *cc)
+bool icarus::routes::parser::read_char(char *cc)
 {
 	if ((this->currentInputStreamChar >= INPUT_STREAM_BUFFER_SIZE) || (this->inputStreamBufferSize == 0))
 	{
@@ -38,9 +38,9 @@ bool icarus::routes::parser::readChar(char *cc)
 	return true;
 }
 
-void icarus::routes::parser::readUntilNonBlank(char *cc)
+void icarus::routes::parser::read_until_non_blank(char *cc)
 {
-	while (this->readChar(cc))
+	while (this->read_char(cc))
 	{
 		if (!((*cc == '\n') || (*cc == '\r') || (*cc == ' ') || (*cc == '\t')))
 			return;
@@ -48,12 +48,12 @@ void icarus::routes::parser::readUntilNonBlank(char *cc)
 	throw icarus::premature_eof();
 }
 
-std::string icarus::routes::parser::readUntil(std::string chars)
+std::string icarus::routes::parser::read_until(std::string chars)
 {
 	char cc;
 	std::string result;
 	unsigned int i;
-	while (this->readChar(&cc))
+	while (this->read_char(&cc))
 	{
 		for (i = 0; i < chars.size(); i++)
 		{
@@ -65,24 +65,24 @@ std::string icarus::routes::parser::readUntil(std::string chars)
 	throw icarus::premature_eof();
 }
 
-void icarus::routes::parser::runCommentLine()
+void icarus::routes::parser::run_comment_line()
 {
 	char cc;
-	while (this->readChar(&cc))
+	while (this->read_char(&cc))
 	{
 		if (cc == '\n')
 			break;
 	}
 }
 
-void icarus::routes::parser::runCommentMultiLine()
+void icarus::routes::parser::run_comment_multiline()
 {
 	char cc;
-	while (this->readChar(&cc))
+	while (this->read_char(&cc))
 	{
 		if (cc == '*')
 		{
-			if (this->readChar(&cc))
+			if (this->read_char(&cc))
 			{
 				if (cc == '/')
 				{
@@ -99,16 +99,16 @@ void icarus::routes::parser::runCommentMultiLine()
 	}
 }
 
-std::string icarus::routes::parser::runSkipQuotes()
+std::string icarus::routes::parser::run_skip_quotes()
 {
 	char cc;
 	std::stringstream stream;
-	while (this->readChar(&cc))
+	while (this->read_char(&cc))
 	{
 		stream << cc;
 		if (cc == '\\')
 		{
-			if (!this->readChar(&cc))
+			if (!this->read_char(&cc))
 			{
 				break;
 			}
@@ -123,17 +123,17 @@ std::string icarus::routes::parser::runSkipQuotes()
 	throw icarus::premature_eof();
 }
 
-std::string icarus::routes::parser::runSkipRegexBrackets()
+std::string icarus::routes::parser::run_skip_regex_brackets()
 {
 	unsigned int count = 1;
 	char cc;
 	std::stringstream stream;
-	while (this->readChar(&cc))
+	while (this->read_char(&cc))
 	{
 		stream << cc;
 		if (cc == '\\')
 		{
-			if (!this->readChar(&cc))
+			if (!this->read_char(&cc))
 				break;
 			stream << cc;
 		}
@@ -153,11 +153,11 @@ std::string icarus::routes::parser::runSkipRegexBrackets()
 	throw icarus::premature_eof();
 }
 
-void icarus::routes::parser::runLineMethodParameters(call_method &callMethod)
+void icarus::routes::parser::run_line_method_parameters(call_method &callMethod)
 {
 	char cc;
 	std::stringstream stream, paramstream;
-	this->readUntilNonBlank(&cc);
+	this->read_until_non_blank(&cc);
 	for (; ;)
 	{
 		if ((cc == ')') || (cc == ','))
@@ -172,7 +172,7 @@ void icarus::routes::parser::runLineMethodParameters(call_method &callMethod)
 				if (cc == ')')
 					break;
 				else
-					this->readUntilNonBlank(&cc);
+					this->read_until_non_blank(&cc);
 			}
 		}
 		else if ((cc == ' ') || (cc == '\t') || (cc == '\r') || (cc == '\n'))
@@ -181,12 +181,12 @@ void icarus::routes::parser::runLineMethodParameters(call_method &callMethod)
 				paramstream << " ";
 			paramstream << stream.rdbuf();
 			stream.str("");
-			this->readUntilNonBlank(&cc);
+			this->read_until_non_blank(&cc);
 		}
 		else
 		{
 			stream << cc;
-			if (!this->readChar(&cc))
+			if (!this->read_char(&cc))
 			{
 				throw icarus::premature_eof();
 			}
@@ -194,17 +194,17 @@ void icarus::routes::parser::runLineMethodParameters(call_method &callMethod)
 	}
 }
 
-char icarus::routes::parser::readURI(icarus::routes::composed_uri &uri)
+char icarus::routes::parser::read_uri(icarus::routes::composed_uri &uri)
 {
 	std::stringstream stream;
 	char cc;
-	this->readUntilNonBlank(&cc);
+	this->read_until_non_blank(&cc);
 	stream << cc;
-	while (this->readChar(&cc))
+	while (this->read_char(&cc))
 	{
 		if (cc == '\\')
 		{
-			if (this->readChar(&cc))
+			if (this->read_char(&cc))
 				stream << '\\' << cc;
 			else
 			{
@@ -220,14 +220,14 @@ char icarus::routes::parser::readURI(icarus::routes::composed_uri &uri)
 				uri.add(tmpstr);
 				stream.str("");
 			}
-			while (this->readChar(&cc))
+			while (this->read_char(&cc))
 			{
 				if (cc == ':')
 				{
 					tmpstr = stream.str();
 					stream.str("");
 
-					while (this->readChar(&cc))
+					while (this->read_char(&cc))
 					{
 						if (cc == '>')
 						{
@@ -239,7 +239,7 @@ char icarus::routes::parser::readURI(icarus::routes::composed_uri &uri)
 						else if (cc == '\\')
 						{
 							stream << cc;
-							if (!this->readChar(&cc))
+							if (!this->read_char(&cc))
 								break;
 							stream << cc;
 						}
@@ -283,36 +283,36 @@ char icarus::routes::parser::readURI(icarus::routes::composed_uri &uri)
 	throw icarus::premature_eof();
 }
 
-void icarus::routes::parser::runGroup(icarus::routes::routes &data, unsigned int level)
+void icarus::routes::parser::run_group(icarus::routes::routes &data, unsigned int level)
 {
 	unsigned int cl = this->currentLine;
 	std::stringstream stream;
 	icarus::routes::group *group;
 	data.add(group = new icarus::routes::group(cl));
-	char cc = this->readURI(group->uri());
+	char cc = this->read_uri(group->uri());
 	if (cc != '{')
-		this->readUntil("{");
-	this->runDoc(*group, level + 1);
+		this->read_until("{");
+	this->run_doc(*group, level + 1);
 }
 
-void icarus::routes::parser::runLine(icarus::routes::routes &data, unsigned int level)
+void icarus::routes::parser::run_line(icarus::routes::routes &data, unsigned int level)
 {
 	icarus::routes::route route(this->currentLine);
 	std::stringstream stream;
-	char cc = this->lastChar();
+	char cc = this->last_char();
 	stream << cc;
-	while (this->readChar(&cc))
+	while (this->read_char(&cc))
 	{
 		if ((cc == ' ') || (cc == '\t'))
 		{
 			if (stream.str() == "on")
 			{
-				this->runGroup(data, level);
+				this->run_group(data, level);
 				return;
 			}
 			else
 			{
-				route.httpMethod(stream.str());
+				route.http_method(stream.str());
 				stream.str("");    // clear stream
 
 				icarus::routes::group *parentGroup = dynamic_cast<icarus::routes::group*>(&data);
@@ -323,19 +323,19 @@ void icarus::routes::parser::runLine(icarus::routes::routes &data, unsigned int 
 						route.uri().add(token.name(), token.regex());
 					}
 				}
-				this->readURI(route.uri());
-				this->readUntilNonBlank(&cc);
+				this->read_uri(route.uri());
+				this->read_until_non_blank(&cc);
 				stream << cc;
 
 				icarus::routes::call_method callMethod;
-				while (this->readChar(&cc))
+				while (this->read_char(&cc))
 				{
 					if (cc == '(')
 					{
 						callMethod.path(stream.str());
 						stream.str("");
-						this->runLineMethodParameters(callMethod);
-						route.callMethod(callMethod);
+						this->run_line_method_parameters(callMethod);
+						route.call_method(callMethod);
 						int i = 0;
 						for (icarus::routes::regex_token &token : route.uri().tokens())
 						{
@@ -390,25 +390,25 @@ void icarus::routes::parser::runLine(icarus::routes::routes &data, unsigned int 
 	throw icarus::premature_eof();
 }
 
-void icarus::routes::parser::runDoc(icarus::routes::routes &data, unsigned int level)
+void icarus::routes::parser::run_doc(icarus::routes::routes &data, unsigned int level)
 {
 	char cc;
-	while (this->readChar(&cc))
+	while (this->read_char(&cc))
 	{
 		// Finds a first char to be a comment.
 		if (cc == '/')
 		{
-			if (this->readChar(&cc))
+			if (this->read_char(&cc))
 			{
 				// Line comment
 				if (cc == '/')
 				{
-					this->runCommentLine();
+					this->run_comment_line();
 				}
 					// Multiline comment
 				else if (cc == '*')
 				{
-					this->runCommentMultiLine();
+					this->run_comment_multiline();
 				}
 			}
 			else
@@ -429,7 +429,7 @@ void icarus::routes::parser::runDoc(icarus::routes::routes &data, unsigned int l
 		}
 		else if ((cc != '\n') && (cc != '\r') && (cc != ' ') && (cc != '\t'))
 		{
-			this->runLine(data, level);
+			this->run_line(data, level);
 		}
 	}
 }
@@ -451,7 +451,7 @@ void icarus::routes::parser::parse(std::string inputFile, icarus::routes::docume
 		try
 		{
 			s->open(ifp.string());
-			this->runDoc(data, 0);
+			this->run_doc(data, 0);
 		}
 		catch (std::ios_base::failure &e)
 		{

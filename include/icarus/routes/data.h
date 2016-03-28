@@ -183,7 +183,7 @@ public:
 
 	void line(size_t line);
 
-	virtual piece *match(std::string method, std::string requestUri, http::values<http::values_value> &values) = 0;
+	virtual piece *match(std::string method, std::string request_uri, http::values<http::values_value> &values) = 0;
 };
 
 class routes;
@@ -196,61 +196,62 @@ class route
 {
 private:
 	unsigned int _id;
-	std::string _httpMethod;
-	composed_uri _composedURI;
-	call_method _callMethod;
+	std::string _http_method;
+	icarus::routes::composed_uri _composed_uri;
+	icarus::routes::call_method _call_method;
 public:
 	route(icarus::routes::route &route);
 
 	route(size_t line);
 
-	route(size_t line, const std::string &httpMethod, std::initializer_list<std::pair<std::string, std::string>> list);
+	route(size_t line, const std::string &http_method, std::initializer_list<std::pair<std::string, std::string>> list);
 
 	const unsigned int id() const;
 
-	route &id(unsigned int id);
+	icarus::routes::route &id(unsigned int id);
 
-	const std::string &httpMethod() const;
+	const std::string &http_method() const;
 
-	route &httpMethod(const std::string &httpMethod);
+	route &http_method(const std::string &httpMethod);
 
-	composed_uri &uri();
+	icarus::routes::composed_uri &uri();
 
-	call_method &callMethod();
+	icarus::routes::call_method &call_method();
 
-	route &callMethod(call_method &callMethod);
+	icarus::routes::route &call_method(icarus::routes::call_method &call_method);
 
-	virtual piece *match(std::string method, std::string uri, http::values<http::values_value> &params) override;
+	virtual piece *match(std::string method, std::string uri,
+		http::values<http::values_value> &params) override;
 };
 
 class routes
-	: public piece
+	: public icarus::routes::piece
 {
 private:
-	std::vector<std::unique_ptr<piece>> _pieces;
+	std::vector<std::unique_ptr<icarus::routes::piece>> _pieces;
 public:
 	routes(size_t line);
 
-	const std::vector<std::unique_ptr<piece>> &pieces() const;
+	const std::vector<std::unique_ptr<icarus::routes::piece>> &pieces() const;
 
-	virtual piece *add(piece *piece);
+	virtual icarus::routes::piece *add(icarus::routes::piece *piece);
 
-	virtual piece *match(std::string method, std::string requestUri, http::values<http::values_value> &values);
+	virtual piece *match(std::string method, std::string requestUri, http::values<http::values_value> &values) override;
 };
 
 class group
-	: public routes
+	: public icarus::routes::routes
 {
 private:
-	composed_uri _composedURI;
+	icarus::routes::composed_uri _composed_uri;
 public:
 	group(size_t line);
 
-	composed_uri &uri();
+	icarus::routes::composed_uri &uri();
 };
 
 class document
-	: public routes
+	: public icarus::routes::routes
 {
 private:
 	std::string _name;
@@ -261,7 +262,7 @@ public:
 
 	const std::string &name();
 
-	document &name(std::string name);
+	icarus::routes::document &name(std::string name);
 
 	std::vector<std::string> &packages();
 };

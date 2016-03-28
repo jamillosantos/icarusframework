@@ -8,4 +8,12 @@
 void icarus::dispatcher::process(icarus::http::client_context *client)
 {
 	this->find_route(client);
+	this->destroy_client(client);
 }
+
+void icarus::dispatcher::destroy_client(http::client_context *client)
+{
+	delete client;
+}
+
+

@@ -34,7 +34,6 @@ void icarus::multi_threaded_application::runTrampolin()
 		if (client)
 		{
 			this->_dispatcher.process(client);
-			delete client;
 		}
 	}
 }

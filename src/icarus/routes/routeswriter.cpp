@@ -6,7 +6,7 @@
 #include <icarus/routes/routeswriter.h>
 #include <icarus/routes/exceptions.h>
 
-void icarus::routes::routes_writer::writeBeginDoc(std::ostream &stream, document &document)
+void icarus::routes::routes_writer::write_begin_doc(std::ostream &stream, document &document)
 {
 	// File header
 	stream << "/**" << std::endl << " * Auto generated routes file" << std::endl << " */" << std::endl << std::endl;
@@ -42,11 +42,11 @@ void icarus::routes::routes_writer::writeBeginDoc(std::ostream &stream, document
 	{
 		if ((route = dynamic_cast<icarus::routes::route*>(piece.get())))			// If a route
 		{
-			this->writeBeginDoc(stream, *route);
+			this->write_begin_doc(stream, *route);
 		}
 		else if ((group = dynamic_cast<icarus::routes::group*>(piece.get())))		// If a group
 		{
-			this->writeBeginDoc(stream, *group);
+			this->write_begin_doc(stream, *group);
 		}
 		else
 		{
@@ -63,7 +63,7 @@ void icarus::routes::routes_writer::writeBeginDoc(std::ostream &stream, document
 	stream << "\ticarus::http::value_hash<icarus::http::values_value> values;" << std::endl;
 };
 
-void icarus::routes::routes_writer::writeBeginDoc(std::ostream &stream, icarus::routes::group& group)
+void icarus::routes::routes_writer::write_begin_doc(std::ostream &stream, icarus::routes::group &group)
 {
 	icarus::routes::route *route;
 	icarus::routes::group *subgroup;
@@ -71,11 +71,11 @@ void icarus::routes::routes_writer::writeBeginDoc(std::ostream &stream, icarus::
 	{
 		if ((route = dynamic_cast<icarus::routes::route*>(piece.get())))
 		{
-			this->writeBeginDoc(stream, *route);
+			this->write_begin_doc(stream, *route);
 		}
 		else if ((subgroup = dynamic_cast<icarus::routes::group*>(piece.get())))
 		{
-			this->writeBeginDoc(stream, *subgroup);
+			this->write_begin_doc(stream, *subgroup);
 		}
 		else
 		{
@@ -85,7 +85,7 @@ void icarus::routes::routes_writer::writeBeginDoc(std::ostream &stream, icarus::
 	}
 }
 
-void icarus::routes::routes_writer::writeBeginDoc(std::ostream &stream, icarus::routes::route& route)
+void icarus::routes::routes_writer::write_begin_doc(std::ostream &stream, icarus::routes::route &route)
 {
 	// If needed, sets the route id, a unique ID route per compilation.
 	if (route.id() == 0)
@@ -95,7 +95,7 @@ void icarus::routes::routes_writer::writeBeginDoc(std::ostream &stream, icarus::
 	stream << "/**" << std::endl << " * Route: " << route.uri().str() << std::endl << " * at line" << route.line()
 		<< " on the original file." << std::endl << " */" << std::endl;
 	// Route declaration itself
-	stream << "icarus::routes::route route" << route.id() << "(" << route.line() << ", \"" << route.httpMethod() << "\", {" << std::endl;
+	stream << "icarus::routes::route route" << route.id() << "(" << route.line() << ", \"" << route.http_method() << "\", {" << std::endl;
 	unsigned int i = 0, j = 0;
 	// Creating the static list initialization of the route with the match rule.
 	for (regex_token &token : route.uri().tokens())
@@ -110,7 +110,7 @@ void icarus::routes::routes_writer::writeBeginDoc(std::ostream &stream, icarus::
 	stream << std::endl << "});" << std::endl << std::endl;
 }
 
-void icarus::routes::routes_writer::writeEndDoc(std::ostream &stream, icarus::routes::document &document)
+void icarus::routes::routes_writer::write_end_doc(std::ostream &stream, icarus::routes::document &document)
 {
 	stream << "\treturn false;" << std::endl;
 	stream << "} // find()" << std::endl;
@@ -133,21 +133,21 @@ void icarus::routes::routes_writer::write(std::ostream &stream, icarus::routes::
 	stream << "if (route" << route.id() << ".match(method, uri, values))" << std::endl << "\t{" << std::endl << "\t\t";
 
 	// If the calling method is static (default).
-	if (route.callMethod().isStatic())
+	if (route.call_method().isStatic())
 	{
 		// Places the packages of the method.
-		stream << "LOG_INFO(\"Route '" << route.uri().str() << "' matched.\")" << std::endl;
+		stream << "LOG_INFO(\"Route '" << route.uri().str() << "' matched.\");" << std::endl;
 		stream << "\t\tcontext.response() << ";
-		for (const std::string &package : route.callMethod().path())
+		for (const std::string &package : route.call_method().path())
 		{
 			stream << package << "::";
 		}
 		// Places the method name
-		stream << route.callMethod().name() << "(";
+		stream << route.call_method().name() << "(";
 		unsigned int i = 0;
 		bool found;
 		// Places the parameter.
-		for (method_param &param : route.callMethod().params())
+		for (method_param &param : route.call_method().params())
 		{
 			found = false;
 			for (regex_token &token : route.uri().tokens())
@@ -208,13 +208,13 @@ void icarus::routes::routes_writer::write(std::ostream &stream, icarus::routes::
 	}
 	else											// If it is not a type expected, it should generate a fatal error
 	{
-		LOG_ERROR("Piece not supported.")
+		LOG_ERROR("Piece not supported.");
 		// TODO: Throw an exception.
 		std::exit(0);
 	}
 }
 
-void icarus::routes::routes_writer::writeReverseRoutes(std::ostream &stream, icarus::routes::document &document)
+void icarus::routes::routes_writer::write_reverse_routes(std::ostream &stream, icarus::routes::document &document)
 {
 	std::string item, del("::");
 	for (const std::unique_ptr<icarus::routes::piece> &piece : document.pieces())
@@ -229,26 +229,26 @@ void icarus::routes::routes_writer::writeReverseRoutes(std::ostream &stream, ica
 			icarus::routes::route* route = dynamic_cast<icarus::routes::route*>(piece.get());
 			if (route)
 			{
-				this->writeReverseRoutes(stream, *route);
+				this->write_reverse_routes(stream, *route);
 			}
 			// TODO: Decide what to do with this else.
 		}
 	}
 }
 
-void icarus::routes::routes_writer::writeReverseRoutes(std::ostream &stream, icarus::routes::route &route)
+void icarus::routes::routes_writer::write_reverse_routes(std::ostream &stream, icarus::routes::route &route)
 {
 	stream << "namespace routes" << std::endl << "{" << std::endl;
-	for (std::string ns : route.callMethod().path())
+	for (std::string ns : route.call_method().path())
 	{
 		stream << "namespace " << ns << std::endl << "{" << std::endl;
 	}
 
 	// String return version
 	{
-		stream << "\tstd::string " << route.callMethod().name() << "(";
+		stream << "\tstd::string " << route.call_method().name() << "(";
 		unsigned int i = 0;
-		for (const icarus::routes::method_param &param : route.callMethod().params())
+		for (const icarus::routes::method_param &param : route.call_method().params())
 		{
 			if (i > 0)
 				stream << ", ";
@@ -269,7 +269,7 @@ void icarus::routes::routes_writer::writeReverseRoutes(std::ostream &stream, ica
 			else
 			{
 				bool found = false;
-				for (const icarus::routes::method_param &p : route.callMethod().params())
+				for (const icarus::routes::method_param &p : route.call_method().params())
 				{
 					if (rt.name() == p.name())
 					{
@@ -288,9 +288,9 @@ void icarus::routes::routes_writer::writeReverseRoutes(std::ostream &stream, ica
 
 	// Action return version
 	{
-		stream << "\ticarus::action _" << route.callMethod().name() << "(";
+		stream << "\ticarus::action _" << route.call_method().name() << "(";
 		unsigned int i = 0;
-		for (const icarus::routes::method_param &param : route.callMethod().params())
+		for (const icarus::routes::method_param &param : route.call_method().params())
 		{
 			if (i > 0)
 				stream << ", ";
@@ -311,7 +311,7 @@ void icarus::routes::routes_writer::writeReverseRoutes(std::ostream &stream, ica
 			else
 			{
 				bool found = false;
-				for (const icarus::routes::method_param &p : route.callMethod().params())
+				for (const icarus::routes::method_param &p : route.call_method().params())
 				{
 					if (rt.name() == p.name())
 					{
@@ -324,11 +324,11 @@ void icarus::routes::routes_writer::writeReverseRoutes(std::ostream &stream, ica
 					throw icarus::routes::param_not_found(route.line(), rt.name());
 			}
 		}
-		stream << "\t\treturn icarus::action(\"" << route.httpMethod() << "\", tmp);\n";
+		stream << "\t\treturn icarus::action(\"" << route.http_method() << "\", tmp);\n";
 		stream << "\t}\n";
 	}
 	stream << "} // routes\n";
-	for (std::string ns : route.callMethod().path())
+	for (std::string ns : route.call_method().path())
 	{
 		stream << "} // " << ns << "\n";
 	}
@@ -340,7 +340,7 @@ icarus::routes::routes_writer::routes_writer()
 
 void icarus::routes::routes_writer::write(std::ostream &stream, icarus::routes::document &document)
 {
-	this->writeBeginDoc(stream, document);
+	this->write_begin_doc(stream, document);
 	for (const std::unique_ptr<piece> &piece : document.pieces())
 	{
 		icarus::routes::route *route = dynamic_cast<icarus::routes::route*>(piece.get());
@@ -355,9 +355,9 @@ void icarus::routes::routes_writer::write(std::ostream &stream, icarus::routes::
 				this->write(stream, *piece);
 		}
 	}
-	this->writeEndDoc(stream, document);
+	this->write_end_doc(stream, document);
 
-	this->writeReverseRoutes(stream, document);
+	this->write_reverse_routes(stream, document);
 
 	stream << "#endif";
 }

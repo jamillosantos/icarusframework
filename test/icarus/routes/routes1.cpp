@@ -20,22 +20,22 @@ BOOST_AUTO_TEST_CASE(route1_parsing)
 
 	{
 		ifr::route &line = *dynamic_cast<ifr::route *>(parserData.pieces()[0].get());
-		BOOST_CHECK_EQUAL(line.httpMethod(), "GET");
+		BOOST_CHECK_EQUAL(line.http_method(), "GET");
 
 		BOOST_REQUIRE_EQUAL(line.uri().tokens().size(), 1);
 		BOOST_CHECK(line.uri().tokens()[0].name().empty());
 		BOOST_CHECK_EQUAL(line.uri().tokens()[0].regex(), "/");
 
-		BOOST_REQUIRE_EQUAL(line.callMethod().path().size(), 2);
-		BOOST_CHECK_EQUAL(line.callMethod().path()[0], "controllers");
-		BOOST_CHECK_EQUAL(line.callMethod().path()[1], "Index");
-		BOOST_CHECK_EQUAL(line.callMethod().name(), "default0");
-		BOOST_CHECK(line.callMethod().params().empty());
+		BOOST_REQUIRE_EQUAL(line.call_method().path().size(), 2);
+		BOOST_CHECK_EQUAL(line.call_method().path()[0], "controllers");
+		BOOST_CHECK_EQUAL(line.call_method().path()[1], "Index");
+		BOOST_CHECK_EQUAL(line.call_method().name(), "default0");
+		BOOST_CHECK(line.call_method().params().empty());
 	}
 
 	{
 		ifr::route &line = *dynamic_cast<ifr::route *>(parserData.pieces()[1].get());
-		BOOST_CHECK_EQUAL(line.httpMethod(), "GET");
+		BOOST_CHECK_EQUAL(line.http_method(), "GET");
 
 		BOOST_REQUIRE_EQUAL(line.uri().tokens().size(), 2);
 		BOOST_CHECK(line.uri().tokens()[0].name().empty());
@@ -43,18 +43,18 @@ BOOST_AUTO_TEST_CASE(route1_parsing)
 		BOOST_CHECK_EQUAL(line.uri().tokens()[1].name(), "param1");
 		BOOST_CHECK_EQUAL(line.uri().tokens()[1].regex(), "[0-9]+");
 
-		BOOST_REQUIRE_EQUAL(line.callMethod().path().size(), 2);
-		BOOST_CHECK_EQUAL(line.callMethod().path()[0], "controllers");
-		BOOST_CHECK_EQUAL(line.callMethod().path()[1], "Index");
-		BOOST_CHECK_EQUAL(line.callMethod().name(), "default1");
-		BOOST_REQUIRE_EQUAL(line.callMethod().params().size(), 1);
-		BOOST_CHECK_EQUAL(line.callMethod().params()[0].name(), "parameter1");
-		BOOST_CHECK_EQUAL(line.callMethod().params()[0].type(), "unsigned int");
+		BOOST_REQUIRE_EQUAL(line.call_method().path().size(), 2);
+		BOOST_CHECK_EQUAL(line.call_method().path()[0], "controllers");
+		BOOST_CHECK_EQUAL(line.call_method().path()[1], "Index");
+		BOOST_CHECK_EQUAL(line.call_method().name(), "default1");
+		BOOST_REQUIRE_EQUAL(line.call_method().params().size(), 1);
+		BOOST_CHECK_EQUAL(line.call_method().params()[0].name(), "parameter1");
+		BOOST_CHECK_EQUAL(line.call_method().params()[0].type(), "unsigned int");
 	}
 
 	{
 		ifr::route &line = *dynamic_cast<ifr::route *>(parserData.pieces()[2].get());
-		BOOST_CHECK_EQUAL(line.httpMethod(), "POST");
+		BOOST_CHECK_EQUAL(line.http_method(), "POST");
 
 		BOOST_REQUIRE_EQUAL(line.uri().tokens().size(), 2);
 		BOOST_CHECK(line.uri().tokens()[0].name().empty());
@@ -62,18 +62,18 @@ BOOST_AUTO_TEST_CASE(route1_parsing)
 		BOOST_CHECK_EQUAL(line.uri().tokens()[1].name(), "count");
 		BOOST_CHECK_EQUAL(line.uri().tokens()[1].regex(), ifr::field_types::types.get("uint8_t"));
 
-		BOOST_REQUIRE_EQUAL(line.callMethod().path().size(), 2);
-		BOOST_CHECK_EQUAL(line.callMethod().path()[0], "controllers");
-		BOOST_CHECK_EQUAL(line.callMethod().path()[1], "Index");
-		BOOST_CHECK_EQUAL(line.callMethod().name(), "default2");
-		BOOST_REQUIRE_EQUAL(line.callMethod().params().size(), 1);
-		BOOST_CHECK_EQUAL(line.callMethod().params()[0].name(), "count");
-		BOOST_CHECK_EQUAL(line.callMethod().params()[0].type(), "uint8_t");
+		BOOST_REQUIRE_EQUAL(line.call_method().path().size(), 2);
+		BOOST_CHECK_EQUAL(line.call_method().path()[0], "controllers");
+		BOOST_CHECK_EQUAL(line.call_method().path()[1], "Index");
+		BOOST_CHECK_EQUAL(line.call_method().name(), "default2");
+		BOOST_REQUIRE_EQUAL(line.call_method().params().size(), 1);
+		BOOST_CHECK_EQUAL(line.call_method().params()[0].name(), "count");
+		BOOST_CHECK_EQUAL(line.call_method().params()[0].type(), "uint8_t");
 	}
 
 	{
 		ifr::route &line = *dynamic_cast<ifr::route *>(parserData.pieces()[3].get());
-		BOOST_CHECK_EQUAL(line.httpMethod(), "POST");
+		BOOST_CHECK_EQUAL(line.http_method(), "POST");
 
 		BOOST_REQUIRE_EQUAL(line.uri().tokens().size(), 4);
 		BOOST_CHECK(line.uri().tokens()[0].name().empty());
@@ -85,20 +85,20 @@ BOOST_AUTO_TEST_CASE(route1_parsing)
 		BOOST_CHECK_EQUAL(line.uri().tokens()[3].name(), "id");
 		BOOST_CHECK_EQUAL(line.uri().tokens()[3].regex(), "");
 
-		BOOST_REQUIRE_EQUAL(line.callMethod().path().size(), 2);
-		BOOST_CHECK_EQUAL(line.callMethod().path()[0], "controllers");
-		BOOST_CHECK_EQUAL(line.callMethod().path()[1], "Index");
-		BOOST_CHECK_EQUAL(line.callMethod().name(), "default3");
-		BOOST_REQUIRE_EQUAL(line.callMethod().params().size(), 2);
-		BOOST_CHECK_EQUAL(line.callMethod().params()[0].name(), "count");
-		BOOST_CHECK_EQUAL(line.callMethod().params()[0].type(), "unsigned int");
-		BOOST_CHECK_EQUAL(line.callMethod().params()[1].name(), "id");
-		BOOST_CHECK_EQUAL(line.callMethod().params()[1].type(), "string");
+		BOOST_REQUIRE_EQUAL(line.call_method().path().size(), 2);
+		BOOST_CHECK_EQUAL(line.call_method().path()[0], "controllers");
+		BOOST_CHECK_EQUAL(line.call_method().path()[1], "Index");
+		BOOST_CHECK_EQUAL(line.call_method().name(), "default3");
+		BOOST_REQUIRE_EQUAL(line.call_method().params().size(), 2);
+		BOOST_CHECK_EQUAL(line.call_method().params()[0].name(), "count");
+		BOOST_CHECK_EQUAL(line.call_method().params()[0].type(), "unsigned int");
+		BOOST_CHECK_EQUAL(line.call_method().params()[1].name(), "id");
+		BOOST_CHECK_EQUAL(line.call_method().params()[1].type(), "string");
 	}
 
 	{
 		ifr::route &line = *dynamic_cast<ifr::route *>(parserData.pieces()[4].get());
-		BOOST_CHECK_EQUAL(line.httpMethod(), "PUT");
+		BOOST_CHECK_EQUAL(line.http_method(), "PUT");
 
 		BOOST_REQUIRE_EQUAL(line.uri().tokens().size(), 5);
 		BOOST_CHECK(line.uri().tokens()[0].name().empty());
@@ -112,20 +112,20 @@ BOOST_AUTO_TEST_CASE(route1_parsing)
 		BOOST_CHECK(line.uri().tokens()[4].name().empty());
 		BOOST_CHECK_EQUAL(line.uri().tokens()[4].regex(), "/test");
 
-		BOOST_REQUIRE_EQUAL(line.callMethod().path().size(), 2);
-		BOOST_CHECK_EQUAL(line.callMethod().path()[0], "controllers");
-		BOOST_CHECK_EQUAL(line.callMethod().path()[1], "Index");
-		BOOST_CHECK_EQUAL(line.callMethod().name(), "default4");
-		BOOST_REQUIRE_EQUAL(line.callMethod().params().size(), 2);
-		BOOST_CHECK_EQUAL(line.callMethod().params()[0].name(), "count");
-		BOOST_CHECK_EQUAL(line.callMethod().params()[0].type(), "uint8_t");
-		BOOST_CHECK_EQUAL(line.callMethod().params()[1].name(), "id");
-		BOOST_CHECK_EQUAL(line.callMethod().params()[1].type(), "string");
+		BOOST_REQUIRE_EQUAL(line.call_method().path().size(), 2);
+		BOOST_CHECK_EQUAL(line.call_method().path()[0], "controllers");
+		BOOST_CHECK_EQUAL(line.call_method().path()[1], "Index");
+		BOOST_CHECK_EQUAL(line.call_method().name(), "default4");
+		BOOST_REQUIRE_EQUAL(line.call_method().params().size(), 2);
+		BOOST_CHECK_EQUAL(line.call_method().params()[0].name(), "count");
+		BOOST_CHECK_EQUAL(line.call_method().params()[0].type(), "uint8_t");
+		BOOST_CHECK_EQUAL(line.call_method().params()[1].name(), "id");
+		BOOST_CHECK_EQUAL(line.call_method().params()[1].type(), "string");
 	}
 
 	{
 		ifr::route &line = *dynamic_cast<ifr::route *>(parserData.pieces()[5].get());
-		BOOST_CHECK_EQUAL(line.httpMethod(), "PUT");
+		BOOST_CHECK_EQUAL(line.http_method(), "PUT");
 
 		BOOST_REQUIRE_EQUAL(line.uri().tokens().size(), 5);
 		BOOST_CHECK(line.uri().tokens()[0].name().empty());
@@ -139,15 +139,15 @@ BOOST_AUTO_TEST_CASE(route1_parsing)
 		BOOST_CHECK(line.uri().tokens()[4].name().empty());
 		BOOST_CHECK_EQUAL(line.uri().tokens()[4].regex(), "test");
 
-		BOOST_REQUIRE_EQUAL(line.callMethod().path().size(), 2);
-		BOOST_CHECK_EQUAL(line.callMethod().path()[0], "controllers");
-		BOOST_CHECK_EQUAL(line.callMethod().path()[1], "Index");
-		BOOST_CHECK_EQUAL(line.callMethod().name(), "default5");
-		BOOST_REQUIRE_EQUAL(line.callMethod().params().size(), 2);
-		BOOST_CHECK_EQUAL(line.callMethod().params()[0].name(), "count");
-		BOOST_CHECK_EQUAL(line.callMethod().params()[0].type(), "unsigned int");
-		BOOST_CHECK_EQUAL(line.callMethod().params()[1].name(), "id");
-		BOOST_CHECK_EQUAL(line.callMethod().params()[1].type(), "string");
+		BOOST_REQUIRE_EQUAL(line.call_method().path().size(), 2);
+		BOOST_CHECK_EQUAL(line.call_method().path()[0], "controllers");
+		BOOST_CHECK_EQUAL(line.call_method().path()[1], "Index");
+		BOOST_CHECK_EQUAL(line.call_method().name(), "default5");
+		BOOST_REQUIRE_EQUAL(line.call_method().params().size(), 2);
+		BOOST_CHECK_EQUAL(line.call_method().params()[0].name(), "count");
+		BOOST_CHECK_EQUAL(line.call_method().params()[0].type(), "unsigned int");
+		BOOST_CHECK_EQUAL(line.call_method().params()[1].name(), "id");
+		BOOST_CHECK_EQUAL(line.call_method().params()[1].type(), "string");
 	}
 }
 

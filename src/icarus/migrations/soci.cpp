@@ -37,7 +37,7 @@ void icarus::migrations::manager_soci::fetch()
 {
 	if (this->_fetched)
 		return;
-	LOG_INFO("Fetching data.")
+	LOG_INFO("Fetching data.");
 	soci::rowset<icarus::migrations::registry> migrations = ((*this->_session).prepare << "select * from __migrations order by version, id");
 	for (const icarus::migrations::registry &r : migrations)
 		this->_data.emplace_back(r);

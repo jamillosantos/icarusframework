@@ -376,16 +376,16 @@ void icarus::routes::piece::line(size_t line)
 }
 
 icarus::routes::route::route(icarus::routes::route &route)
-	: piece(route.line()), _id(0), _httpMethod(route._httpMethod), _composedURI(route._composedURI),
-	  _callMethod(route._callMethod)
+	: piece(route.line()), _id(0), _http_method(route._http_method), _composed_uri(route._composed_uri),
+	  _call_method(route._call_method)
 { }
 
 icarus::routes::route::route(size_t line)
-	: piece(line), _id(0), _composedURI("^", "$")
+	: piece(line), _id(0), _composed_uri("^", "$")
 { }
 
-icarus::routes::route::route(size_t line, const std::string &httpMethod, std::initializer_list<std::pair<std::string, std::string>> list)
-	: piece(line), _id(0), _httpMethod(httpMethod), _composedURI("^", "$")
+icarus::routes::route::route(size_t line, const std::string &http_method, std::initializer_list<std::pair<std::string, std::string>> list)
+	: piece(line), _id(0), _http_method(http_method), _composed_uri("^", "$")
 {
 	for (auto &c : list)
 	{
@@ -404,36 +404,43 @@ icarus::routes::route &icarus::routes::route::id(unsigned int id)
 	return *this;
 }
 
-const std::string &icarus::routes::route::httpMethod() const
+const std::string &icarus::routes::route::http_method() const
 {
-	return this->_httpMethod;
+	return this->_http_method;
 }
 
-icarus::routes::route &icarus::routes::route::httpMethod(const std::string &httpMethod)
+icarus::routes::route &icarus::routes::route::http_method(const std::string &httpMethod)
 {
-	this->_httpMethod = httpMethod;
+	this->_http_method = httpMethod;
 	return *this;
 }
 
 icarus::routes::composed_uri &icarus::routes::route::uri()
 {
-	return this->_composedURI;
+	return this->_composed_uri;
 }
 
-icarus::routes::call_method &icarus::routes::route::callMethod()
+icarus::routes::call_method &icarus::routes::route::call_method()
 {
-	return this->_callMethod;
+	return this->_call_method;
 }
 
-icarus::routes::route &icarus::routes::route::callMethod(icarus::routes::call_method &callMethod)
+icarus::routes::route &icarus::routes::route::call_method(icarus::routes::call_method &call_method)
 {
-	this->_callMethod = callMethod;
+	this->_call_method = call_method;
 	return *this;
 }
 
-icarus::routes::piece *icarus::routes::route::match(std::string method, std::string uri, icarus::http::values<icarus::http::values_value> &params)
+icarus::routes::piece *icarus::routes::route::match(std::string method, std::string uri,
+	icarus::http::values<icarus::http::values_value> &params)
 {
-	if (this->httpMethod() == method)
+	if (
+		(this->http_method() == method)
+		|| (
+			(this->http_method() == "WS")
+			&& (method == "GET")
+		)
+	)
 	{
 		if (this->uri().match(uri, params))
 			return this;
@@ -456,7 +463,8 @@ icarus::routes::piece *icarus::routes::routes::add(icarus::routes::piece *piece)
 	return piece;
 }
 
-icarus::routes::piece *icarus::routes::routes::match(std::string method, std::string requestUri, icarus::http::values<icarus::http::values_value> &values)
+icarus::routes::piece *icarus::routes::routes::match(std::string method, std::string requestUri,
+	icarus::http::values<icarus::http::values_value> &values)
 {
 	LOG_TRACE("routes::match");
 	icarus::routes::piece *result = nullptr;
@@ -470,12 +478,12 @@ icarus::routes::piece *icarus::routes::routes::match(std::string method, std::st
 }
 
 icarus::routes::group::group(size_t line)
-	: routes(line), _composedURI("^", "")
+	: routes(line), _composed_uri("^", "")
 { }
 
 icarus::routes::composed_uri &icarus::routes::group::uri()
 {
-	return this->_composedURI;
+	return this->_composed_uri;
 }
 
 icarus::routes::document::document(const std::string &name)

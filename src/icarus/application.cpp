@@ -40,7 +40,6 @@ void icarus::application::run()
 		if (client)
 		{
 			this->_dispatcher.process(client);
-			delete client;
 		}
 	}
 	this->cleanup();
