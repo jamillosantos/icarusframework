@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(icarusframework VERSION 0.0.0.0)
+project(icarus VERSION 0.0.0.0)
 
 add_definitions(-DVERSION_MAJOR="${PROJECT_VERSION_MAJOR}")
 add_definitions(-DVERSION_MINOR="${PROJECT_VERSION_MINOR}")
@@ -33,7 +33,7 @@ endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall")
 
-set(CMAKE_MODULE_PATH ${icarusframework_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH ${icarus_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 
 add_definitions(-DOUTPUT_DIRECTORY="${CMAKE_BINARY_DIR}")
 add_definitions(-DSOURCE_DIRECTORY="${CMAKE_CURRENT_SOURCE_DIR}")
@@ -242,7 +242,7 @@ set(ICARUS_LIBRARIES
 
 include_directories(${CMAKE_SOURCE_DIR}/src)
 
-add_library(icarusframework SHARED
+add_library(icarus SHARED
 	${SOURCE_FILES}
 )
 
@@ -265,11 +265,11 @@ add_library(minotaur SHARED
 	src/minotaur/templatebuilder.cpp
 )
 
-target_link_libraries(icarusframework
+target_link_libraries(icarus
 	${ICARUS_LIBRARIES}
 )
 
-set_target_properties(icarusframework PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(icarus PROPERTIES LINKER_LANGUAGE CXX)
 
 add_executable(mntr
 	src/minotaur/mntr.cpp
@@ -281,7 +281,7 @@ target_link_libraries(mntr
 	boost_program_options
 	boost_regex
 
-	icarusframework
+	icarus
 )
 
 add_executable(icarus-routes
@@ -294,7 +294,7 @@ target_link_libraries(icarus-routes
 	boost_program_options
 	boost_regex
 
-	icarusframework
+	icarus
 )
 
 # Test configuration thanks to http://neyasystems.com/an-engineers-guide-to-unit-testing-cmake-and-boost-unit-tests/
@@ -319,7 +319,7 @@ foreach (testSrc ${TEST_SRCS})
 	target_link_libraries(${testName}
 		${Boost_LIBRARIES}
 
-		icarusframework
+		icarus
 	)
 
 	set_target_properties(${testName} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${TEST_OUTPUT})
@@ -344,7 +344,7 @@ foreach (testSrc ${TEST_SRCS})
 	target_link_libraries(${testName}
 		${Boost_LIBRARIES}
 
-		icarusframework
+		icarus
 		minotaur
 	)
 
