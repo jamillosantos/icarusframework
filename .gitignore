@@ -12,3 +12,4 @@ build/debug/mntr
 build/debug/icarus-fastcgi
 build/debug/icarus-routes
 build/debug/Testing
+docs/
