@@ -84,10 +84,18 @@ message("--   crypto libraries: ${OPENSSL_CRYPTO_LIBRARIES}")
 message("")
 include_directories(${OPENSSL_INCLUDE_DIR})
 
-#configure_file(
-#	src/config.h.in
-#	"${PROJECT_BINARY_DIR}/config.h"
-#)
+
+set(JSONCPP_ROOT "$ENV{HOME}/libs/jsoncpp1.7.2")
+
+find_library(jsoncpp jsoncpp REQUIRED PATHS "${JSONCPP_ROOT}" PATH_SUFFIXES lib lib64)
+if("${jsoncpp}" STREQUAL "jsoncpp-NOTFOUND")
+	message(FATAL_ERROR "Component not found ${Red}jsoncpp${ColourReset}.")
+endif()
+message("-- JSONCPP")
+message("--   include dir: ${JSONCPP_ROOT}/include")
+message("--       library: ${jsoncpp}")
+message("")
+include_directories(${JSONCPP_ROOT}/include)
 
 set(SOURCE_FILES
 	include/icarus/log.h
@@ -238,6 +246,7 @@ set(ICARUS_LIBRARIES
 
 	${OPENSSL_SSL_LIBRARIES}
 	${OPENSSL_CRYPTO_LIBRARIES}
+	${jsoncpp}
 )
 
 include_directories(${CMAKE_SOURCE_DIR}/src)
@@ -294,6 +303,7 @@ target_link_libraries(icarus-routes
 	boost_program_options
 	boost_regex
 
+	${jsoncpp}
 	icarus
 )
 
@@ -320,6 +330,7 @@ foreach (testSrc ${TEST_SRCS})
 		${Boost_LIBRARIES}
 
 		icarus
+		${jsoncpp}
 	)
 
 	set_target_properties(${testName} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${TEST_OUTPUT})

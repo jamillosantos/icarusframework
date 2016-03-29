@@ -5,6 +5,8 @@
 
 #include <icarus/result.h>
 
+#include <json/writer.h>
+
 icarus::result::result()
 	: icarus::content::content(), _status(icarus::statuses::OK)
 { }
@@ -19,6 +21,17 @@ icarus::result::result(icarus::status &status, const std::string &content)
 
 icarus::result::result(const std::string &content)
 	: icarus::result::result(icarus::statuses::OK, content)
+{ }
+
+icarus::result::result(icarus::status &status, const Json::Value &json)
+	: icarus::result::result(status)
+{
+	this->_contentType = "application/json";
+	this->stream() << json;
+}
+
+icarus::result::result(const Json::Value &json)
+	: icarus::result::result(icarus::statuses::OK, json)
 { }
 
 icarus::result::result(icarus::result &&r)
@@ -87,6 +100,11 @@ icarus::result &&icarus::results::ok(icarus::result &result)
 	return std::move(result.status(icarus::statuses::OK));
 }
 
+icarus::result icarus::results::ok(const Json::Value &json)
+{
+	return icarus::result(icarus::statuses::OK, json);
+}
+
 icarus::result icarus::results::notImplemented(const std::string &content)
 {
 	return icarus::result(icarus::statuses::NOT_IMPLEMENTED, content);
@@ -95,6 +113,11 @@ icarus::result icarus::results::notImplemented(const std::string &content)
 icarus::result &icarus::results::notImplemented(icarus::result &result)
 {
 	return icarus::results::status(result, icarus::statuses::NOT_IMPLEMENTED);
+}
+
+icarus::result icarus::results::notImplemented(const Json::Value &json)
+{
+	return icarus::result(icarus::statuses::NOT_IMPLEMENTED, json);
 }
 
 icarus::result icarus::results::badRequest(const std::string &content)
@@ -107,6 +130,11 @@ icarus::result &icarus::results::badRequest(icarus::result &result)
 	return icarus::results::status(result, icarus::statuses::BAD_REQUEST);
 }
 
+icarus::result icarus::results::badRequest(const Json::Value &json)
+{
+	return icarus::result(icarus::statuses::BAD_REQUEST, json);
+}
+
 icarus::result icarus::results::unauthorized(const std::string &content)
 {
 	return icarus::result(icarus::statuses::UNAUTHORIZED, content);
@@ -115,6 +143,11 @@ icarus::result icarus::results::unauthorized(const std::string &content)
 icarus::result &icarus::results::unauthorized(icarus::result &result)
 {
 	return icarus::results::status(result, icarus::statuses::UNAUTHORIZED);
+}
+
+icarus::result icarus::results::unauthorized(const Json::Value &json)
+{
+	return icarus::result(icarus::statuses::UNAUTHORIZED, json);
 }
 
 icarus::result icarus::results::paymentRequired(const std::string &content)
@@ -127,6 +160,11 @@ icarus::result &icarus::results::paymentRequired(icarus::result &result)
 	return icarus::results::status(result, icarus::statuses::PAYMENT_REQUIRED);
 }
 
+icarus::result icarus::results::paymentRequired(const Json::Value &json)
+{
+	return icarus::result(icarus::statuses::PAYMENT_REQUIRED, json);
+}
+
 icarus::result icarus::results::forbidden(const std::string &content)
 {
 	return icarus::result(icarus::statuses::FORBIDDEN, content);
@@ -135,6 +173,11 @@ icarus::result icarus::results::forbidden(const std::string &content)
 icarus::result &icarus::results::forbidden(icarus::result &result)
 {
 	return icarus::results::status(result, icarus::statuses::FORBIDDEN);
+}
+
+icarus::result icarus::results::forbidden(const Json::Value &json)
+{
+	return icarus::result(icarus::statuses::FORBIDDEN, json);
 }
 
 icarus::result icarus::results::notFound(const std::string &content)
@@ -147,6 +190,11 @@ icarus::result &icarus::results::notFound(icarus::result &result)
 	return icarus::results::status(result, icarus::statuses::NOT_FOUND);
 }
 
+icarus::result icarus::results::notFound(const Json::Value &json)
+{
+	return icarus::result(icarus::statuses::NOT_FOUND, json);
+}
+
 icarus::result icarus::results::internalServerError(const std::string &content)
 {
 	return icarus::result(icarus::statuses::INTERNAL_ERROR, content);
@@ -155,6 +203,11 @@ icarus::result icarus::results::internalServerError(const std::string &content)
 icarus::result &icarus::results::internalServerError(icarus::result &result)
 {
 	return icarus::results::status(result, icarus::statuses::INTERNAL_ERROR);
+}
+
+icarus::result icarus::results::internalServerError(const Json::Value &json)
+{
+	return icarus::result(icarus::statuses::INTERNAL_ERROR, json);
 }
 
 icarus::result icarus::results::movedPermanently(std::string url)

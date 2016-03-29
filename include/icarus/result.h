@@ -15,6 +15,8 @@
 #include <icarus/content.h>
 #include <icarus/statuses.h>
 
+#include <json/value.h>
+
 namespace icarus
 {
 class result
@@ -35,6 +37,10 @@ public:
 	result(icarus::status &status, const std::string &content);
 
 	result(const std::string &content);
+
+	result(icarus::status &status, const Json::Value &json);
+
+	result(const Json::Value &json);
 
 	result(icarus::result &&r);
 
@@ -63,35 +69,51 @@ static result &status(icarus::result &result, icarus::status &status);
 
 static result ok(const std::string &content);
 
+static result ok(const Json::Value &json);
+
 static icarus::result &&ok(icarus::result &result);
 
 static result notImplemented(const std::string &content);
 
 static result &notImplemented(icarus::result &result);
 
+static result notImplemented(const Json::Value &json);
+
 static result badRequest(const std::string &content);
 
 static result &badRequest(icarus::result &result);
+
+static result badRequest(const Json::Value &json);
 
 static result unauthorized(const std::string &content);
 
 static result &unauthorized(icarus::result &result);
 
+static result unauthorized(const Json::Value &json);
+
 static result paymentRequired(const std::string &content);
 
 static result &paymentRequired(icarus::result &result);
+
+static result paymentRequired(const Json::Value &json);
 
 static result forbidden(const std::string &content);
 
 static result &forbidden(icarus::result &result);
 
+static result forbidden(const Json::Value &json);
+
 static result notFound(const std::string &content);
 
 static result &notFound(icarus::result &result);
 
+static result notFound(const Json::Value &json);
+
 static result internalServerError(const std::string &content);
 
 static result &internalServerError(icarus::result &result);
+
+static result internalServerError(const Json::Value &json);
 
 static result movedPermanently(std::string url);
 
