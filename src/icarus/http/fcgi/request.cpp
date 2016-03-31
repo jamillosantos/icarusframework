@@ -27,14 +27,14 @@ void icarus::http::fcgi::request::init(const FCGX_Request &request)
 			}
 			else if (headerName.compare(0, 5, "HTTP_") == 0)
 			{
-				this->_headers.add(
+				this->_headers.emplace(
 					headerName.substr(5, headerName.length() - 5),
 					headerValue
 				);
 			}
 			else
 			{
-				this->_serverVariables.add(
+				this->_serverVariables.emplace(
 					headerName,
 					headerValue
 				);

@@ -38,7 +38,7 @@ icarus::result::result(icarus::result &&r)
 	: icarus::content::content(r), _status(r._status)
 { }
 
-const icarus::http::value_list<icarus::http::values_value> &icarus::result::headers() const
+const icarus::http::headers &icarus::result::headers() const
 {
 	return this->_headers;
 }
@@ -76,7 +76,7 @@ boost::optional<std::string> icarus::result::contentType() const
 
 icarus::result &icarus::result::header(const std::string &name, const std::string &value)
 {
-	this->_headers.add(name, value);
+	this->_headers.emplace(name, value);
 	return *this;
 }
 

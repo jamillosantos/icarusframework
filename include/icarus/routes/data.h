@@ -83,7 +83,7 @@ public:
 
 	composed_uri &sufix(const std::string &sufix);
 
-	bool match(std::string requestUri, icarus::http::values<http::values_value> &params);
+	bool match(std::string requestUri, std::map<std::string, std::string> &params);
 
 	std::string str();
 
@@ -183,7 +183,7 @@ public:
 
 	void line(size_t line);
 
-	virtual piece *match(std::string method, std::string request_uri, http::values<http::values_value> &values) = 0;
+	virtual piece *match(std::string method, std::string request_uri, std::map<std::string, std::string> &values) = 0;
 };
 
 class routes;
@@ -220,8 +220,7 @@ public:
 
 	icarus::routes::route &call_method(icarus::routes::call_method &call_method);
 
-	virtual piece *match(std::string method, std::string uri,
-		http::values<http::values_value> &params) override;
+	virtual piece *match(std::string method, std::string uri, std::map<std::string, std::string> &params) override;
 };
 
 class routes
@@ -236,7 +235,8 @@ public:
 
 	virtual icarus::routes::piece *add(icarus::routes::piece *piece);
 
-	virtual piece *match(std::string method, std::string requestUri, http::values<http::values_value> &values) override;
+	virtual piece *match(std::string method, std::string requestUri,
+		std::map<std::string, std::string> &values) override;
 };
 
 class group
@@ -266,8 +266,6 @@ public:
 
 	std::vector<std::string> &packages();
 };
-
-bool find(icarus::http::client_context &context);
 }
 }
 

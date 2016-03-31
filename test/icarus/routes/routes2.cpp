@@ -159,7 +159,7 @@ BOOST_AUTO_TEST_CASE(matching_root)
 	icarus::routes::route route(0, "GET", {
 		{"", "/"}
 	});
-	icarus::http::value_hash<icarus::http::values_value> values;
+	std::map<std::string, std::string> values;
 	BOOST_CHECK(route.match("GET", "/", values));
 	BOOST_CHECK_EQUAL(values.size(), 0);
 	BOOST_CHECK(!route.match("GET", "/test", values));
@@ -179,24 +179,24 @@ BOOST_AUTO_TEST_CASE(matching_param)
 	});
 
 	{
-		icarus::http::value_hash<icarus::http::values_value> values;
+		std::map<std::string, std::string> values;
 		BOOST_CHECK(!route.match("GET", "/", values));
 		BOOST_CHECK_EQUAL(values.size(), 0);
 	}
 	{
-		icarus::http::value_hash<icarus::http::values_value> values;
+		std::map<std::string, std::string> values;
 		BOOST_CHECK(route.match("GET", "/username/", values));
 		BOOST_CHECK_EQUAL(values.size(), 1);
-		BOOST_CHECK_EQUAL(values.get("user"), "username");
+		BOOST_CHECK_EQUAL(values["user"], "username");
 	}
 	{
-		icarus::http::value_hash<icarus::http::values_value> values;
+		std::map<std::string, std::string> values;
 		BOOST_CHECK(route.match("GET", "/ze/", values));
 		BOOST_CHECK_EQUAL(values.size(), 1);
-		BOOST_CHECK_EQUAL(values.get("user"), "ze");
+		BOOST_CHECK_EQUAL(values["user"], "ze");
 	}
 	{
-		icarus::http::value_hash<icarus::http::values_value> values;
+		std::map<std::string, std::string> values;
 		BOOST_CHECK(!route.match("POST", "/username/", values));
 		BOOST_CHECK_EQUAL(values.size(), 0);
 	}

@@ -28,7 +28,7 @@ private:
 	boost::optional<std::string> _contentType;
 	boost::optional<std::string> _charset;
 
-	icarus::http::value_list<icarus::http::values_value> _headers;
+	icarus::http::headers _headers;
 public:
 	result();
 
@@ -44,7 +44,7 @@ public:
 
 	result(icarus::result &&r);
 
-	const icarus::http::value_list<icarus::http::values_value> &headers() const;
+	const icarus::http::headers &headers() const;
 
 	result &status(icarus::status &status);
 

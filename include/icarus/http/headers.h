@@ -7,213 +7,85 @@
 #define ICARUSFRAMEWORK_HTTP_HEADERS_H
 
 #include <string>
-#include <vector>
 #include <map>
+#include <vector>
+#include <boost/optional.hpp>
 
 namespace icarus
 {
 namespace http
 {
-class values_value
+
+class header_value
 {
-private:
-	std::string _name;
-	std::string _value;
 public:
-	values_value();
+	typedef std::vector<std::string> list;
 
-	values_value(const std::string &name, const std::string &value);
+	typedef list::iterator iterator;
+	typedef list::const_iterator const_iterator;
+	typedef list::reverse_iterator reverse_iterator;
+	typedef list::const_reverse_iterator const_reverse_iterator;
+private:
+	list _values;
+public:
+	header_value();
 
-	const std::string &name() const;
+	header_value(const std::string &value);
 
-	void name(const std::string &name);
+	const std::string &value();
 
-	const std::string &value() const;
+	icarus::http::header_value &value(const std::string &value);
 
-	void value(const std::string &value);
+	icarus::http::header_value &emplace(const std::string &value);
+
+	iterator begin();
+	const_iterator begin() const;
+	iterator end();
+	const_iterator end() const;
+
+	const_iterator cbegin() const;
+	const_iterator cend() const;
+
+	reverse_iterator rbegin();
+	reverse_iterator rend();
+
+	const_reverse_iterator crbegin() const;
+	const_reverse_iterator crend() const;
 };
 
-template <typename T>
-class values
+class headers
 {
 public:
-	virtual void set(const std::string &name, const std::string &value) = 0;
+	typedef std::map<std::string, icarus::http::header_value> list;
 
-	virtual std::string get(const std::string &name) = 0;
+	typedef std::pair<const std::string, icarus::http::header_value> pair;
 
-	virtual std::string get(const unsigned int index) = 0;
-
-	virtual void erase(const std::string &name) = 0;
-
-	virtual void clear() = 0;
-
-	virtual unsigned long size() = 0;
-};
-
-template <typename T>
-class value_list
-	: public values<T>
-{
-public:
-	typedef typename std::vector<T>::iterator iterator;
-	typedef typename std::vector<T>::reverse_iterator reverse_iterator;
-	typedef typename std::vector<T>::const_iterator const_iterator;
-	typedef typename std::vector<T>::const_reverse_iterator const_reverse_iterator;
+	typedef list::iterator iterator;
+	typedef list::const_iterator const_iterator;
+	typedef list::reverse_iterator reverse_iterator;
+	typedef list::const_reverse_iterator const_reverse_iterator;
 private:
-	std::vector<T> values;
-
-	int index_of(const std::string &name)
-	{
-		int i = 0;
-		for (T &value : this->values)
-		{
-			if (value.name() == name)
-				return i;
-			i++;
-		}
-		return -1;
-	}
-
+	list _list;
 public:
-	virtual void set(const std::string &name, const std::string &value) override
-	{
-		int idx = this->index_of(name);
-		if (idx > 0)
-			this->values[idx].value(value);
-		else
-			this->add(name, value);
-	}
+	headers();
 
-	virtual void erase(const std::string &name) override
-	{
-		int idx = this->index_of(name);
-		if (idx >= 0)
-			this->values.erase(this->values.begin() + idx);
-	}
+	boost::optional<icarus::http::header_value&> operator[](const std::string &name);
 
-	virtual std::string get(const std::string &name) override
-	{
-		int idx = this->index_of(name);
-		if (idx >= 0)
-			return this->values[idx].value();
-		return "";
-	}
+	iterator begin();
+	const_iterator begin() const;
+	iterator end();
+	const_iterator end() const;
 
-	virtual std::string get(const unsigned int index) override
-	{
-		return this->values[index].value();
-	}
+	const_iterator cbegin() const;
+	const_iterator cend() const;
 
-	virtual void add(const std::string &name, const std::string &value)
-	{
-		this->values.emplace_back(name, value);
-	}
+	reverse_iterator rbegin();
+	reverse_iterator rend();
 
-	virtual void clear() override
-	{
-		this->values.clear();
-	}
+	const_reverse_iterator crbegin() const;
+	const_reverse_iterator crend() const;
 
-	iterator begin()
-	{
-		return this->values.begin();
-	}
-
-	iterator end()
-	{
-		return this->values.end();
-	}
-
-	reverse_iterator rbegin()
-	{
-		return this->values.rbegin();
-	}
-
-	reverse_iterator rend()
-	{
-		return this->values.rend();
-	}
-
-	const_iterator cbegin() const
-	{
-		return this->values.cbegin();
-	}
-
-	const_iterator cend() const
-	{
-		return this->values.cend();
-	}
-
-	const_reverse_iterator crbegin() const
-	{
-		return this->values.crbegin();
-	}
-
-	const_reverse_iterator crend() const
-	{
-		return this->values.crend();
-	}
-
-	virtual unsigned long size() override
-	{
-		return this->values.size();
-	}
-};
-
-template <typename T>
-class value_hash
-	: public values<T>
-{
-	typedef typename std::map<std::string, T>::iterator iterator;
-private:
-	std::map<std::string, T> _container;
-public:
-	virtual void set(const std::string &name, const std::string &value) override
-	{
-		this->_container.emplace(std::make_pair(name, T(name, value)));
-	}
-
-	virtual std::string get(const std::string &name) override
-	{
-		auto search = this->_container.find(name);
-		if(search == this->_container.end())
-			return "";
-		else
-			return search->second.value();
-	}
-
-	virtual std::string get(const unsigned int index) override
-	{
-		auto b = this->_container.begin();
-		for (unsigned int i = 0; i < index; i++)
-			++b;
-		return b->second.value();
-	}
-
-	virtual void erase(const std::string &name) override
-	{
-		this->_container.erase(name);
-	}
-
-	virtual void clear() override
-	{
-		this->_container.clear();
-	}
-
-	iterator begin()
-	{
-		return this->_container.begin();
-	}
-
-	iterator end()
-	{
-		return this->_container.end();
-	}
-
-	virtual unsigned long size() override
-	{
-		return this->_container.size();
-	}
+	void emplace(const std::string &name, const std::string &value);
 };
 }
 }

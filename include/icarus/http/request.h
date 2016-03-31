@@ -9,6 +9,7 @@
 #include <icarus/http/headers.h>
 #include <icarus/http/cookies.h>
 #include <icarus/http/querystring.h>
+#include <json/value.h>
 
 namespace icarus
 {
@@ -17,8 +18,8 @@ namespace http
 class request
 {
 protected:
-	value_list<values_value> _headers;
-	value_list<values_value> _serverVariables;
+	icarus::http::headers _headers;
+	icarus::http::headers _serverVariables;
 
 	std::string _contentType;
 	long long int _contentLength;
@@ -32,14 +33,16 @@ protected:
 	icarus::http::query_string_values _params;
 
 	std::string _method;
+
+	std::unique_ptr<Json::Value> _json;
 public:
 	request();
 
 	virtual ~request();
 
-	value_list<values_value> &headers();
+	icarus::http::headers &headers();
 
-	value_list<values_value> &serverVariables();
+	icarus::http::headers &serverVariables();
 
 	std::istream &content();
 
@@ -56,6 +59,8 @@ public:
 	icarus::http::query_string_values &params();
 
 	const std::string &method();
+
+	const Json::Value &as_json();
 };
 }
 }

@@ -8,9 +8,6 @@
 
 #include <boost/program_options.hpp>
 
-bool icarus::routes::find(icarus::http::client_context&)
-{ }
-
 int main(int argc, char **argv)
 {
 	namespace ifr = icarus::routes;

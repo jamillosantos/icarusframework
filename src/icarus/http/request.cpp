@@ -5,18 +5,20 @@
 
 #include <icarus/http/request.h>
 
+#include <json/reader.h>
+
 icarus::http::request::request()
 { }
 
 icarus::http::request::~request()
 { }
 
-icarus::http::value_list<icarus::http::values_value> &icarus::http::request::headers()
+icarus::http::headers &icarus::http::request::headers()
 {
 	return this->_headers;
 }
 
-icarus::http::value_list<icarus::http::values_value> &icarus::http::request::serverVariables()
+icarus::http::headers &icarus::http::request::serverVariables()
 {
 	return this->_serverVariables;
 }
@@ -59,4 +61,15 @@ icarus::http::query_string_values &icarus::http::request::params()
 const std::string &icarus::http::request::method()
 {
 	return this->_method;
+}
+
+const Json::Value &icarus::http::request::as_json()
+{
+	if (!this->_json)
+	{
+		this->_json.reset(new Json::Value());
+		Json::Reader reader;
+		reader.parse(this->content(), *this->_json, false);
+	}
+	return *this->_json;
 }

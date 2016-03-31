@@ -24,7 +24,7 @@ public:
 private:
 	icarus::status &status;
 
-	value_list<values_value> _headers;
+	icarus::http::headers _headers;
 
 	bool _header_sent;
 protected:
@@ -38,7 +38,7 @@ public:
 
 	virtual ~response();
 
-	value_list<values_value> &headers();
+	icarus::http::headers &headers();
 
 	virtual void flush();
 
@@ -51,27 +51,11 @@ public:
 		return *this;
 	}
 
-	icarus::http::response &operator<<(const icarus::result &result)
-	{
-		if (!this->_header_sent)
-			this->flush_headers(result);
-		(*this->ostream) << result.stream().rdbuf();
-		return *this;
-	}
+	icarus::http::response & operator<<(const icarus::result &result);
 
-	icarus::http::response &operator<<(icarus::content &content)
-	{
-		(*this->ostream) << content.stream().rdbuf();
-		return *this;
-	}
+	icarus::http::response & operator<<(icarus::content &content);
 
-	icarus::http::response &operator<<(std::ostream &(*manip)(std::ostream &))
-	{
-		if (!this->_header_sent)
-			this->flush_headers();
-		(*this->ostream) << manip;
-		return *this;
-	}
+	icarus::http::response & operator<<(std::ostream &(*manip)(std::ostream &));
 };
 }
 }
