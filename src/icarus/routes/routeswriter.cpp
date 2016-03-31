@@ -60,7 +60,7 @@ void icarus::routes::routes_writer::write_begin_doc(std::ostream &stream, docume
 	stream << "bool find(icarus::http::client_context &context)" << std::endl << "{" << std::endl;
 	stream << "\tconst std::string method = context.request().method();" << std::endl;
 	stream << "\tconst std::string uri = context.request().uri();" << std::endl;
-	stream << "\ticarus::http::value_hash<icarus::http::values_value> values;" << std::endl;
+	stream << "\tstd::map<std::string, std::string> values;" << std::endl;
 };
 
 void icarus::routes::routes_writer::write_begin_doc(std::ostream &stream, icarus::routes::group &group)
@@ -159,9 +159,9 @@ void icarus::routes::routes_writer::write(std::ostream &stream, icarus::routes::
 						stream << ", ";
 					}
 					if ((param.type() == "") || (param.type() == "std::string") || (param.type() == "string"))
-						stream << "values.get(" << token.index() << ")";
+						stream << "values[" << token.index() << "]";
 					else
-						stream << "icarus::data::fromString(values.get(" << token.index() << "))";
+						stream << "icarus::data::fromString(values[" << token.index() << "])";
 					found = true;
 					break;
 				}

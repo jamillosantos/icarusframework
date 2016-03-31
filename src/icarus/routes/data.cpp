@@ -148,7 +148,7 @@ icarus::routes::composed_uri &icarus::routes::composed_uri::sufix(const std::str
 	return *this;
 }
 
-bool icarus::routes::composed_uri::match(std::string requestUri, std::map<std::string, std::string> &params)
+bool icarus::routes::composed_uri::match(std::string requestUri, std::vector<std::string> &params)
 {
 	if (!this->regex)
 		this->compile();
@@ -162,7 +162,7 @@ bool icarus::routes::composed_uri::match(std::string requestUri, std::map<std::s
 			for (icarus::routes::regex_token &token : this->_tokens)
 			{
 				if (!token.name().empty())
-					params.emplace(token.name(), results[token.index()]);
+					params.emplace_back(results[token.index()]);
 			}
 			return true;
 		}
@@ -432,7 +432,7 @@ icarus::routes::route &icarus::routes::route::call_method(icarus::routes::call_m
 }
 
 icarus::routes::piece *icarus::routes::route::match(std::string method, std::string uri,
-	std::map<std::string, std::string> &params)
+	std::vector<std::string> &params)
 {
 	if (
 		(this->http_method() == method)
@@ -464,7 +464,7 @@ icarus::routes::piece *icarus::routes::routes::add(icarus::routes::piece *piece)
 }
 
 icarus::routes::piece *icarus::routes::routes::match(std::string method, std::string requestUri,
-	std::map<std::string, std::string> &values)
+	std::vector<std::string> &values)
 {
 	LOG_TRACE("routes::match");
 	icarus::routes::piece *result = nullptr;

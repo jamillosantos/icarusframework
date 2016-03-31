@@ -206,10 +206,10 @@ set(SOURCE_FILES
 	include/icarus/general.h
 	src/icarus/general.cpp
 
-	include/icarus/routes/typeconversion.h
-	src/icarus/routes/typeconversion.cpp
+		include/icarus/typeconversion.h
+		src/icarus/typeconversion.cpp
 
-	include/icarus/routes/typeconversion-commons.h
+		include/icarus/typeconversion-commons.h
 
 	include/icarus/content.h
 	src/icarus/content.cpp
