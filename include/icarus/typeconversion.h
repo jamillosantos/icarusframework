@@ -1,4 +1,6 @@
 /**
+ *
+ * This conversion infrastructure is based on SOCI ideas.
  * @author J. Santos <jamillo@gmail.com>
  * @date March 12, 2016
  **/
@@ -6,11 +8,10 @@
 #ifndef ICARUSFRAMEWORK_ROUTES_TYPECONVERSION_H
 #define ICARUSFRAMEWORK_ROUTES_TYPECONVERSION_H
 
+#include <string>
+
 namespace icarus
 {
-/**
- * Based on SOCI ideas for conversion.
- */
 template <typename T>
 struct type_conversion
 {
@@ -26,7 +27,7 @@ struct type_conversion
 		out = in;
 	}
 };
-}
 
+}
 
 #endif //ICARUSFRAMEWORK_ROUTES_TYPECONVERSION_H

@@ -6,6 +6,10 @@
 #ifndef ICARUSFRAMEWORK_ROUTES_TYPECONVERSION_COMMONS_H
 #define ICARUSFRAMEWORK_ROUTES_TYPECONVERSION_COMMONS_H
 
+#include <json/value.h>
+#include <json/writer.h>
+#include <json/reader.h>
+
 namespace icarus
 {
 template<>
@@ -135,6 +139,26 @@ struct type_conversion<long long>
 		out = std::to_string(in);
 	}
 };
+
+template<>
+struct type_conversion<Json::Value>
+{
+	typedef std::string base_type;
+
+	static void from(base_type const &in, Json::Value &out)
+	{
+		Json::Reader reader;
+		reader.parse(in, out, false);
+	}
+
+	static void to(Json::Value const &in, base_type &out)
+	{
+		Json::FastWriter writer;
+		out = writer.write(in);
+	}
+};
+
+
 }
 
 #endif //ICARUSFRAMEWORK_ROUTES_TYPECONVERSION_COMMONS_H
