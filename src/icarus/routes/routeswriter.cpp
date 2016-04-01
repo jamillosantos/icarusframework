@@ -23,9 +23,14 @@ void icarus::routes::routes_writer::write_begin_doc(std::ostream &stream, docume
 	stream << defconstName << std::endl << "#define " << defconstName << std::endl << std::endl;
 
 	// Default includes
+	stream << "#include <vector>" << std::endl;
+	stream << "#include <string>" << std::endl;
+	stream << "#include <icarus/typeconversion.h>" << std::endl;
+	stream << "#include <icarus/typeconversion-commons.h>" << std::endl;
+	stream << "#include <icarus/http/client.h>" << std::endl;
 	stream << "#include <icarus/routes/data.h>" << std::endl;
 	stream << "#include <icarus/action.h>" << std::endl;
-	stream << "#include <icarus/http/client.h>" << std::endl << std::endl;
+	stream << std::endl;
 
 	// Namespaces
 	stream << "namespace icarus" << std::endl << "{" << std::endl;
@@ -60,7 +65,7 @@ void icarus::routes::routes_writer::write_begin_doc(std::ostream &stream, docume
 	stream << "bool find(icarus::http::client_context &context)" << std::endl << "{" << std::endl;
 	stream << "\tconst std::string method = context.request().method();" << std::endl;
 	stream << "\tconst std::string uri = context.request().uri();" << std::endl;
-	stream << "\tstd::map<std::string, std::string> values;" << std::endl;
+	stream << "\tstd::vector<std::string> values;" << std::endl;
 };
 
 void icarus::routes::routes_writer::write_begin_doc(std::ostream &stream, icarus::routes::group &group)
@@ -137,6 +142,15 @@ void icarus::routes::routes_writer::write(std::ostream &stream, icarus::routes::
 	{
 		// Places the packages of the method.
 		stream << "LOG_INFO(\"Route '" << route.uri().str() << "' matched.\");" << std::endl;
+
+		unsigned int paramIndex = 0;
+		for (const method_param &param : route.call_method().params())
+		{
+			stream << "\t\t" << param.type() << " param" << paramIndex << ";" << std::endl <<
+					  "\t\ticarus::type_conversion<" << param.type() << ">::from(values[" << paramIndex << "], param" << paramIndex << ");" << std::endl <<
+					  std::endl;
+			paramIndex++;
+		}
 		stream << "\t\tcontext.response() << ";
 		for (const std::string &package : route.call_method().path())
 		{
@@ -161,7 +175,7 @@ void icarus::routes::routes_writer::write(std::ostream &stream, icarus::routes::
 					if ((param.type() == "") || (param.type() == "std::string") || (param.type() == "string"))
 						stream << "values[" << token.index() << "]";
 					else
-						stream << "icarus::data::fromString(values[" << token.index() << "])";
+						stream << "param" << token.index();
 					found = true;
 					break;
 				}
@@ -273,7 +287,11 @@ void icarus::routes::routes_writer::write_reverse_routes(std::ostream &stream, i
 				{
 					if (rt.name() == p.name())
 					{
-						stream << "\t\ttmp += icarus::to_url(" << p.name() << ");\n";
+						stream << "\t\t{"
+								  "\t\t\tstd::string tmp2;" << std::endl <<
+								  "\t\t\ticarus::type_conversion<" << p.type() << ">::to(" << p.name() << ", tmp2);" << std::endl <<
+								  "\t\t\ttmp += tmp2;" << std::endl <<
+								  "\t\t}" << std::endl;
 						found = true;
 						break;
 					}
@@ -315,7 +333,11 @@ void icarus::routes::routes_writer::write_reverse_routes(std::ostream &stream, i
 				{
 					if (rt.name() == p.name())
 					{
-						stream << "\t\ttmp += icarus::to_url(" << p.name() << ");\n";
+						stream << "\t\t{" <<
+								  "\t\t\tstd::string tmp2;" << std::endl <<
+								  "\t\t\ticarus::type_conversion<" << p.type() << ">::to(" << p.name() << ", tmp2);" << std::endl <<
+								  "\t\t\ttmp += tmp2;" << std::endl <<
+								  "\t\t}" << std::endl;
 						found = true;
 						break;
 					}

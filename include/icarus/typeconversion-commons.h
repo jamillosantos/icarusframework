@@ -6,6 +6,7 @@
 #ifndef ICARUSFRAMEWORK_ROUTES_TYPECONVERSION_COMMONS_H
 #define ICARUSFRAMEWORK_ROUTES_TYPECONVERSION_COMMONS_H
 
+#include <string>
 #include <json/value.h>
 #include <json/writer.h>
 #include <json/reader.h>
@@ -141,6 +142,54 @@ struct type_conversion<long long>
 };
 
 template<>
+struct type_conversion<float>
+{
+	typedef std::string base_type;
+
+	static void from(base_type const &in, float &out)
+	{
+		out = std::stof(in);
+	}
+
+	static void to(float const &in, base_type &out)
+	{
+		out = std::to_string(in);
+	}
+};
+
+template<>
+struct type_conversion<double>
+{
+	typedef std::string base_type;
+
+	static void from(base_type const &in, double &out)
+	{
+		out = std::stod(in);
+	}
+
+	static void to(double const &in, base_type &out)
+	{
+		out = std::to_string(in);
+	}
+};
+
+template<>
+struct type_conversion<bool>
+{
+	typedef std::string base_type;
+
+	static void from(base_type const &in, bool &out)
+	{
+		out = ((in == "1") || (in == "on"));
+	}
+
+	static void to(bool const &in, base_type &out)
+	{
+		out = (in ? "on" : "off");
+	}
+};
+
+template<>
 struct type_conversion<Json::Value>
 {
 	typedef std::string base_type;
@@ -157,8 +206,6 @@ struct type_conversion<Json::Value>
 		out = writer.write(in);
 	}
 };
-
-
 }
 
 #endif //ICARUSFRAMEWORK_ROUTES_TYPECONVERSION_COMMONS_H
