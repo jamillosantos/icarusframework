@@ -144,8 +144,7 @@ BOOST_AUTO_TEST_CASE(route_group_match1)
 	ifr::document parserData("routes_groups");
 	parser.parse((resourceDir / "routes" / "routes_groups").string(), parserData);
 
-
-	std::map<std::string, std::string> values;
+	std::vector<std::string> values;
 	ifr::piece *piece = parserData.match("POST", "/testing/123/abc/", values);
 	BOOST_REQUIRE_MESSAGE(piece != nullptr, "Could not find the piece.");
 }
@@ -162,10 +161,10 @@ BOOST_AUTO_TEST_CASE(route_group_match2)
 	parser.parse((resourceDir / "routes" / "routes_groups").string(), parserData);
 
 
-	std::map<std::string, std::string> values;
+	std::vector<std::string> values;
 	ifr::piece *piece = parserData.match("PUT", "/u/username/testing/123xabctest", values);
 	BOOST_REQUIRE_MESSAGE(piece != nullptr, "Could not find the piece.");
-	BOOST_CHECK_EQUAL(values["user"], "username");
-	BOOST_CHECK_EQUAL(values["count"], "123");
-	BOOST_CHECK_EQUAL(values["id"], "abc");
+	BOOST_CHECK_EQUAL(values[0], "username");
+	BOOST_CHECK_EQUAL(values[1], "123");
+	BOOST_CHECK_EQUAL(values[2], "abc");
 }

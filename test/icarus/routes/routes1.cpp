@@ -1,3 +1,4 @@
+
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE Routes1
 
@@ -162,13 +163,13 @@ BOOST_AUTO_TEST_CASE(route1_match1)
 	ifr::document parserData("routes1");
 	parser.parse((resourceDir / "routes" / "routes1").string(), parserData);
 
-	std::map<std::string, std::string> values;
+	std::vector<std::string> values;
 	ifr::piece *piece = parserData.match("GET", "/match/123", values);
 	BOOST_REQUIRE_MESSAGE(piece != nullptr, "Could not find a route to match the URI.");
 	ifr::route *route = dynamic_cast<ifr::route*>(piece);
 	BOOST_REQUIRE_MESSAGE(route, "The piece found is not a Route*.");
 	BOOST_CHECK_EQUAL(values.size(), 1);
-	BOOST_CHECK_EQUAL(values["param1"], "123");
+	BOOST_CHECK_EQUAL(values[0], "123");
 }
 
 BOOST_AUTO_TEST_CASE(route1_match2)
@@ -182,7 +183,7 @@ BOOST_AUTO_TEST_CASE(route1_match2)
 	ifr::document parserData("routes1");
 	parser.parse((resourceDir / "routes" / "routes1").string(), parserData);
 
-	std::map<std::string, std::string> values;
+	std::vector<std::string> values;
 	ifr::piece *piece = parserData.match("POST", "/testing/1/2/test", values);
 	BOOST_REQUIRE_MESSAGE(piece == nullptr, "Should not find a route to match the URI.");
 }
@@ -198,14 +199,14 @@ BOOST_AUTO_TEST_CASE(route1_match3)
 	ifr::document parserData("routes1");
 	parser.parse((resourceDir / "routes" / "routes1").string(), parserData);
 
-	std::map<std::string, std::string> values;
+	std::vector<std::string> values;
 	ifr::piece *piece = parserData.match("PUT", "/testing/1/2/test", values);
 	BOOST_REQUIRE_MESSAGE(piece != nullptr, "Could not find a route to match the URI.");
 	ifr::route *route = dynamic_cast<ifr::route*>(piece);
 	BOOST_REQUIRE_MESSAGE(route, "The piece found is not a Route*.");
 	BOOST_REQUIRE_EQUAL(values.size(), 2);
-	BOOST_CHECK_EQUAL(values["count"], "1");
-	BOOST_CHECK_EQUAL(values["id"], "2");
+	BOOST_CHECK_EQUAL(values[0], "1");
+	BOOST_CHECK_EQUAL(values[1], "2");
 }
 
 BOOST_AUTO_TEST_CASE(route1_match4)
@@ -219,12 +220,12 @@ BOOST_AUTO_TEST_CASE(route1_match4)
 	ifr::document parserData("routes1");
 	parser.parse((resourceDir / "routes" / "routes1").string(), parserData);
 
-	std::map<std::string, std::string> values;
+	std::vector<std::string> values;
 	ifr::piece *piece = parserData.match("POST", "/4/foobar", values);
 	BOOST_REQUIRE_MESSAGE(piece != nullptr, "Could not find a route to match the URI.");
 	ifr::route *route = dynamic_cast<ifr::route*>(piece);
 	BOOST_REQUIRE_MESSAGE(route, "The piece found is not a Route*.");
 	BOOST_REQUIRE_EQUAL(values.size(), 2);
-	BOOST_CHECK_EQUAL(values["count"], "4");
-	BOOST_CHECK_EQUAL(values["id"], "foobar");
+	BOOST_CHECK_EQUAL(values[0], "4");
+	BOOST_CHECK_EQUAL(values[1], "foobar");
 }
