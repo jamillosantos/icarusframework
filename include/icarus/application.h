@@ -9,9 +9,18 @@
 #include <icarus/config.h>
 #include <icarus/http/client.h>
 #include <icarus/dispatcher.h>
+#include <icarus/session/session.h>
 
 namespace icarus
 {
+
+class no_session_manager_defined
+	: public icarus::exception
+{
+public:
+	no_session_manager_defined();
+};
+
 class application
 {
 private:
@@ -20,6 +29,7 @@ protected:
 	volatile bool _running;
 
 	icarus::dispatcher &_dispatcher;
+	std::unique_ptr<icarus::session::manager> _session_manager;
 public:
 	application(icarus::dispatcher &dispatcher);
 

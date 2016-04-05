@@ -30,7 +30,6 @@ private:
 	fcgi::response *_fcgiResponse;
 public:
 	client_context(FCGX_Request *fcgiRequest);
-
 	virtual ~client_context() override;
 
 	void init();

@@ -14,6 +14,16 @@ void icarus::http::response::flush_headers()
 		for (const std::string &value : header.second)
 			(*this->ostream) << header.first << ": " << value << endh;
 	}
+	for (const icarus::http::cookies::pair &cookie : this->_cookies)
+	{
+		if (cookie.second.expires())
+		{
+			std::time_t tt = std::chrono::system_clock::to_time_t(*cookie.second.expires());
+			(*this->ostream) << "Set-Cookie: " << cookie.first << "=" << cookie.second.value() << "; Expires=" << std::put_time(std::localtime(&tt), "%a, %Od %b %Y %H:%I:%S %Z") << endh;
+		}
+		else
+			(*this->ostream) << "Set-Cookie: " << cookie.first << "=" << cookie.second.value() << endh;
+	}
 	(*this->ostream) << endh;
 
 	this->_header_sent = true;
@@ -42,6 +52,11 @@ icarus::http::response::~response()
 icarus::http::headers &icarus::http::response::headers()
 {
 	return this->_headers;
+}
+
+icarus::http::cookies &icarus::http::response::cookies()
+{
+	return this->_cookies;
 }
 
 void icarus::http::response::flush()

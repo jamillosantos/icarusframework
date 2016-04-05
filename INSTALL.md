@@ -21,6 +21,13 @@ make all
 make install
 ```
 
+### libemcached
+
+```bash
+mkdir -p $HOME/libs/libmemcached
+./configure --prefix=$HOME/libs/libmemcached
+```
+
 ### Boost
 
 Version: 1.60.0

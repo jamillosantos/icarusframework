@@ -5,6 +5,7 @@
 
 #include <icarus/routes/routeswriter.h>
 #include <icarus/routes/exceptions.h>
+#include <icarus/log.h>
 
 void icarus::routes::routes_writer::write_begin_doc(std::ostream &stream, document &document)
 {

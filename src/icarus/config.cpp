@@ -120,6 +120,14 @@ icarus::config::database &icarus::config::databases::add(const std::string &name
 	return (it.first)->second;
 }
 
+icarus::config::session_memcached_server::session_memcached_server(const std::string &address)
+{ }
+
+const std::string &icarus::config::session_memcached_server::address() const
+{
+	return this->_address;
+}
+
 unsigned int icarus::config::config::threads()
 {
 	return this->_threads;
@@ -128,6 +136,76 @@ unsigned int icarus::config::config::threads()
 icarus::config::databases &icarus::config::config::databases()
 {
 	return this->_databases;
+}
+
+const icarus::config::session_memcached_server &icarus::config::session_memcached::operator[](const unsigned int index)
+{
+	return this->_servers[index];
+}
+
+icarus::config::session_memcached_server &icarus::config::session_memcached::add(const std::string &address)
+{
+	return *this->_servers.emplace(this->_servers.end(), address);
+}
+
+icarus::config::session_memcached::iterator icarus::config::session_memcached::begin()
+{
+	return this->_servers.begin();
+}
+
+icarus::config::session_memcached::const_iterator icarus::config::session_memcached::begin() const
+{
+	return this->_servers.begin();
+}
+
+icarus::config::session_memcached::iterator icarus::config::session_memcached::end()
+{
+	return this->_servers.end();
+}
+
+icarus::config::session_memcached::const_iterator icarus::config::session_memcached::end() const
+{
+	return this->_servers.end();
+}
+
+icarus::config::session_memcached::const_iterator icarus::config::session_memcached::cbegin()
+{
+	return this->_servers.cbegin();
+}
+
+icarus::config::session_memcached::const_iterator icarus::config::session_memcached::cend()
+{
+	return this->_servers.cend();
+}
+
+icarus::config::session_memcached::reverse_iterator icarus::config::session_memcached::rbegin()
+{
+	return this->_servers.rbegin();
+}
+
+icarus::config::session_memcached::reverse_iterator icarus::config::session_memcached::rend()
+{
+	return this->_servers.rend();
+}
+
+icarus::config::session_memcached::const_reverse_iterator icarus::config::session_memcached::crbegin()
+{
+	return this->_servers.crbegin();
+}
+
+icarus::config::session_memcached::const_reverse_iterator icarus::config::session_memcached::crend()
+{
+	return this->_servers.crend();
+}
+
+boost::optional<icarus::config::session_memcached> icarus::config::session::memcached()
+{
+	return this->_memcached;
+}
+
+icarus::config::session &icarus::config::config::session()
+{
+	return this->_session;
 }
 
 void icarus::config::config::loadFromFile(const std::string &fname)
@@ -165,6 +243,16 @@ void icarus::config::config::loadFromFile(const std::string &fname)
 					dbref.add(dbproperty.first, dbproperty.second.data());
 				}
 			}
+		}
+	}
+
+	const boost::optional<boost::property_tree::ptree&> &memcached = pt.get_child_optional("memcached");
+	if (memcached)
+	{
+		for (boost::property_tree::ptree::value_type &server : memcached.get())
+		{
+			if (server.first == "server")
+				this->_session.memcached()->add(server.second.get_child("address").get_value<std::string>());
 		}
 	}
 }

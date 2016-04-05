@@ -8,6 +8,7 @@
 
 #include <string>
 #include <map>
+#include <vector>
 
 #include <boost/program_options.hpp>
 #include <boost/property_tree/ptree.hpp>
@@ -74,15 +75,67 @@ public:
 	icarus::config::database &add(const std::string &name, const std::string &driver, const unsigned int poolSize);
 };
 
+class session_memcached_server
+{
+private:
+	std::string _address;
+public:
+	session_memcached_server(const std::string &address);
+
+	const std::string &address() const;
+};
+
+class session_memcached
+{
+public:
+	typedef std::vector<session_memcached_server> list;
+
+	typedef list::iterator iterator;
+	typedef list::const_iterator const_iterator;
+	typedef list::reverse_iterator reverse_iterator;
+	typedef list::const_reverse_iterator const_reverse_iterator;
+private:
+	list _servers;
+public:
+	const session_memcached_server& operator[](const unsigned int index);
+
+	session_memcached_server &add(const std::string &address);
+
+	iterator begin();
+	const_iterator begin() const;
+	iterator end();
+	const_iterator end() const;
+
+	const_iterator cbegin();
+	const_iterator cend();
+
+	reverse_iterator rbegin();
+	reverse_iterator rend();
+
+	const_reverse_iterator crbegin();
+	const_reverse_iterator crend();
+};
+
+class session
+{
+private:
+	boost::optional<session_memcached> _memcached;
+public:
+	boost::optional<session_memcached> memcached();
+};
+
 class config
 {
 private:
 	unsigned int _threads;
 	icarus::config::databases _databases;
+	icarus::config::session _session;
 public:
 	unsigned int threads();
 
 	icarus::config::databases &databases();
+
+	icarus::config::session &session();
 
 	void loadFromFile(const std::string &fname);
 };

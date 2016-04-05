@@ -19,7 +19,6 @@
 #include <boost/regex.hpp>
 
 #include <icarus/http/headers.h>
-#include <icarus/http/client.h>
 
 namespace icarus
 {

@@ -12,6 +12,7 @@
 #include <icarus/statuses.h>
 #include <icarus/result.h>
 #include <icarus/log.h>
+#include "cookies.h"
 
 namespace icarus
 {
@@ -25,6 +26,7 @@ private:
 	icarus::status &status;
 
 	icarus::http::headers _headers;
+	icarus::http::cookies _cookies;
 
 	bool _header_sent;
 protected:
@@ -39,6 +41,8 @@ public:
 	virtual ~response();
 
 	icarus::http::headers &headers();
+
+	icarus::http::cookies &cookies();
 
 	virtual void flush();
 

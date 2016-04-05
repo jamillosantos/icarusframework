@@ -1,6 +1,8 @@
 
 #include <minotaur/templatebuilder.h>
 
+#include <icarus/exceptions.h>
+
 minotaur::content_info::content_info(const std::string &stream, unsigned int level)
 	: stream(stream), level(level)
 { }

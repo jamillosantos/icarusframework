@@ -38,6 +38,10 @@ set(CMAKE_MODULE_PATH ${icarus_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 add_definitions(-DOUTPUT_DIRECTORY="${CMAKE_BINARY_DIR}")
 add_definitions(-DSOURCE_DIRECTORY="${CMAKE_CURRENT_SOURCE_DIR}")
 
+#
+# SOCI
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 set(SOCI_LIBRARY_DIR "$ENV{HOME}/libs/soci3.2.3")
 find_library(soci_core soci_core REQUIRED PATHS "${SOCI_LIBRARY_DIR}" PATH_SUFFIXES lib lib64)
 if("${soci_core}" STREQUAL "soci_core-NOTFOUND")
@@ -64,6 +68,10 @@ include_directories(
 	"${SOCI_LIBRARY_DIR}/include"
 )
 
+#
+# BOOST
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 set(BOOST_ROOT "$ENV{HOME}/libs/libboost_1_60_0")
 set(BOOST_INCLUDEDIR "${BOOST_ROOT}/include")
 set(BOOST_LIBRARYDIR "${BOOST_ROOT}/lib")
@@ -76,6 +84,10 @@ add_definitions(-DBOOST_LOG_DYN_LINK=1)
 include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
 
+#
+# OpenSSL
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 find_package(OpenSSL REQUIRED)
 message("-- OpenSSL")
 message("--   include dir: ${OPENSSL_INCLUDE_DIR}")
@@ -84,6 +96,37 @@ message("--   crypto libraries: ${OPENSSL_CRYPTO_LIBRARIES}")
 message("")
 include_directories(${OPENSSL_INCLUDE_DIR})
 
+#
+# libmemcached
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+set(LIBMEMCACHED_ROOT "$ENV{HOME}/libs/libmemcached")
+set(LIBMEMCACHED_INCLUDE_DIR "${LIBMEMCACHED_ROOT}/include")
+find_library(memcached memcached REQUIRED PATHS "${LIBMEMCACHED_ROOT}" PATH_SUFFIXES lib lib64 NAMES libmemcached.a libmemcached)
+if("${memcached}" STREQUAL "libmemcached-NOTFOUND")
+	message("libmemcached searched in ${Red}${LIBMEMCACHED_ROOT}${ColourReset}")
+	message(FATAL_ERROR "Component not found ${Red}libmemcached${ColourReset}.")
+endif()
+
+find_library(memcachedutil memcachedutil REQUIRED PATHS "${LIBMEMCACHED_ROOT}" PATH_SUFFIXES lib lib64 NAMES libmemcachedutil.a libmemcachedutil)
+if("${memcachedutil}" STREQUAL "memcachedutil-NOTFOUND")
+	message("memcachedutil searched in ${Red}${LIBMEMCACHED_ROOT}${ColourReset}")
+	message(FATAL_ERROR "Component not found ${Red}memcachedutil${ColourReset}.")
+endif()
+
+message("-- memcached")
+message("--        memcached: ${memcached}")
+message("--    memcachedutil: ${memcachedutil}")
+message("--      include dir: ${LIBMEMCACHED_INCLUDE_DIR}")
+message("")
+
+include_directories(
+	"${LIBMEMCACHED_INCLUDE_DIR}"
+)
+
+#
+# JSONCPP
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 set(JSONCPP_ROOT "$ENV{HOME}/libs/jsoncpp1.7.2")
 
@@ -96,6 +139,8 @@ message("--   include dir: ${JSONCPP_ROOT}/include")
 message("--       library: ${jsoncpp}")
 message("")
 include_directories(${JSONCPP_ROOT}/include)
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 set(SOURCE_FILES
 	include/icarus/log.h
@@ -151,13 +196,11 @@ set(SOURCE_FILES
 
 	# ---
 
-	include/icarus/session/manager.h
-	include/icarus/session/session.h
-	include/icarus/session/memory.h
+	src/icarus/memcached.cpp
+	include/icarus/memcached.h
 
-	src/icarus/session/manager.cpp
+	include/icarus/session/session.h
 	src/icarus/session/session.cpp
-	src/icarus/session/memory.cpp
 
 	# ---
 
@@ -206,17 +249,16 @@ set(SOURCE_FILES
 	include/icarus/general.h
 	src/icarus/general.cpp
 
-		include/icarus/typeconversion.h
-		src/icarus/typeconversion.cpp
-
-		include/icarus/typeconversion-commons.h
+	include/icarus/typeconversion.h
+	src/icarus/typeconversion.cpp
+	include/icarus/typeconversion-commons.h
 
 	include/icarus/content.h
 	src/icarus/content.cpp
 
 	include/icarus/dispatcher.h
 	src/icarus/dispatcher.cpp
-)
+		src/icarus/session/memcached.cpp include/icarus/session/memcached.h src/icarus/digests.cpp include/icarus/digests.h)
 
 include_directories("${CMAKE_SOURCE_DIR}/include")
 
@@ -238,6 +280,9 @@ set(ICARUS_LIBRARIES
 
 	fcgi
 	fcgi++
+
+	${memcached}
+	${memcachedutil}
 
 	rt
 

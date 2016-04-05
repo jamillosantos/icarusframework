@@ -4,7 +4,6 @@
  **/
 
 #include <icarus/http/client.h>
-#include <icarus/routes/data.h>
 
 icarus::http::client_context::client_context(client_context &clientContext)
 	: _request(clientContext._request), _response(clientContext._response)

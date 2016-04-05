@@ -24,3 +24,14 @@ databases
 		pool_size 13
 	}
 }
+
+session
+{
+	memcached
+	{
+		server
+		{
+			address 'localhost:11211'
+		}
+	}
+}
