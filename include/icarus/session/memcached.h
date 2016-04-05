@@ -21,6 +21,9 @@ class memcached_manager
 	friend class memcached_session;
 private:
 	icarus::memcached_server _server;
+protected:
+	virtual icarus::session::session create(const icarus::session::session_id_t &id);
+
 public:
 	memcached_manager(icarus::config::session_memcached &config);
 };
@@ -29,11 +32,13 @@ class memcached_session
 	: public icarus::session::session
 {
 private:
+	icarus::session::memcached_manager &_manager;
+
 	std::unique_ptr<icarus::memcached_session> _session;
 	std::string _group_key;
 public:
-	memcached_session(icarus::session::memcached_session &&sss);
-	memcached_session(icarus::session::memcached_manager &manager, icarus::http::client_context &context);
+	memcached_session(icarus::session::memcached_session &&msession);
+	memcached_session(icarus::session::memcached_manager &manager, const icarus::session::session_id_t &id);
 
 	virtual std::string get_value(const std::string &key);
 

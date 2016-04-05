@@ -25,8 +25,12 @@ class session;
 class manager
 {
 private:
-	unsigned int _maxAge;
+	unsigned int _max_age;
 	volatile bool _running;
+protected:
+	icarus::session::session_id_t generate_id();
+
+	virtual icarus::session::session create(const icarus::session::session_id_t &id) = 0;
 public:
 	manager();
 	~manager();
@@ -38,7 +42,7 @@ public:
 	virtual void start();
 	virtual void stop();
 
-	icarus::session::session_id_t generate_id();
+	virtual icarus::session::session get(icarus::http::client_context &client);
 };
 
 class session
@@ -46,16 +50,11 @@ class session
 private:
 	session_id_t _id;
 protected:
-	icarus::session::manager &_manager;
-	icarus::http::client_context &_client;
-
 	virtual std::string get_value(const std::string &key) = 0;
 
 	virtual void set_value(const std::string &key, const std::string &value) = 0;
 public:
-	session(icarus::session::session &session);
-	session(icarus::session::session &&session);
-	session(icarus::session::manager &manager, icarus::http::client_context &client);
+	session(const icarus::session::session_id_t &id);
 	virtual ~session();
 
 	const session_id_t id();

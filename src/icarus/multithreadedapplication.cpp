@@ -33,7 +33,7 @@ void icarus::multi_threaded_application::runTrampolin()
 		http::client_context *client = this->accept();
 		if (client)
 		{
-			this->_dispatcher.process(client);
+			this->_dispatcher.process(*this, client);
 		}
 	}
 }

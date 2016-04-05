@@ -48,6 +48,8 @@ public:
 	virtual void run();
 
 	virtual icarus::dispatcher &dispatcher();
+
+	icarus::session::manager& session_manager();
 };
 }
 

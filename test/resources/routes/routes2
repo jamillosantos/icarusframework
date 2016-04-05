@@ -5,7 +5,7 @@
  * Multiline comment
  */
 
-GET			/									controllers::Index::default0()
+GET			/									controllers::Index::default0(@client)
 GET			/match/<param1:[0-9]+>				controllers::Index::default1(unsigned int param1)
 POST		/<count>							controllers::Index::default2(uint8_t count)
 POST		/<count>/<id>						controllers::Index::default3(unsigned int count, string id)

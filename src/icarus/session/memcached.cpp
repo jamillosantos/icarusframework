@@ -9,13 +9,18 @@ icarus::session::memcached_manager::memcached_manager(icarus::config::session_me
 	: _server(config)
 { }
 
-icarus::session::memcached_session::memcached_session(memcached_session &&sss)
-	: icarus::session::session(std::move(sss)), _session(sss._session.release()), _group_key(sss._group_key)
+icarus::session::session icarus::session::memcached_manager::create(const icarus::session::session_id_t &id)
+{
+	return icarus::session::memcached_session(*this, id);
+}
+
+icarus::session::memcached_session::memcached_session(icarus::session::memcached_session &&msession)
+	: icarus::session::session(std::move(msession)), _manager(msession._manager), _session(msession._session.release()),
+	  _group_key(msession._group_key)
 { }
 
-icarus::session::memcached_session::memcached_session(icarus::session::memcached_manager &manager,
-	icarus::http::client_context &context)
-	: icarus::session::session(manager, context), _session(new icarus::memcached_session(manager._server)), _group_key("session" + this->id())
+icarus::session::memcached_session::memcached_session(icarus::session::memcached_manager &manager, const icarus::session::session_id_t &id)
+	: icarus::session::session(id), _manager(manager), _session(new icarus::memcached_session(manager._server)), _group_key("session" + this->id())
 { }
 
 std::string icarus::session::memcached_session::get_value(const std::string &key)

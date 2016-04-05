@@ -39,6 +39,8 @@ private:
 	size_t currentLine;
 	size_t currentChar;
 
+	char _next_char;
+
 	char last_char();
 
 	bool read_char(char *cc);
@@ -46,6 +48,8 @@ private:
 	void read_until_non_blank(char *cc);
 
 	std::string read_until(std::string chars);
+
+	std::string read_identifier();
 
 	/**
 	 * Reads bytes untilfind the end of the comment.

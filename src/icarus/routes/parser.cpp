@@ -15,6 +15,13 @@ char icarus::routes::parser::last_char()
 
 bool icarus::routes::parser::read_char(char *cc)
 {
+	if (this->_next_char != 0)
+	{
+		*cc = this->_next_char;
+		this->_next_char = 0;
+		return  true;
+	}
+
 	if ((this->currentInputStreamChar >= INPUT_STREAM_BUFFER_SIZE) || (this->inputStreamBufferSize == 0))
 	{
 		this->inputStreamBufferSize = this->istream->readsome(this->inputStreamBuffer, INPUT_STREAM_BUFFER_SIZE);
@@ -61,6 +68,41 @@ std::string icarus::routes::parser::read_until(std::string chars)
 				return result;
 		}
 		result += cc;
+	}
+	throw icarus::premature_eof();
+}
+
+
+std::string icarus::routes::parser::read_identifier()
+{
+	char cc;
+	std::string result;
+	unsigned int i = 0;
+	while (this->read_char(&cc))
+	{
+		if (
+			(
+				(cc >= 'A')
+				&& (cc <= 'Z')
+			)
+			|| (
+				(cc >= 'a')
+				&& (cc <= 'z')
+			)
+			|| (cc == '_')
+			|| (
+				(i > 0)
+				&& (cc >= '0')
+				&& (cc <= '9')
+			)
+		)
+			result += cc;
+		else
+		{
+			this->_next_char = cc;
+			return result;
+		}
+		++i;
 	}
 	throw icarus::premature_eof();
 }
@@ -182,6 +224,19 @@ void icarus::routes::parser::run_line_method_parameters(call_method &callMethod)
 			paramstream << stream.rdbuf();
 			stream.str("");
 			this->read_until_non_blank(&cc);
+		}
+		else if (cc == '@')
+		{
+			std::string identifier = this->read_identifier();
+			if (identifier.empty())
+			{
+				// TODO Throw an exception
+				std::cerr << "Identifier expected.";
+				std::exit(99);
+			}
+			else
+				callMethod.add("", icarus::routes::method_param_type::IDENTIFIER, identifier);
+			this->read_char(&cc);
 		}
 		else
 		{
@@ -436,7 +491,7 @@ void icarus::routes::parser::run_doc(icarus::routes::routes &data, unsigned int 
 
 icarus::routes::parser::parser(std::string inputFolder)
 	: inputFolder(inputFolder), inputStreamBufferSize(0), currentInputStreamChar(0), currentLine(0),
-	  currentChar(0)
+	  currentChar(0), _next_char(0)
 { }
 
 void icarus::routes::parser::parse(std::string inputFile, icarus::routes::document &data)

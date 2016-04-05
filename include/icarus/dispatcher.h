@@ -10,6 +10,9 @@
 
 namespace icarus
 {
+
+class application;
+
 /** Dispatches client request after accepted by the `application`.
  *
  * This class dispatches client request after accepted by the `application` and after all work done, it should clean up
@@ -25,7 +28,7 @@ protected:
 	/**
 	 * Abstract method to be overrided when implementing a project.
 	 */
-	virtual void find_route(http::client_context *client) = 0;
+	virtual void find_route(icarus::application &app, http::client_context *client) = 0;
 
 	/**
 	 * Method responsible for cleaning the `client_context` up.
@@ -35,7 +38,7 @@ public:
 	/**
 	 * Process the client request. The default implementation of it is to call the `find_route` method.
 	 */
-	virtual void process(http::client_context *client);
+	virtual void process(icarus::application &app, http::client_context *client);
 };
 }
 

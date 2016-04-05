@@ -42,6 +42,13 @@ class param_not_found
 public:
 	param_not_found(unsigned int line, std::string paramName);
 };
+
+class identifier_not_found
+	: public icarus::exception
+{
+public:
+	identifier_not_found(unsigned int line, std::string paramName);
+};
 } // routes
 } // icarus
 

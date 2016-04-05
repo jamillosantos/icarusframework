@@ -5,9 +5,9 @@
 
 #include <icarus/dispatcher.h>
 
-void icarus::dispatcher::process(icarus::http::client_context *client)
+void icarus::dispatcher::process(icarus::application &app, icarus::http::client_context *client)
 {
-	this->find_route(client);
+	this->find_route(app, client);
 	this->destroy_client(client);
 }
 

@@ -49,7 +49,7 @@ void icarus::application::run()
 		http::client_context *client = this->accept();
 		if (client)
 		{
-			this->_dispatcher.process(client);
+			this->_dispatcher.process(*this, client);
 		}
 	}
 	this->cleanup();
@@ -58,4 +58,9 @@ void icarus::application::run()
 icarus::dispatcher &icarus::application::dispatcher()
 {
 	return this->_dispatcher;
+}
+
+icarus::session::manager &icarus::application::session_manager()
+{
+	return *this->_session_manager;
 }

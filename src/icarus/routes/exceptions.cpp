@@ -20,3 +20,7 @@ icarus::routes::incomplete_declaration::incomplete_declaration(unsigned int line
 icarus::routes::param_not_found::param_not_found(unsigned int line, std::string paramName)
 	: icarus::exception((boost::locale::format(boost::locale::translate("Param {2} was not found. (at {1})")) % line % paramName).str(), nullptr)
 { }
+
+icarus::routes::identifier_not_found::identifier_not_found(unsigned int line, std::string identifier)
+	: icarus::exception((boost::locale::format(boost::locale::translate("Identifier {2} was not found. (at {1})")) % line % identifier).str(), nullptr)
+{ }

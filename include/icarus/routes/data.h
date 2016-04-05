@@ -96,7 +96,7 @@ public:
  */
 enum class method_param_type
 {
-	NORMAL, REFERENCE, POINTER, RVALUE
+	NORMAL, REFERENCE, POINTER, RVALUE, IDENTIFIER
 };
 
 class method_param
