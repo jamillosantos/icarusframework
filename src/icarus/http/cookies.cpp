@@ -17,9 +17,12 @@ icarus::http::cookie_value::cookie_value()
 { }
 
 icarus::http::cookie_value::cookie_value(const std::string &value)
+	: _value(value)
 { }
 
-icarus::http::cookie_value::cookie_value(const std::string &value, const boost::optional<icarus::http::cookie_expiration_t> &expires)
+icarus::http::cookie_value::cookie_value(const std::string &value,
+	const boost::optional<icarus::http::cookie_expiration_t> &expires)
+	: _value(value), _expires(expires)
 { }
 
 const std::string icarus::http::cookie_value::value() const
