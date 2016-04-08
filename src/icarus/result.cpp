@@ -36,9 +36,7 @@ icarus::result::result(const Json::Value &json)
 
 icarus::result::result(icarus::result &&r)
 	: icarus::content::content(r), _status(r._status)
-{
-	LOG_DEBUG("icarus::result::result(icarus::result &&r)");
-}
+{ }
 
 const icarus::http::headers &icarus::result::headers() const
 {

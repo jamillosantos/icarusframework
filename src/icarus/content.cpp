@@ -9,29 +9,23 @@
 
 icarus::content::content()
 	: _content_stream(new std::stringstream(std::stringstream::in | std::stringstream::out | std::stringstream::binary))
-{
-	LOG_DEBUG("icarus::content::content()");
-}
+{ }
 
 icarus::content::content(const std::string &content)
 	: icarus::content::content()
 {
-	LOG_DEBUG("icarus::content::content(const std::string &content)");
 	(*this->_content_stream) << content;
 }
 
 icarus::content::content(icarus::content &html)
 	: icarus::content::content()
 {
-	LOG_DEBUG("icarus::content::content(icarus::content &html)");
 	(*this->_content_stream) << html._content_stream->rdbuf();
 }
 
 icarus::content::content(icarus::content &&html)
 	: _content_stream(html._content_stream.release())
-{
-	LOG_DEBUG("icarus::content::content(icarus::content &&html)");
-}
+{ }
 
 icarus::content::~content()
 { }
