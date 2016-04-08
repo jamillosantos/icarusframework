@@ -114,14 +114,16 @@ public:
 
 	const_reverse_iterator crbegin();
 	const_reverse_iterator crend();
+
+	size_t size() const;
 };
 
 class session
 {
 private:
-	boost::optional<session_memcached> _memcached;
+	std::unique_ptr<session_memcached> _memcached;
 public:
-	boost::optional<session_memcached> memcached();
+	std::unique_ptr<session_memcached> &memcached();
 };
 
 class config

@@ -5,6 +5,7 @@
 
 #include <icarus/routes/routeswriter.h>
 #include <icarus/routes/exceptions.h>
+#include <icarus/log.h>
 
 void icarus::routes::routes_writer::write_begin_doc(std::ostream &stream, document &document)
 {
@@ -63,10 +64,11 @@ void icarus::routes::routes_writer::write_begin_doc(std::ostream &stream, docume
 	}
 
 	// Function declaration (interface)
-	stream << "bool find(icarus::http::client_context &context)" << std::endl << "{" << std::endl;
-	stream << "\tconst std::string method = context.request().method();" << std::endl;
-	stream << "\tconst std::string uri = context.request().uri();" << std::endl;
-	stream << "\tstd::map<std::string, std::string> values;" << std::endl;
+	stream << "bool find(icarus::application &app, icarus::http::client_context &client)" << std::endl << "{" <<
+	std::endl;
+	stream << "\tconst std::string method = client.request().method();" << std::endl;
+	stream << "\tconst std::string uri = client.request().uri();" << std::endl;
+	stream << "\tstd::vector<std::string> values;" << std::endl;
 };
 
 void icarus::routes::routes_writer::write_begin_doc(std::ostream &stream, icarus::routes::group &group)
@@ -99,7 +101,7 @@ void icarus::routes::routes_writer::write_begin_doc(std::ostream &stream, icarus
 
 	// Route comment
 	stream << "/**" << std::endl << " * Route: " << route.uri().str() << std::endl << " * at line" << route.line()
-		<< " on the original file." << std::endl << " */" << std::endl;
+	<< " on the original file." << std::endl << " */" << std::endl;
 	// Route declaration itself
 	stream << "icarus::routes::route route" << route.id() << "(" << route.line() << ", \"" << route.http_method() << "\", {" << std::endl;
 	unsigned int i = 0, j = 0;
@@ -143,7 +145,22 @@ void icarus::routes::routes_writer::write(std::ostream &stream, icarus::routes::
 	{
 		// Places the packages of the method.
 		stream << "LOG_INFO(\"Route '" << route.uri().str() << "' matched.\");" << std::endl;
-		stream << "\t\tcontext.response() << ";
+
+		unsigned int paramIndex = 0;
+		for (const method_param &param : route.call_method().params())
+		{
+			if (param.attribute() == icarus::routes::method_param_type::IDENTIFIER)
+			{
+				if (param.name() == "session")
+					stream << "\t\ticarus::session::session &&session = app.session_manager().get(client);" << std::endl;
+			}
+			else
+				stream << "\t\t" << param.type() << " param" << paramIndex << ";" << std::endl <<
+				"\t\ticarus::type_conversion<" << param.type() << ">::from(values[" << paramIndex << "], param" << paramIndex << ");" << std::endl <<
+				std::endl;
+			paramIndex++;
+		}
+		stream << "\t\tclient.response() << ";
 		for (const std::string &package : route.call_method().path())
 		{
 			stream << package << "::";
@@ -155,26 +172,42 @@ void icarus::routes::routes_writer::write(std::ostream &stream, icarus::routes::
 		// Places the parameter.
 		for (method_param &param : route.call_method().params())
 		{
-			found = false;
-			for (regex_token &token : route.uri().tokens())
+			if (param.attribute() == icarus::routes::method_param_type::IDENTIFIER)
 			{
-				if (token.name() == param.name())
-				{
-					if (i++ > 0)
-					{
-						stream << ", ";
-					}
-					if ((param.type() == "") || (param.type() == "std::string") || (param.type() == "string"))
-						stream << "values[" << token.index() << "]";
-					else
-						stream << "icarus::data::fromString(values[" << token.index() << "])";
-					found = true;
-					break;
-				}
+				if (param.name() == "client")
+					stream << "client";
+				else if (param.name() == "app")
+					stream << "app";
+				else if (param.name() == "session")
+					stream << "session";
+				else if (param.name() == "request")
+					stream << "client.request()";
+				else if (param.name() == "response")
+					stream << "client.response()";
+				else
+					throw icarus::routes::identifier_not_found(route.line(), param.name());
 			}
-			if (!found)
+			else
 			{
-				throw icarus::routes::param_not_found(route.line(), param.name());
+				found = false;
+				for (regex_token &token : route.uri().tokens())
+				{
+					if (token.name() == param.name())
+					{
+						if (i++ > 0)
+						{
+							stream << ", ";
+						}
+						if ((param.type() == "") || (param.type() == "std::string") || (param.type() == "string"))
+							stream << "values[" << token.index() << "]";
+						else
+							stream << "param" << token.index();
+						found = true;
+						break;
+					}
+				}
+				if (!found)
+					throw icarus::routes::param_not_found(route.line(), param.name());
 			}
 		}
 		stream << ");" << std::endl;
@@ -256,15 +289,18 @@ void icarus::routes::routes_writer::write_reverse_routes(std::ostream &stream, i
 		unsigned int i = 0;
 		for (const icarus::routes::method_param &param : route.call_method().params())
 		{
-			if (i > 0)
-				stream << ", ";
-			stream << param.type() << " ";
-			if (param.attribute() == icarus::routes::method_param_type::POINTER)
-				stream << "*";
-			if (param.attribute() == icarus::routes::method_param_type::REFERENCE)
-				stream << "&";
-			stream << param.name();
-			i++;
+			if (param.attribute() != icarus::routes::method_param_type::IDENTIFIER)
+			{
+				if (i > 0)
+					stream << ", ";
+				stream << param.type() << " ";
+				if (param.attribute() == icarus::routes::method_param_type::POINTER)
+					stream << "*";
+				if (param.attribute() == icarus::routes::method_param_type::REFERENCE)
+					stream << "&";
+				stream << param.name();
+				i++;
+			}
 		}
 		stream << ")\n\t{\n";
 		stream << "\t\tstd::string tmp;\n";
@@ -279,7 +315,11 @@ void icarus::routes::routes_writer::write_reverse_routes(std::ostream &stream, i
 				{
 					if (rt.name() == p.name())
 					{
-						stream << "\t\ttmp += icarus::to_url(" << p.name() << ");\n";
+						stream << "\t\t{" << std::endl <<
+						"\t\t\tstd::string tmp2;" << std::endl <<
+						"\t\t\ticarus::type_conversion<" << p.type() << ">::to(" << p.name() << ", tmp2);" << std::endl <<
+						"\t\t\ttmp += tmp2;" << std::endl <<
+						"\t\t}" << std::endl;
 						found = true;
 						break;
 					}
@@ -298,15 +338,18 @@ void icarus::routes::routes_writer::write_reverse_routes(std::ostream &stream, i
 		unsigned int i = 0;
 		for (const icarus::routes::method_param &param : route.call_method().params())
 		{
-			if (i > 0)
-				stream << ", ";
-			stream << param.type() << " ";
-			if (param.attribute() == icarus::routes::method_param_type::POINTER)
-				stream << "*";
-			if (param.attribute() == icarus::routes::method_param_type::REFERENCE)
-				stream << "&";
-			stream << param.name();
-			i++;
+			if (param.attribute() != icarus::routes::method_param_type::IDENTIFIER)
+			{
+				if (i > 0)
+					stream << ", ";
+				stream << param.type() << " ";
+				if (param.attribute() == icarus::routes::method_param_type::POINTER)
+					stream << "*";
+				if (param.attribute() == icarus::routes::method_param_type::REFERENCE)
+					stream << "&";
+				stream << param.name();
+				i++;
+			}
 		}
 		stream << ")\n\t{\n";
 		stream << "\t\tstd::string tmp;\n";
@@ -321,7 +364,11 @@ void icarus::routes::routes_writer::write_reverse_routes(std::ostream &stream, i
 				{
 					if (rt.name() == p.name())
 					{
-						stream << "\t\ttmp += icarus::to_url(" << p.name() << ");\n";
+						stream << "\t\t{" <<
+						"\t\t\tstd::string tmp2;" << std::endl <<
+						"\t\t\ticarus::type_conversion<" << p.type() << ">::to(" << p.name() << ", tmp2);" << std::endl <<
+						"\t\t\ttmp += tmp2;" << std::endl <<
+						"\t\t}" << std::endl;
 						found = true;
 						break;
 					}

@@ -22,14 +22,18 @@ class memcached_manager
 private:
 	icarus::memcached_server _server;
 protected:
-	virtual icarus::session::session create(const icarus::session::session_id_t &id);
+	virtual icarus::session::session_impl* create(const icarus::session::session_id_t &id);
 
 public:
 	memcached_manager(icarus::config::session_memcached &config);
+
+	virtual void start() override;
+
+	virtual void stop() override;
 };
 
 class memcached_session
-	: public icarus::session::session
+	: public icarus::session::session_impl
 {
 private:
 	icarus::session::memcached_manager &_manager;
@@ -40,9 +44,9 @@ public:
 	memcached_session(icarus::session::memcached_session &&msession);
 	memcached_session(icarus::session::memcached_manager &manager, const icarus::session::session_id_t &id);
 
-	virtual std::string get_value(const std::string &key);
+	virtual std::string get_value(const std::string &key) override;
 
-	virtual void set_value(const std::string &key, const std::string &value);
+	virtual void set_value(const std::string &key, const std::string &value) override;
 };
 }
 }

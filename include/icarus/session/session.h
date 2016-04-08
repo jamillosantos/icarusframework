@@ -20,7 +20,25 @@ namespace session
 {
 typedef std::string session_id_t;
 
-class session;
+class session_impl;
+
+class session_key_not_found
+	: public icarus::exception
+{
+public:
+	session_key_not_found(const std::string &key);
+};
+
+class session
+{
+private:
+	std::unique_ptr<icarus::session::session_impl> _session;
+public:
+	session(icarus::session::session_impl* session);
+	session(icarus::session::session &&session);
+
+	icarus::session::session_impl * operator->();
+};
 
 class manager
 {
@@ -30,7 +48,7 @@ private:
 protected:
 	icarus::session::session_id_t generate_id();
 
-	virtual icarus::session::session create(const icarus::session::session_id_t &id) = 0;
+	virtual icarus::session::session_impl* create(const icarus::session::session_id_t &id) = 0;
 public:
 	manager();
 	~manager();
@@ -45,7 +63,7 @@ public:
 	virtual icarus::session::session get(icarus::http::client_context &client);
 };
 
-class session
+class session_impl
 {
 private:
 	session_id_t _id;
@@ -54,8 +72,8 @@ protected:
 
 	virtual void set_value(const std::string &key, const std::string &value) = 0;
 public:
-	session(const icarus::session::session_id_t &id);
-	virtual ~session();
+	session_impl(const icarus::session::session_id_t &id);
+	virtual ~session_impl();
 
 	const session_id_t id();
 
@@ -76,11 +94,18 @@ public:
 	}
 
 	template <typename T>
-	T get(const std::string &name)
+	T get(const std::string &name, const T &default_value)
 	{
-		T result;
-		icarus::type_conversion<T>::from(this->get_value(name), result);
-		return result;
+		try
+		{
+			T result;
+			icarus::type_conversion<T>::from(this->get_value(name), result);
+			return result;
+		}
+		catch (icarus::session::session_key_not_found&)
+		{
+			return default_value;
+		}
 	}
 };
 }

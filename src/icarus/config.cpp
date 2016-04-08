@@ -121,6 +121,7 @@ icarus::config::database &icarus::config::databases::add(const std::string &name
 }
 
 icarus::config::session_memcached_server::session_memcached_server(const std::string &address)
+	: _address(address)
 { }
 
 const std::string &icarus::config::session_memcached_server::address() const
@@ -198,7 +199,12 @@ icarus::config::session_memcached::const_reverse_iterator icarus::config::sessio
 	return this->_servers.crend();
 }
 
-boost::optional<icarus::config::session_memcached> icarus::config::session::memcached()
+size_t icarus::config::session_memcached::size() const
+{
+	return this->_servers.size();
+}
+
+std::unique_ptr<icarus::config::session_memcached> &icarus::config::session::memcached()
 {
 	return this->_memcached;
 }
@@ -246,13 +252,18 @@ void icarus::config::config::loadFromFile(const std::string &fname)
 		}
 	}
 
-	const boost::optional<boost::property_tree::ptree&> &memcached = pt.get_child_optional("memcached");
-	if (memcached)
+	const boost::optional<boost::property_tree::ptree&> &session = pt.get_child_optional("session");
+	if (session)
 	{
-		for (boost::property_tree::ptree::value_type &server : memcached.get())
+		const boost::optional<boost::property_tree::ptree&> &memcached = session->get_child_optional("memcached");
+		if (memcached)
 		{
-			if (server.first == "server")
-				this->_session.memcached()->add(server.second.get_child("address").get_value<std::string>());
+			this->_session.memcached().reset(new icarus::config::session_memcached());
+			for (boost::property_tree::ptree::value_type &server : memcached.get())
+			{
+				if (server.first == "server")
+					this->_session.memcached()->add(server.second.get<std::string>("address"));
+			}
 		}
 	}
 }

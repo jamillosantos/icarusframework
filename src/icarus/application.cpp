@@ -32,13 +32,21 @@ bool icarus::application::is_running()
 void icarus::application::init()
 {
 	if (this->_config.session().memcached())
-		this->_session_manager.reset(new icarus::session::memcached_manager(this->config().session().memcached().get()));
+	{
+		this->_session_manager.reset(new icarus::session::memcached_manager(*this->config().session().memcached()));
+		this->_session_manager->start();
+	}
 	else
 		throw icarus::no_session_manager_defined();
 }
 
 void icarus::application::cleanup()
-{ }
+{
+	if (this->_session_manager)
+	{
+		this->_session_manager->stop();
+	}
+}
 
 void icarus::application::run()
 {

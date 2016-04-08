@@ -258,7 +258,13 @@ set(SOURCE_FILES
 
 	include/icarus/dispatcher.h
 	src/icarus/dispatcher.cpp
-		src/icarus/session/memcached.cpp include/icarus/session/memcached.h src/icarus/digests.cpp include/icarus/digests.h)
+
+	src/icarus/session/memcached.cpp
+	include/icarus/session/memcached.h
+
+	src/icarus/digests.cpp
+	include/icarus/digests.h
+)
 
 include_directories("${CMAKE_SOURCE_DIR}/include")
 

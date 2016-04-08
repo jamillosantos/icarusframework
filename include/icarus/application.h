@@ -21,7 +21,30 @@ public:
 	no_session_manager_defined();
 };
 
+class iapplication
+{
+public:
+	virtual icarus::config::config &config() = 0;
+
+	virtual icarus::http::client_context* accept() = 0;
+
+	virtual void terminate() = 0;
+
+	virtual bool is_running() = 0;
+
+	virtual void init() = 0;
+
+	virtual void cleanup() = 0;
+
+	virtual void run() = 0;
+
+	virtual icarus::dispatcher &dispatcher() = 0;
+
+	virtual icarus::session::manager& session_manager() = 0;
+};
+
 class application
+	: public icarus::iapplication
 {
 private:
 	icarus::config::config _config;

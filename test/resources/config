@@ -31,7 +31,7 @@ session
 	{
 		server
 		{
-			address 'localhost:11211'
+			address localhost:11211
 		}
 	}
 }

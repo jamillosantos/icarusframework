@@ -15,14 +15,19 @@
 namespace icarus
 {
 class multi_threaded_application
-: public application
+: public iapplication
 {
 private:
+	bool volatile _running;
 	std::mutex _acceptMutex;
 	application &_application;
 	std::vector<std::unique_ptr<std::thread>> _threads;
 public:
 	multi_threaded_application(icarus::application &application);
+
+	virtual config::config & config();
+
+	virtual icarus::session::manager & session_manager();
 
 	virtual void init() override;
 
@@ -33,6 +38,12 @@ public:
 	virtual void runTrampolin();
 
 	virtual void run() override;
+
+	virtual void terminate();
+
+	virtual bool is_running();
+
+	virtual icarus::dispatcher &dispatcher();
 };
 }
 

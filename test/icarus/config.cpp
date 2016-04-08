@@ -44,4 +44,8 @@ BOOST_AUTO_TEST_CASE(parse_1)
 	BOOST_CHECK_EQUAL(c.databases()["test"]->driver(), "mysql");
 	BOOST_CHECK_EQUAL(c.databases()["test"]->str(), "mysql://db=test password='12345' user=root");
 	BOOST_CHECK_EQUAL(c.databases()["test"]->pool_size(), 13);
+
+	BOOST_REQUIRE_MESSAGE(c.session().memcached(), "Memcached configuration should be loaded.");
+	BOOST_REQUIRE_EQUAL(c.session().memcached()->size(), 1);
+	BOOST_CHECK_EQUAL((*c.session().memcached())[0].address(), "localhost:11211");
 }

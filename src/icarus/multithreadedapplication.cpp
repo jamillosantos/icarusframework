@@ -6,11 +6,22 @@
 #include <icarus/multithreadedapplication.h>
 
 icarus::multi_threaded_application::multi_threaded_application(icarus::application &application)
-	: icarus::application::application(application.dispatcher()), _application(application)
+	: _running(false), _application(application)
 { }
+
+icarus::config::config &icarus::multi_threaded_application::config()
+{
+	return this->_application.config();
+}
+
+icarus::session::manager &icarus::multi_threaded_application::session_manager()
+{
+	return this->_application.session_manager();
+}
 
 void icarus::multi_threaded_application::init()
 {
+	LOG_DEBUG("icarus::multi_threaded_application::init");
 	this->_application.init();
 }
 
@@ -27,13 +38,13 @@ icarus::http::client_context *icarus::multi_threaded_application::accept()
 
 void icarus::multi_threaded_application::runTrampolin()
 {
-	LOG_TRACE("Running trampolin");
+	icarus::dispatcher &dispatcher = this->_application.dispatcher();
 	while (this->_running)
 	{
 		http::client_context *client = this->accept();
 		if (client)
 		{
-			this->_dispatcher.process(*this, client);
+			dispatcher.process(this->_application, client);
 		}
 	}
 }
@@ -51,4 +62,19 @@ void icarus::multi_threaded_application::run()
 		this->_threads[i]->join();
 
 	this->cleanup();
+}
+
+void icarus::multi_threaded_application::terminate()
+{
+	this->_running = false;
+}
+
+bool icarus::multi_threaded_application::is_running()
+{
+	return this->_running;
+}
+
+icarus::dispatcher &icarus::multi_threaded_application::dispatcher()
+{
+	return this->_application.dispatcher();
 }

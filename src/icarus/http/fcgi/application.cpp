@@ -7,6 +7,8 @@
 
 void icarus::http::fcgi::application::init()
 {
+	icarus::application::init();
+
 	FCGX_Init();
 }
 
