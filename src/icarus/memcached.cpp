@@ -73,9 +73,11 @@ void icarus::memcached_session::assert_connection()
 }
 
 icarus::memcached_session::memcached_session()
+	: _memcached_st(nullptr)
 { }
 
 icarus::memcached_session::memcached_session(icarus::memcached_server &server)
+	: memcached_session()
 {
 	this->connect(server);
 }
@@ -131,8 +133,22 @@ std::string icarus::memcached_session::get_value(const std::string &key)
 	size_t size;
 	char *value = memcached_get(this->_memcached_st, key.c_str(), key.length(), &size, (uint32_t*)0, &rc);
 	if (memcached_success(rc))
-		return std::string(value, size);
+	{
+		std::string result(value, size);
+		free(value);
+		return result;
+	}
 
+	throw icarus::memcached_key_not_found(key);
+}
+
+size_t icarus::memcached_session::get_value(const std::string &key, char **buffer)
+{
+	memcached_return_t rc;
+	size_t size;
+	*buffer = memcached_get(this->_memcached_st, key.c_str(), key.length(), &size, (uint32_t*)0, &rc);
+	if (memcached_success(rc))
+		return size;
 	throw icarus::memcached_key_not_found(key);
 }
 
@@ -140,27 +156,57 @@ std::string icarus::memcached_session::get_value(const std::string &group, const
 {
 	memcached_return_t rc;
 	size_t size;
-	char *value = memcached_get_by_key(this->_memcached_st, group.c_str(), group.length(), key.c_str(), key.length(), &size, (uint32_t*)0, &rc);
+	char *value = memcached_get_by_key(this->_memcached_st, group.c_str(), group.length(), key.c_str(), key.length(),
+		&size, (uint32_t*)0, &rc);
 	if (memcached_success(rc))
-		return std::string(value, size);
+	{
+		std::string result(value, size);
+		free(value);
+		return result;
+	}
+	throw icarus::memcached_key_not_found(key);
+}
 
+size_t icarus::memcached_session::get_value(const std::string &group, const std::string &key, char **buffer)
+{
+	memcached_return_t rc;
+	size_t size;
+	*buffer = memcached_get_by_key(this->_memcached_st, group.c_str(), group.length(), key.c_str(), key.length(), &size,
+		(uint32_t*)0, &rc);
+	if (memcached_success(rc))
+		return size;
 	throw icarus::memcached_key_not_found(key);
 }
 
 bool icarus::memcached_session::set_value(const std::string &key, const std::string &value)
 {
 	this->assert_connection();
-
 	memcached_return_t rc = memcached_set(this->_memcached_st, key.c_str(), key.length(), value.c_str(), value.length(), (time_t)0, (uint32_t)0);
 	return memcached_success(rc);
 }
 
-bool icarus::memcached_session::set_value(const std::string &key, const std::string &value,
-	const time_t duration)
+bool icarus::memcached_session::set_value(const std::string &key, const char *value, size_t value_size)
+{
+	this->assert_connection();
+	memcached_return_t rc = memcached_set(this->_memcached_st, key.c_str(), key.length(), value, value_size, (time_t)0, (uint32_t)0);
+	return memcached_success(rc);
+}
+
+bool icarus::memcached_session::set_value(const std::string &key, const std::string &value, const time_t duration)
 {
 	this->assert_connection();
 
-	memcached_return_t rc = memcached_set(this->_memcached_st, key.c_str(), key.length(), value.c_str(), value.length(), duration, (uint32_t)0);
+	memcached_return_t rc = memcached_set(this->_memcached_st, key.c_str(), key.length(), value.c_str(), value.length(),
+		duration, (uint32_t)0);
+	return memcached_success(rc);
+}
+
+bool icarus::memcached_session::set_value(const std::string &key, const char *value, const size_t value_size,
+	const time_t duration)
+{
+	this->assert_connection();
+	memcached_return_t rc = memcached_set(this->_memcached_st, key.c_str(), key.length(), value, value_size, duration,
+		(uint32_t)0);
 	return memcached_success(rc);
 }
 
@@ -173,6 +219,16 @@ bool icarus::memcached_session::set_value(const std::string &group, const std::s
 	return memcached_success(rc);
 }
 
+bool icarus::memcached_session::set_value(const std::string &group, const std::string &key, const char *value,
+	const size_t value_size)
+{
+	this->assert_connection();
+
+	memcached_return_t rc = memcached_set_by_key(this->_memcached_st, group.c_str(), group.length(), key.c_str(),
+		key.length(), value, value_size, (time_t)0, (uint32_t)0);
+	return memcached_success(rc);
+}
+
 bool icarus::memcached_session::set_value(const std::string &group, const std::string &key, const std::string &value,
 	time_t duration)
 {
@@ -180,5 +236,15 @@ bool icarus::memcached_session::set_value(const std::string &group, const std::s
 
 	memcached_return_t rc = memcached_set_by_key(this->_memcached_st, group.c_str(), group.length(), key.c_str(),
 		key.length(), value.c_str(), value.length(), (time_t)duration, (uint32_t)0);
+	return memcached_success(rc);
+}
+
+bool icarus::memcached_session::set_value(const std::string &group, const std::string &key, const char *value,
+	const size_t value_size, const time_t duration)
+{
+	this->assert_connection();
+
+	memcached_return_t rc = memcached_set_by_key(this->_memcached_st, group.c_str(), group.length(), key.c_str(),
+		key.length(), value, value_size, (time_t)duration, (uint32_t)0);
 	return memcached_success(rc);
 }

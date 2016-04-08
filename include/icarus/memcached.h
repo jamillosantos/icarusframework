@@ -86,11 +86,23 @@ public:
 	void disconnect();
 
 	virtual std::string get_value(const std::string &key);
+	virtual size_t get_value(const std::string &key, char **buffer);
 	virtual std::string get_value(const std::string &group, const std::string &key);
+	virtual size_t get_value(const std::string &group, const std::string &key, char **buffer);
+
 	virtual bool set_value(const std::string &key, const std::string &value);
+	virtual bool set_value(const std::string &key, const char *value, size_t value_size);
+
 	virtual bool set_value(const std::string &key, const std::string &value, const time_t duration);
+	virtual bool set_value(const std::string &key, const char *value, const size_t value_size, const time_t duration);
+
 	virtual bool set_value(const std::string &group, const std::string &key, const std::string &value);
+	virtual bool set_value(const std::string &group, const std::string &key, const char *value,
+		const size_t value_size);
+
 	virtual bool set_value(const std::string &group, const std::string &key, const std::string &value, const time_t duration);
+	virtual bool set_value(const std::string &group, const std::string &key, const char *value, const size_t value_size,
+		const time_t duration);
 };
 }
 
