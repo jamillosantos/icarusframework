@@ -24,6 +24,6 @@ std::string icarus::digests::sha256(const std::string &data)
 {
 	char buffer[65];
 	icarus::digests::sha256(data.c_str(), data.length(), buffer);
-	return std::string(buffer, 65);
+	return std::string(buffer, 64);
 }
 
