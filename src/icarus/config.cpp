@@ -6,6 +6,7 @@
 #include <icarus/config.h>
 #include <boost/filesystem/operations.hpp>
 #include <icarus/exceptions.h>
+#include <icarus/log.h>
 
 icarus::config::database::database()
 { }
@@ -18,7 +19,7 @@ icarus::config::database::database(const database &database)
 	: _data(database._data), _driver(database._driver), _pool_size(database._pool_size)
 { }
 
-const std::string &icarus::config::database::driver()
+const std::string &icarus::config::database::driver() const
 {
 	return this->_driver;
 }
@@ -29,7 +30,7 @@ icarus::config::database &icarus::config::database::driver(const std::string &dr
 	return *this;
 }
 
-unsigned int icarus::config::database::pool_size()
+unsigned int icarus::config::database::pool_size() const
 {
 	return this->_pool_size;
 }
@@ -45,7 +46,7 @@ void icarus::config::database::add(const std::string &param, const std::string &
 	this->_data.emplace(param, value);
 }
 
-const std::string icarus::config::database::str()
+const std::string icarus::config::database::str() const
 {
 	std::string result(this->_driver);
 	result += "://";
@@ -74,6 +75,16 @@ icarus::config::databases::iterator icarus::config::databases::begin()
 }
 
 icarus::config::databases::iterator icarus::config::databases::end()
+{
+	return this->_data.end();
+}
+
+icarus::config::databases::const_iterator icarus::config::databases::begin() const
+{
+	return this->_data.begin();
+}
+
+icarus::config::databases::const_iterator icarus::config::databases::end() const
 {
 	return this->_data.end();
 }
@@ -116,7 +127,7 @@ size_t icarus::config::databases::size()
 icarus::config::database &icarus::config::databases::add(const std::string &name, const std::string &driver, const unsigned int poolSize)
 {
 	std::pair<icarus::config::databases::iterator, bool> it
-		= this->_data.emplace(std::make_pair(name, icarus::config::database(driver, poolSize)));
+		= this->_data.emplace(name, icarus::config::database(driver, poolSize));
 	return (it.first)->second;
 }
 

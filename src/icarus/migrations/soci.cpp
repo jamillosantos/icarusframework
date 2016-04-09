@@ -86,7 +86,7 @@ void icarus::migrations::runner_soci::run(int argc, char **argv)
 
 	icarus::migrations::runner::run(argc, argv);
 
-	icarus::db::databases databases(this->config());
+	icarus::db::databases databases(this->config().databases());
 
 	LOG_INFO(this->config().databases()["default"]->str());
 

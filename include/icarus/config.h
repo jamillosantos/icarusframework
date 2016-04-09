@@ -32,22 +32,24 @@ public:
 
 	database(const icarus::config::database &database);
 
-	const std::string &driver();
+	const std::string &driver() const;
 
 	icarus::config::database &driver(const std::string &driver);
 
-	unsigned int pool_size();
+	unsigned int pool_size() const;
 
 	icarus::config::database &pool_size(unsigned int pool_size);
 
 	void add(const std::string &param, const std::string &value);
 
-	const std::string str();
+	const std::string str() const;
 };
 
 class databases
 {
 public:
+	typedef typename std::pair<std::string, icarus::config::database> pair;
+
 	typedef typename std::map<std::string, icarus::config::database>::iterator iterator;
 	typedef typename std::map<std::string, icarus::config::database>::reverse_iterator reverse_iterator;
 
@@ -60,6 +62,9 @@ public:
 
 	iterator begin();
 	iterator end();
+
+	const_iterator begin() const;
+	const_iterator end() const;
 
 	reverse_iterator rbegin();
 	reverse_iterator rend();
