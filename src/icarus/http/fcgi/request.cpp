@@ -39,7 +39,7 @@ void icarus::http::fcgi::request::init(const FCGX_Request &request)
 					headerValue
 				);
 				if (headerName == "CONTENT_TYPE")
-					this->_contentType = headerValue;
+					this->_content_type = headerValue;
 				else if (headerName == "DOCUMENT_URI")
 				{
 					this->_uri = headerValue;

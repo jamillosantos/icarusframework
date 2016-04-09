@@ -30,7 +30,7 @@ std::istream &icarus::http::request::content()
 
 const std::string &icarus::http::request::contentType() const
 {
-	return this->_contentType;
+	return this->_content_type;
 }
 
 const long long int &icarus::http::request::contentLength() const
@@ -73,3 +73,9 @@ const Json::Value &icarus::http::request::as_json()
 	}
 	return *this->_json;
 }
+
+const bool icarus::http::request::is_json() const
+{
+	return (this->_content_type == "application/json");
+}
+

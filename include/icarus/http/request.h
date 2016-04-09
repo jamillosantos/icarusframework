@@ -21,7 +21,7 @@ protected:
 	icarus::http::headers _headers;
 	icarus::http::headers _serverVariables;
 
-	std::string _contentType;
+	std::string _content_type;
 	long long int _contentLength;
 
 	icarus::http::cookies _cookies;
@@ -61,6 +61,8 @@ public:
 	const std::string &method();
 
 	const Json::Value &as_json();
+
+	const bool is_json() const;
 };
 }
 }
