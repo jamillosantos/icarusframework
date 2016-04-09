@@ -28,6 +28,8 @@ class compiler
 private:
 	std::string input_file;
 	std::string output_file;
+
+	bool needs_update(const boost::filesystem::path &source, const boost::filesystem::path &compiled);
 public:
 	compiler(std::string inputFile, std::string outputFile);
 
