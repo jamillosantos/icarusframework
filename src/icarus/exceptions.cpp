@@ -73,3 +73,7 @@ icarus::invalid_pointer::invalid_pointer(const std::string &message, std::except
 icarus::invalid_pointer::invalid_pointer(const std::string &message)
 	: icarus::exception(message)
 { }
+
+icarus::json_expected_exception::json_expected_exception()
+	: icarus::exception((bl::translate("Invalid data entry, JSON expected.")).str())
+{ }

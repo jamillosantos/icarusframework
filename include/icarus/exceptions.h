@@ -78,6 +78,13 @@ public:
 
 	invalid_pointer(const std::string &message);
 };
+
+class json_expected_exception
+	: public icarus::exception
+{
+public:
+	json_expected_exception();
+};
 }
 
 #endif //ICARUSFRAMEWORK_EXCEPTIONS_H
