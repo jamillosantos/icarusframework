@@ -28,7 +28,7 @@ public:
 
 	void add(const std::string &name, icarus::config::database &database);
 
-	boost::optional<soci::connection_pool> operator[](const std::string &name);
+	boost::optional<soci::connection_pool&> operator[](const std::string &name);
 };
 }
 }

@@ -93,7 +93,7 @@ void icarus::migrations::runner_soci::run(int argc, char **argv)
 	icarus::migrations::manager_soci *m = dynamic_cast<icarus::migrations::manager_soci*>(&this->manager());
 	if (m)
 	{
-		boost::optional<soci::connection_pool> pool = databases[(this->options().dbid.empty()) ? "default" : this->options().dbid];
+		boost::optional<soci::connection_pool&> pool = databases[(this->options().dbid.empty()) ? "default" : this->options().dbid];
 		if (pool)
 		{
 			soci::session session(*pool);

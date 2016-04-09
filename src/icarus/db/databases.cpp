@@ -25,11 +25,11 @@ void icarus::db::databases::add(const std::string &name, icarus::config::databas
 	this->_pools.emplace(std::make_pair(name, std::unique_ptr<soci::connection_pool>(pool)));
 }
 
-boost::optional<soci::connection_pool> icarus::db::databases::operator[](const std::string &name)
+boost::optional<soci::connection_pool&> icarus::db::databases::operator[](const std::string &name)
 {
 	auto it = this->_pools.find(name);
 	if (it == this->_pools.end())
-		return boost::optional<soci::connection_pool>();
+		return boost::optional<soci::connection_pool&>();
 	else
-		return boost::optional<soci::connection_pool>(*it->second);
+		return boost::optional<soci::connection_pool&>(*it->second);
 }
