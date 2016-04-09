@@ -56,23 +56,21 @@ protected:
 public:
 	application(icarus::dispatcher &dispatcher);
 
-	config::config &config();
+	config::config &config() override;
 
-	virtual http::client_context* accept() = 0;
+	virtual void terminate() override;
 
-	virtual void terminate();
+	virtual bool is_running() override;
 
-	virtual bool is_running();
+	virtual void init() override;
 
-	virtual void init();
+	virtual void cleanup() override;
 
-	virtual void cleanup();
+	virtual void run() override;
 
-	virtual void run();
+	virtual icarus::dispatcher &dispatcher() override;
 
-	virtual icarus::dispatcher &dispatcher();
-
-	icarus::session::manager& session_manager();
+	icarus::session::manager& session_manager() override;
 };
 }
 

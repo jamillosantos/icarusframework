@@ -25,9 +25,9 @@ private:
 public:
 	multi_threaded_application(icarus::application &application);
 
-	virtual config::config & config();
+	virtual config::config & config() override;
 
-	virtual icarus::session::manager & session_manager();
+	virtual icarus::session::manager &session_manager() override;
 
 	virtual void init() override;
 
@@ -39,11 +39,11 @@ public:
 
 	virtual void run() override;
 
-	virtual void terminate();
+	virtual void terminate() override;
 
-	virtual bool is_running();
+	virtual bool is_running() override;
 
-	virtual icarus::dispatcher &dispatcher();
+	virtual icarus::dispatcher &dispatcher() override;
 };
 }
 

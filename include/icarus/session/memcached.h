@@ -22,7 +22,7 @@ class memcached_manager
 private:
 	icarus::memcached_server _server;
 protected:
-	virtual icarus::session::session_impl* create(const icarus::session::session_id_t &id);
+	virtual icarus::session::session_impl* create(const icarus::session::session_id_t &id) override;
 
 public:
 	memcached_manager(icarus::config::session_memcached &config);
