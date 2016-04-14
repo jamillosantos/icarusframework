@@ -27,7 +27,8 @@ icarus::result::result(icarus::status &status, const Json::Value &json)
 	: icarus::result::result(status)
 {
 	this->_contentType = "application/json";
-	this->stream() << json;
+	Json::FastWriter writer;
+	this->stream() << writer.write(json);
 }
 
 icarus::result::result(const Json::Value &json)
