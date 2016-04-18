@@ -17,6 +17,8 @@ class cpp_template_builder
 protected:
 	virtual void document_begin(minotaur::file_info &fileInfo, std::ostream &ostream) override;
 
+	virtual void document_end(file_info &fileInfo, std::ostream &ostream);
+
 	virtual void class_begin(minotaur::file_info &fileInfo, std::ostream &ostream) override;
 
 	virtual void class_end(minotaur::file_info &fileInfo, std::ostream &ostream) override;

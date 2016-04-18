@@ -8,12 +8,43 @@ minotaur::cpp_template_builder::cpp_template_builder()
 void minotaur::cpp_template_builder::document_begin(minotaur::file_info &fileInfo, std::ostream &ostream)
 {
 	template_builder::document_begin(fileInfo, ostream);
+
+	std::string define_name = "VIEWS_";
+	unsigned int i = 0;
+	for (const std::string &package : fileInfo.package)
+	{
+		if (++i > 1)
+			define_name += "_";
+		define_name += package;
+	}
+	define_name += "_" + fileInfo.name + "_HPP";
+
 	ostream
-	<< "/**" << std::endl
-	<< " * Auto created." << std::endl
-	<< " **/" << std::endl << std::endl
-	<< "#include <icarus/result.h>" << std::endl
-	<< "#include <icarus/statuses.h>" << std::endl;
+		<< "/**" << std::endl
+		<< " * Auto created." << std::endl
+		<< " **/" << std::endl << std::endl
+		<< "#ifndef " << define_name << std::endl
+		<< "#define " << define_name << std::endl
+		<< "#include <icarus/result.h>" << std::endl
+		<< "#include <icarus/statuses.h>" << std::endl;
+}
+
+void minotaur::cpp_template_builder::document_end(file_info &fileInfo, std::ostream &ostream)
+{
+	std::string define_name = "VIEWS_";
+	unsigned int i = 0;
+	for (const std::string &package : fileInfo.package)
+	{
+		if (++i > 1)
+			define_name += "_";
+		define_name += package;
+	}
+	define_name += "_" + fileInfo.name + "_HPP";
+
+	ostream
+		<< "#endif // " << define_name << std::endl;
+
+	template_builder::document_end(fileInfo, ostream);
 }
 
 void minotaur::cpp_template_builder::class_begin(minotaur::file_info &fileInfo, std::ostream &ostream)
