@@ -52,7 +52,7 @@ private:
 
 	void run_parameters(minotaur::file_info &file);
 
-	void run_content(minotaur::group_block &block, bool skip_at = false);
+	void run_content(minotaur::group_block &block, bool skip_at = false, bool root = false);
 
 	void run_block_code(minotaur::group_block &block);
 

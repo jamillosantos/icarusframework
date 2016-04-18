@@ -105,7 +105,7 @@ void minotaur::parser_file::run_parameters(minotaur::file_info &info)
 	}
 }
 
-void minotaur::parser_file::run_content(minotaur::group_block &block, bool skip_at)
+void minotaur::parser_file::run_content(minotaur::group_block &block, bool skip_at, bool root)
 {
 	char cc;
 	std::stringstream sblock;
@@ -158,7 +158,7 @@ void minotaur::parser_file::run_content(minotaur::group_block &block, bool skip_
 			else
 				throw icarus::premature_eof(this->currentLine);
 		}
-		else if (cc == '}')
+		else if ((!root) && (cc == '}'))
 			break;
 		else
 			sblock << cc;
@@ -328,7 +328,7 @@ void minotaur::parser_file::parse(minotaur::file_info &info)
 				}
 				else
 				{
-					this->run_content(info, true);
+					this->run_content(info, true, true);
 				}
 				this->initialized = true;
 			}
@@ -336,7 +336,7 @@ void minotaur::parser_file::parse(minotaur::file_info &info)
 				throw icarus::premature_eof(this->currentLine);
 		}
 		else
-			this->run_content(info);
+			this->run_content(info, false, true);
 	}
 	while (this->read(&cc));
 }
