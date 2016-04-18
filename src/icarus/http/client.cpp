@@ -9,14 +9,14 @@ icarus::http::client_context::client_context(client_context &clientContext)
 	: _request(clientContext._request), _response(clientContext._response)
 { }
 
-icarus::http::client_context::client_context(icarus::http::request &req, icarus::http::response &resp)
+icarus::http::client_context::client_context(icarus::http::irequest &req, icarus::http::response &resp)
 	: _request(req), _response(resp)
 { }
 
 icarus::http::client_context::~client_context()
 { }
 
-icarus::http::request &icarus::http::client_context::request()
+icarus::http::irequest &icarus::http::client_context::request()
 {
 	return this->_request;
 }

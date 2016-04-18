@@ -62,13 +62,13 @@ void icarus::http::cookies::parse(const std::string &cookies)
 
 boost::regex icarus::http::cookies::regex("[ \\t]*([^=]+)=([^;]+)(; *|$)");
 
-const boost::optional<icarus::http::cookie_value&> icarus::http::cookies::operator[](const std::string &name)
+const boost::optional<icarus::http::cookie_value> icarus::http::cookies::operator[](const std::string &name) const
 {
-	icarus::http::cookies::iterator it = this->_list.find(name);
+	icarus::http::cookies::const_iterator it = this->_list.find(name);
 	if (it == this->_list.end())
-		return boost::optional<icarus::http::cookie_value&>();
+		return boost::optional<icarus::http::cookie_value>();
 	else
-		return boost::optional<icarus::http::cookie_value&>(it->second);
+		return boost::optional<icarus::http::cookie_value>(it->second);
 }
 
 void icarus::http::cookies::emplace(const std::string &name, const std::string &value)

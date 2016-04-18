@@ -225,10 +225,7 @@ set(SOURCE_FILES
 	# ---
 
 	include/icarus/db/databases.h
-	include/icarus/db/field.h
-
 	src/icarus/db/databases.cpp
-	src/icarus/db/field.cpp
 
 	# ---
 

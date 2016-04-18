@@ -70,7 +70,7 @@ private:
 public:
 	void parse(const std::string &cookies);
 
-	const boost::optional<cookie_value&> operator[](const std::string &name);
+	const boost::optional<icarus::http::cookie_value> operator[](const std::string &name) const;
 
 	void emplace(const std::string &name, const std::string &value);
 

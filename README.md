@@ -53,7 +53,7 @@ Routes
 The `routes` is a simple text file that binds URIs with controller methods.
 Internally, at the pre-build stage of the project compilation, the framework
 will parse and transform the `routes` into C++ code. Afterwards, the temporary
-C++ code will be compiled into the main executable (export to a library).
+C++ code will be compiled into the main executable (or into a library).
 
 ### Basic
 
@@ -64,9 +64,15 @@ request.
 The rules are checked in sequence from the top to bottom.
 
 ```
+// This is a inline comment comment
+/** This is a
+ *  multiline comment
+ */
 GET         /                           controllers::index::def()
 GET         /about                      controllers::static_pages::about()
-GET         /<user:[a-z_]+>/dashboard   controllers::user::dashboard(string username)
+GET         /<user:[a-z_]+>/dashboard   controllers::user::dashboard(string user)
+// ON next, another way to write the param definition.
+GET         /<user>/dashboard           controllers::user::dashboard(string user)
 GET         /user/create                controllers::user::form()
 POST        /user/create                controllers::user::create()
 ```
@@ -78,9 +84,10 @@ Another feature implemented are groups. Where
 ```
 on /<user>
 {
-	GET			/                       controllers::user::dashboard(std::string username)
-	GET			/posts                  controllers::user::posts(std::string username)
-	GET			/posts/<month:[0-9]+>   controllers::user::posts(std::string username, unsigned int month)
+	GET			/                       controllers::user::dashboard(std::string user)
+	// On next, we do not need to use the `user` param.
+	GET			/posts                  controllers::user::posts()
+	GET			/posts/<month:[0-9]+>   controllers::user::posts(std::string user, unsigned int month)
 }
 ```
 

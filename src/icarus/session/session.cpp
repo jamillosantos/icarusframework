@@ -71,15 +71,15 @@ void icarus::session::manager::stop()
 
 icarus::session::session icarus::session::manager::get(icarus::http::client_context &client)
 {
-	boost::optional<icarus::http::cookie_value&> session_id = client.request().cookies()["session_id"];
-	if (session_id)
-		return icarus::session::session(this->create((*session_id).value()));
-	else
+	std::string session_id = client.request().cookie("session_id");
+	if (session_id.empty())
 	{
 		icarus::session::session_id_t id = this->generate_id();
 		client.response().cookies().set("session_id", id);
 		return icarus::session::session(this->create(id));
 	}
+	else
+		return icarus::session::session(this->create(session_id));
 }
 
 icarus::session::session_impl::session_impl(const icarus::session::session_id_t &id)

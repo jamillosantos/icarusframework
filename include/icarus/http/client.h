@@ -16,16 +16,16 @@ namespace http
 class client_context
 {
 protected:
-	icarus::http::request &_request;
+	icarus::http::irequest &_request;
 	icarus::http::response &_response;
 public:
 	client_context(client_context &clientContext);
 
-	client_context(icarus::http::request &req, icarus::http::response &resp);
+	client_context(icarus::http::irequest &req, icarus::http::response &resp);
 
 	virtual ~client_context();
 
-	icarus::http::request &request();
+	icarus::http::irequest &request();
 
 	icarus::http::response &response();
 };

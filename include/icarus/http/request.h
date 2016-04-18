@@ -15,54 +15,31 @@ namespace icarus
 {
 namespace http
 {
-class request
+class irequest
 {
-protected:
-	icarus::http::headers _headers;
-	icarus::http::headers _serverVariables;
-
-	std::string _content_type;
-	long long int _contentLength;
-
-	icarus::http::cookies _cookies;
-
-	std::unique_ptr<std::istream> _content;
-
-	std::string _uri;
-	std::string _queryString;
-	icarus::http::query_string_values _params;
-
-	std::string _method;
-
-	std::unique_ptr<Json::Value> _json;
 public:
-	request();
+	virtual std::string header(const std::string &name) = 0;
 
-	virtual ~request();
+	virtual std::string env(const std::string &name) = 0;
 
-	icarus::http::headers &headers();
+	virtual std::unique_ptr<std::istream> &content() = 0;
 
-	icarus::http::headers &serverVariables();
+	virtual const std::string &content_type() const = 0;
 
-	std::istream &content();
+	virtual const size_t &content_length() const = 0;
 
-	const std::string &contentType() const;
+	virtual const std::string cookie(const std::string &name) const = 0;
 
-	const long long int &contentLength() const;
+	virtual const std::string &uri() const = 0;
+	virtual const std::string &query_string() const = 0;
 
-	icarus::http::cookies &cookies();
+	virtual const std::string &param(const std::string &name) = 0;
+	virtual const icarus::http::query_string_value &params(const std::string &name) = 0;
 
-	const std::string &uri();
+	virtual const std::string &method() = 0;
 
-	const std::string &queryString();
-
-	icarus::http::query_string_values &params();
-
-	const std::string &method();
-
-	const Json::Value &as_json();
-
-	const bool is_json() const;
+	virtual const Json::Value &as_json() = 0;
+	virtual const bool is_json() const = 0;
 };
 }
 }
