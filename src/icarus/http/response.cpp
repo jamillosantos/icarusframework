@@ -37,6 +37,8 @@ void icarus::http::response::flush_headers(const icarus::result &result)
 		for (const std::string &value : (*it).second)
 			(*this->ostream) << (*it).first << ": " << value << endh;
 	}
+	if (result.content_type())
+		(*this->ostream) << "Content-Type: " << *result.content_type() << endh;
 	for (const icarus::http::cookies::pair &cookie : this->_cookies)
 	{
 		if (cookie.second.expires())

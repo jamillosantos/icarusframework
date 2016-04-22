@@ -26,7 +26,7 @@ icarus::result::result(const std::string &content)
 icarus::result::result(icarus::status &status, const Json::Value &json)
 	: icarus::result::result(status)
 {
-	this->_contentType = "application/json";
+	this->_content_type = "application/json";
 	Json::FastWriter writer;
 	this->stream() << writer.write(json);
 }
@@ -58,6 +58,7 @@ icarus::status &icarus::result::status() const
 icarus::result &icarus::result::charset(std::string &charset)
 {
 	this->_charset = charset;
+	return *this;
 }
 
 boost::optional<std::string> icarus::result::charset() const
@@ -65,14 +66,15 @@ boost::optional<std::string> icarus::result::charset() const
 	return this->_charset;
 }
 
-icarus::result &icarus::result::as(std::string &contentType)
+icarus::result &icarus::result::as(const std::string &content_type)
 {
-	this->_contentType = contentType;
+	this->_content_type = content_type;
+	return *this;
 }
 
-boost::optional<std::string> icarus::result::contentType() const
+boost::optional<std::string> icarus::result::content_type() const
 {
-	return this->_contentType;
+	return this->_content_type;
 }
 
 icarus::result &icarus::result::header(const std::string &name, const std::string &value)

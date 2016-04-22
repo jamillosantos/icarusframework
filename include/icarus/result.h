@@ -25,7 +25,7 @@ class result
 private:
 	icarus::status &_status;
 
-	boost::optional<std::string> _contentType;
+	boost::optional<std::string> _content_type;
 	boost::optional<std::string> _charset;
 
 	icarus::http::headers _headers;
@@ -54,9 +54,9 @@ public:
 
 	boost::optional<std::string> charset() const;
 
-	result &as(std::string &contentType);
+	result &as(const std::string &content_type);
 
-	boost::optional<std::string> contentType() const;
+	boost::optional<std::string> content_type() const;
 
 	icarus::result &header(const std::string &name, const std::string &value);
 };
