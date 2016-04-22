@@ -147,7 +147,12 @@ const Json::Value &icarus::http::fcgi::request::as_json()
 	else if (this->is_json())
 	{
 		std::string json_content;
-		std::getline<char>(*this->content(), json_content, (char)EOF);
+		char data[2048];
+		while (!this->content()->eof())
+		{
+			this->content()->read(data, 2048);
+			json_content.append(data, this->content()->gcount());
+		}
 		Json::Reader reader;
 		this->_json.reset(new Json::Value());
 		reader.parse(json_content, *this->_json, false);
