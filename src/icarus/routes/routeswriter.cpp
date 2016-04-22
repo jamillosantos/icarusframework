@@ -6,6 +6,7 @@
 #include <icarus/routes/routeswriter.h>
 #include <icarus/routes/exceptions.h>
 #include <icarus/log.h>
+#include <json/value.h>
 
 void icarus::routes::routes_writer::write_begin_doc(std::ostream &stream, document &document)
 {
@@ -26,6 +27,7 @@ void icarus::routes::routes_writer::write_begin_doc(std::ostream &stream, docume
 	// Default includes
 	stream << "#include <vector>" << std::endl;
 	stream << "#include <string>" << std::endl;
+	stream << "#include <icarus/general.h>" << std::endl;
 	stream << "#include <icarus/application.h>" << std::endl;
 	stream << "#include <icarus/typeconversion.h>" << std::endl;
 	stream << "#include <icarus/typeconversion-commons.h>" << std::endl;
@@ -184,6 +186,8 @@ void icarus::routes::routes_writer::write(std::ostream &stream, icarus::routes::
 					stream << "client.request()";
 				else if (param.name() == "response")
 					stream << "client.response()";
+				else if (param.name() == "json")
+					stream << "(client.request().is_json() ? client.request().as_json() : icarus::json_null_value)";
 				else
 					throw icarus::routes::identifier_not_found(route.line(), param.name());
 			}
