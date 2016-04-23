@@ -176,6 +176,9 @@ void icarus::routes::routes_writer::write(std::ostream &stream, icarus::routes::
 		{
 			if (param.attribute() == icarus::routes::method_param_type::IDENTIFIER)
 			{
+				if (i++ > 0)
+					stream << ", ";
+
 				if (param.name() == "client")
 					stream << "client";
 				else if (param.name() == "app")
@@ -199,9 +202,8 @@ void icarus::routes::routes_writer::write(std::ostream &stream, icarus::routes::
 					if (token.name() == param.name())
 					{
 						if (i++ > 0)
-						{
 							stream << ", ";
-						}
+
 						if ((param.type() == "") || (param.type() == "std::string") || (param.type() == "string"))
 							stream << "values[" << token.index() << "]";
 						else
