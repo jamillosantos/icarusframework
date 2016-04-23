@@ -200,21 +200,33 @@ void icarus::routes::parser::run_line_method_parameters(call_method &callMethod)
 	char cc;
 	std::stringstream stream, paramstream;
 	this->read_until_non_blank(&cc);
+	bool last_identifier = false;
 	for (; ;)
 	{
-		if ((cc == ')') || (cc == ','))
+		if ((cc == ')') || (cc == ',')) // End of parameter definition
 		{
-			if ((paramstream.tellp() == 0) && (stream.tellp() == 0))
-				break;
-			else
+			if (last_identifier)
 			{
-				callMethod.add(paramstream.str(), icarus::routes::method_param_type::NORMAL, stream.str());
-				paramstream.str("");
-				stream.str("");
+				last_identifier = false;
 				if (cc == ')')
 					break;
 				else
 					this->read_until_non_blank(&cc);
+			}
+			else
+			{
+				if ((paramstream.tellp() == 0) && (stream.tellp() == 0))
+					break;
+				else
+				{
+					callMethod.add(paramstream.str(), icarus::routes::method_param_type::NORMAL, stream.str());
+					paramstream.str("");
+					stream.str("");
+					if (cc == ')')
+						break;
+					else
+						this->read_until_non_blank(&cc);
+				}
 			}
 		}
 		else if ((cc == ' ') || (cc == '\t') || (cc == '\r') || (cc == '\n'))
@@ -225,7 +237,7 @@ void icarus::routes::parser::run_line_method_parameters(call_method &callMethod)
 			stream.str("");
 			this->read_until_non_blank(&cc);
 		}
-		else if (cc == '@')
+		else if (cc == '@')	// Identifier found
 		{
 			std::string identifier = this->read_identifier();
 			if (identifier.empty())
@@ -235,10 +247,13 @@ void icarus::routes::parser::run_line_method_parameters(call_method &callMethod)
 				std::exit(99);
 			}
 			else
+			{
 				callMethod.add("", icarus::routes::method_param_type::IDENTIFIER, identifier);
+				last_identifier = true;
+			}
 			this->read_char(&cc);
 		}
-		else
+		else // Saving data to use when finding end of token
 		{
 			stream << cc;
 			if (!this->read_char(&cc))

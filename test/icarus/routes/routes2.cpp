@@ -32,9 +32,11 @@ BOOST_AUTO_TEST_CASE(parsing)
 		BOOST_CHECK_EQUAL(line.call_method().path()[0], "controllers");
 		BOOST_CHECK_EQUAL(line.call_method().path()[1], "Index");
 		BOOST_CHECK_EQUAL(line.call_method().name(), "default0");
-		BOOST_REQUIRE_EQUAL(line.call_method().params().size(), 1);
+		BOOST_REQUIRE_EQUAL(line.call_method().params().size(), 2);
 		BOOST_CHECK(line.call_method().params()[0].attribute() == icarus::routes::method_param_type::IDENTIFIER);
 		BOOST_CHECK_EQUAL(line.call_method().params()[0].name(), "client");
+		BOOST_CHECK(line.call_method().params()[1].attribute() == icarus::routes::method_param_type::IDENTIFIER);
+		BOOST_CHECK_EQUAL(line.call_method().params()[1].name(), "session");
 	}
 
 	{
