@@ -7,7 +7,8 @@
 
 void icarus::http::response::flush_headers()
 {
-	(*this->ostream) << "HTTP/1.1 " << this->status.code << " " << this->status.value << endh;
+	// (*this->ostream) << "HTTP/1.1 " << this->status.code << " " << this->status.value << endh;
+	(*this->ostream) << "Status: " << this->status.code << " " << this->status.value << endh;
 
 	for (const icarus::http::headers::pair &header : this->headers())
 	{
@@ -31,7 +32,8 @@ void icarus::http::response::flush_headers()
 
 void icarus::http::response::flush_headers(const icarus::result &result)
 {
-	(*this->ostream) << "HTTP/1.1 " << this->status.code << " " << this->status.value << endh;
+	// (*this->ostream) << "HTTP/1.1 " << result.status().code << " " << result.status().value << endh;
+	(*this->ostream) << "Status: " << result.status().code << " " << result.status().value << endh;
 	for (auto it = result.headers().cbegin(); it != result.headers().cend(); ++it)
 	{
 		for (const std::string &value : (*it).second)
@@ -39,6 +41,8 @@ void icarus::http::response::flush_headers(const icarus::result &result)
 	}
 	if (result.content_type())
 		(*this->ostream) << "Content-Type: " << *result.content_type() << endh;
+	if (result.stream().tellp())
+		(*this->ostream) << "Content-Length: " << result.stream().tellp() << endh;
 	for (const icarus::http::cookies::pair &cookie : this->_cookies)
 	{
 		if (cookie.second.expires())
